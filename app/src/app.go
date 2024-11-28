@@ -12,14 +12,14 @@ func DBMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		dbConn, err := repository.InitializeDatabase()
 		if err != nil {
-			c.JSON(500, gin.H{"error": "failed to connect to the database"})
+			c.JSON(500, gin.H{"error": "failed to connect to the database\n"})
 			c.Abort()
 			return
 		}
 
 		err = models.MigrateAll(dbConn)
 		if err != nil {
-			log.Fatal("Migration error: ", err)
+			log.Fatal("Migration error: ", err, "\n")
 		}
 
 		c.Set("dbConn", dbConn)

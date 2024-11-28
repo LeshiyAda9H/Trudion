@@ -15,13 +15,14 @@ import (
 func LoginHandler(c *gin.Context) {
 	var loginReq models.LoginRequest
 	if err := c.ShouldBindJSON(&loginReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload\n"})
 		return
 	}
 
 	token, err := AuthenticateUser(loginReq.Email, loginReq.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token\n"})
+		log.Fatalln("Error: ", err)
 		return
 	}
 
@@ -31,13 +32,13 @@ func LoginHandler(c *gin.Context) {
 func AuthenticateUser(email, password string) (string, error) {
 	user, err := repository.FindUserByEmail(email)
 	if err != nil {
-		return "", errors.New("invalid email or password")
+		return "", errors.New("invalid email or password\n")
 	}
 
 	// Compare passwords hashes
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		return "", errors.New("invalid email or password")
+		return "", errors.New("invalid email or password\n")
 	}
 
 	// generate JWT token
@@ -74,23 +75,22 @@ func RegisterHandler(c *gin.Context) {
 
 	// check incoming data
 	if err := c.ShouldBindJSON(&newUser); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": err.Error() + "\n"})
 		return
 	}
 
 	existingUser, err := repository.FindUserByEmail(newUser.Email)
 	if err == nil && existingUser != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Email is already in use",
+			"error": "Email is already in use\n",
 		})
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.PasswordHash), bcrypt.DefaultCost)
-	log.Printf("Hashed password: %s\n", hashedPassword)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"error": "Error hashing password",
+			"error": "Error hashing password\n",
 		})
 		return
 	}
@@ -102,8 +102,9 @@ func RegisterHandler(c *gin.Context) {
 
 	if err := repository.CreateUser(&newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "User registration failed: " + err.Error(),
+			"error": "User registration failed: " + err.Error() + "\n",
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
