@@ -7,12 +7,12 @@ import (
 type User struct {
 	UserId           uint       `gorm:"primaryKey;autoIncrement" json:"user_id"`
 	Username         string     `gorm:"size:20;not null" json:"username"`
-	Email            string     `gorm:"size:30;unique;not null" json:"email"`
+	Email            string     `gorm:"size:60;unique;not null" json:"email"`
 	PasswordHash     string     `gorm:"size:60;not null" json:"password_hash"`
-	RegistrationDate time.Time  `gorm:"not null" json:"registration_date"`
+	RegistrationDate time.Time  `gorm:"not null;autoCreateTime" json:"registration_date"`
 	AccountStatus    string     `gorm:"size:255;not null;check:account_status IN ('active', 'inactive', 'pending')" json:"account_status" default:"active"`
 	Inactive         *time.Time `gorm:"" json:"inactive" default:"nil"`
-	Gender           string     `gorm:"size:255;not null;check:gender IN ('male', 'female', 'non_binary', 'prefer_not_to_say')" json:"gender" default:"prefer_not_to_say"`
+	Gender           string     `gorm:"size:255;not null;check:gender IN ('male', 'female', 'prefer_not_to_say')" json:"gender" default:"prefer_not_to_say"`
 	Biography        string     `gorm:"type:text;not null" json:"biography" default:" "`
 	OnlineStatus     string     `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away')" json:"online_status" default:"offline"`
 	IsBanned         bool       `gorm:"not null" json:"is_banned" default:"false"`
@@ -56,7 +56,7 @@ type Notification struct {
 	UserID           uint      `gorm:"not null" json:"user_id"`
 	Message          string    `gorm:"type:text;not null" json:"message"`
 	IsRead           bool      `gorm:"not null" json:"is_read" default:"false"`
-	NotificationDate time.Time `gorm:"not null" json:"notification_date"`
+	NotificationDate time.Time `gorm:"not null;autoCreateTime" json:"notification_date"`
 	User             User      `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE;" json:"user"`
 }
 
