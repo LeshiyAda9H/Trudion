@@ -10,12 +10,12 @@ type User struct {
 	Email            string     `gorm:"size:30;unique;not null" json:"email"`
 	PasswordHash     string     `gorm:"size:60;not null" json:"password_hash"`
 	RegistrationDate time.Time  `gorm:"not null" json:"registration_date"`
-	AccountStatus    string     `gorm:"size:255;not null;check:account_status IN ('active', 'inactive', 'pending')" json:"account_status"`
-	Inactive         *time.Time `gorm:"" json:"inactive"`
-	Gender           string     `gorm:"size:255;not null;check:gender IN ('male', 'female', 'non_binary', 'prefer_not_to_say')" json:"gender"`
-	Biography        string     `gorm:"type:text;not null" json:"biography"`
-	OnlineStatus     string     `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away')" json:"online_status"`
-	IsBanned         bool       `gorm:"not null" json:"is_banned"`
+	AccountStatus    string     `gorm:"size:255;not null;check:account_status IN ('active', 'inactive', 'pending')" json:"account_status" default:"active"`
+	Inactive         *time.Time `gorm:"" json:"inactive" default:"nil"`
+	Gender           string     `gorm:"size:255;not null;check:gender IN ('male', 'female', 'non_binary', 'prefer_not_to_say')" json:"gender" default:"prefer_not_to_say"`
+	Biography        string     `gorm:"type:text;not null" json:"biography" default:" "`
+	OnlineStatus     string     `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away')" json:"online_status" default:"offline"`
+	IsBanned         bool       `gorm:"not null" json:"is_banned" default:"false"`
 }
 
 type Message struct {
@@ -41,7 +41,7 @@ type UserLabel struct {
 type BlockData struct {
 	UserID      uint      `gorm:"primaryKey;not null" json:"user_id"`
 	BannedDate  time.Time `gorm:"not null" json:"banned_date"`
-	Description string    `gorm:"type:text;not null" json:"description"`
+	Description string    `gorm:"type:text;not null" json:"description" default:"Violating platform rules"`
 	User        User      `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE" json:"user"`
 }
 
@@ -55,7 +55,7 @@ type Notification struct {
 	NotificationID   uint      `gorm:"primaryKey;autoIncrement" json:"notification_id"`
 	UserID           uint      `gorm:"not null" json:"user_id"`
 	Message          string    `gorm:"type:text;not null" json:"message"`
-	IsRead           bool      `gorm:"not null" json:"is_read"`
+	IsRead           bool      `gorm:"not null" json:"is_read" default:"false"`
 	NotificationDate time.Time `gorm:"not null" json:"notification_date"`
 	User             User      `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE;" json:"user"`
 }
