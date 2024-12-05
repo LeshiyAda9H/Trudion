@@ -66,12 +66,3 @@ type Like struct {
 	SecondLikerID uint   `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"second_liker_id"`
 	LikeStatus    string `gorm:"type:varchar(255);not null" json:"like_status"`
 }
-
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type LoginResponse struct {
-	Token string `json:"token"`
-}

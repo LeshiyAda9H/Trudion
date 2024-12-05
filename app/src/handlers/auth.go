@@ -8,7 +8,6 @@ import (
 	"os"
 	"src/initializers"
 	"src/models"
-	"src/repository"
 	"time"
 )
 
@@ -57,50 +56,51 @@ func LoginHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Token generated"})
 }
 
-// RegisterHandler is a handler for POST /register
 func RegisterHandler(c *gin.Context) {
-	var newUser models.User
+	var err error
+	var body struct {
+		Name     string
+		Email    string
+		Password string
+		Gender   string
+	}
 
 	// check incoming data
-	if err := c.ShouldBindJSON(&newUser); err != nil {
-		c.JSON(400, gin.H{"error": err.Error() + "\n"})
+	if err = c.Bind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
 		return
 	}
 
-	existingUser, err := repository.FindUserByEmail(newUser.Email)
-	if err == nil && existingUser != nil {
+	var user models.User
+	result := initializers.DB.Where("email = ?", body.Email).First(&user)
+	if result.Error == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Email is already in use\n",
+			"error": "Email is already in use",
 		})
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.PasswordHash), bcrypt.DefaultCost)
+	// hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "Error hashing password\n",
-		})
-		return
-	}
-	newUser.PasswordHash = string(hashedPassword)
-	newUser.RegistrationDate = time.Now()
-	if newUser.AccountStatus == "" {
-		newUser.AccountStatus = "active"
-	}
-
-	if err := repository.CreateUser(&newUser); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "User registration failed: " + err.Error() + "\n",
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Пользователь успешно зарегистрирован",
-		"user": gin.H{
-			"id":       newUser.UserId,
-			"username": newUser.Username,
-			"email":    newUser.Email,
-		},
-	})
+	// create a new user
+	user = models.User{
+		Username:      body.Name,
+		Email:         body.Email,
+		PasswordHash:  string(hashedPassword),
+		Gender:        body.Gender,
+		AccountStatus: "active",
+		OnlineStatus:  "online",
+	}
+	result = initializers.DB.Create(&user)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User created"})
 }
