@@ -1,72 +1,60 @@
 package handlers
 
 import (
-	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"net/http"
+	"os"
+	"src/initializers"
 	"src/models"
 	"src/repository"
 	"time"
 )
 
 func LoginHandler(c *gin.Context) {
-	var loginReq models.LoginRequest
-	if err := c.ShouldBindJSON(&loginReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload\n"})
+	// get the email and password from the request
+	var body struct {
+		Email    string
+		Password string
+	}
+	if err := c.Bind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
 		return
 	}
 
-	token, err := AuthenticateUser(loginReq.Email, loginReq.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token\n"})
-		log.Fatalln("Error: ", err)
+	// look up requested user
+	var user models.User
+	initializers.DB.First(&user, "email = ?", body.Email)
+
+	if user.UserId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
-}
-
-func AuthenticateUser(email, password string) (string, error) {
-	user, err := repository.FindUserByEmail(email)
+	// compare the password
+	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(body.Password))
 	if err != nil {
-		return "", errors.New("invalid email or password\n")
-	}
-
-	// Compare passwords hashes
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
-	if err != nil {
-		return "", errors.New("invalid email or password\n")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
+		return
 	}
 
 	// generate JWT token
-	token, err := generateJWT(user.UserId)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": user.UserId,
+		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
-		return "", err
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
 	}
 
-	return token, nil
-}
-
-func generateJWT(userId uint) (string, error) {
-	// TODO: Заменить секретный ключ на безопасный и сохранить его в надежном месте
-	secretKey := []byte("qwerty12345")
-
-	claims := jwt.MapClaims{
-		"user_id": userId,
-		"exp":     time.Now().Add(24 * time.Hour).Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	signedToken, err := token.SignedString(secretKey)
-	if err != nil {
-		return "", err
-	}
-
-	return signedToken, nil
+	// return the token
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Token generated"})
 }
 
 // RegisterHandler is a handler for POST /register
