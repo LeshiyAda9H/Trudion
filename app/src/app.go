@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"os"
 	"src/handlers"
 	"src/initializers"
 )
@@ -21,8 +22,9 @@ func main() {
 	router.POST("/login", handlers.LoginHandler)
 
 	// run server
-	log.Println("Server is running at 8080 port.")
-	err := router.Run(":8080")
+	port := os.Getenv("PORT")
+	log.Printf("Server is running at %s port.", port)
+	err := router.Run(":" + port)
 	if err != nil {
 		log.Fatalln("Can't run server.")
 		return
