@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func LoginHandler(c *gin.Context) {
+func Login(c *gin.Context) {
 	// get the email and password from the request
 	var body struct {
 		Email    string
@@ -56,7 +56,7 @@ func LoginHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Token generated"})
 }
 
-func RegisterHandler(c *gin.Context) {
+func Register(c *gin.Context) {
 	var err error
 	var body struct {
 		Name     string

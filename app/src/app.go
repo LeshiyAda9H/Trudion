@@ -18,8 +18,9 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/", handlers.RootHandler)
-	router.POST("/register", handlers.RegisterHandler)
-	router.POST("/login", handlers.LoginHandler)
+	router.GET("/users", handlers.GetUsers)
+	router.POST("/register", handlers.Register)
+	router.POST("/login", handlers.Login)
 
 	// run server
 	port := os.Getenv("PORT")
