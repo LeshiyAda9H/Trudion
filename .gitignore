@@ -1,6 +1,5 @@
-/app/.idea
+.idea/
+.vscode/
 /app/src/src
-/app/src/src.exe
-/app/front/.vscode
-/.idea
-/app/src/.env
+src.exe
+.env
