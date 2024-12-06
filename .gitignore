@@ -2,4 +2,4 @@
 .vscode/
 /app/src/src
 src.exe
-.env
+**/.env
