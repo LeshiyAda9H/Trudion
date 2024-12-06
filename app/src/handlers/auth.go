@@ -59,7 +59,7 @@ func Login(c *gin.Context) {
 func Register(c *gin.Context) {
 	var err error
 	var body struct {
-		Name     string
+		Username string
 		Email    string
 		Password string
 		Gender   string
@@ -89,7 +89,7 @@ func Register(c *gin.Context) {
 
 	// create a new user
 	user = models.User{
-		Username:      body.Name,
+		Username:      body.Username,
 		Email:         body.Email,
 		PasswordHash:  string(hashedPassword),
 		Gender:        body.Gender,
