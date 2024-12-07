@@ -13,9 +13,10 @@ import (
 
 func Login(c *gin.Context) {
 	// get the email and password from the request
+	// TODO: fix email-username field
 	var body struct {
-		Email    string
-		Password string
+		Email    string `json:"username"`
+		Password string `json:"password"`
 	}
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
