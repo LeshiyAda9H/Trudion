@@ -13,9 +13,8 @@ import (
 
 func Login(c *gin.Context) {
 	// get the email and password from the request
-	// TODO: fix email-username field
 	var body struct {
-		Email    string `json:"username"`
+		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 	if err := c.Bind(&body); err != nil {
