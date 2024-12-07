@@ -15,11 +15,11 @@ const isAuthenticated = (): boolean => AuthService.isAuth();
 const routes = [
   {
     path: '/',
-    redirect: () => (isAuthenticated() ? '/home' : '/registration'),
+    redirect: () => (isAuthenticated() ? '/home' : '/register'),
   },
 
   {
-    path: '/registration',
+    path: '/register',
     name: 'RegistrationPage',
     component: () => import("./views/Registration.vue"),
     beforeEnter: (
@@ -62,7 +62,7 @@ const routes = [
       next: NavigationGuardNext
     ) => {
       if (!isAuthenticated()) {
-        next('/registration');
+        next('/register');
       } else {
         next();
       }

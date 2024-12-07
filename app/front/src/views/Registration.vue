@@ -7,18 +7,13 @@
     </div>
 
     <InputRegistration
-    :writeEmail="writeEmail"
-    :writePass="writePass"
-    :writeConfirmPass="writeConfirmPass"
-    :error="error" />
+      :writeEmail="writeEmail"
+      :writePass="writePass"
+      :writeConfirmPass="writeConfirmPass"
+      :error="error"
+    />
 
-
-    <button
-    class="auth-button"
-    @click="sendData"
-    >
-    Зарегистрироваться
-    </button>
+    <button class="auth-button" @click="sendData">Зарегистрироваться</button>
 
     <div class="footer-text">
       Уже есть аккаунт? <router-link to="/login" class="link">Войти</router-link>
@@ -30,8 +25,8 @@
 import { defineComponent } from 'vue'
 import myImage from '../assets/trudion.png'
 import InputRegistration from '../components/InputRegistration.vue'
-import AuthService from "../services/AuthService"
-import "../assets/authentication.css"
+import AuthService from '../services/AuthService'
+import '../assets/authentication.css'
 
 export default defineComponent({
   name: 'RegistrationPage',
@@ -60,50 +55,48 @@ export default defineComponent({
       this.confirmPass = text_confirmPass
     },
     async sendData(): Promise<void> {
-      try{
+      try {
         //Валидация данных
-        if (this.userEmail === '' && ( this.userPass === '' || this.confirmPass === '')) {
-        this.error = 'not-valid-email-and-passwords'
-        return
-      }
+        if (this.userEmail === '' && (this.userPass === '' || this.confirmPass === '')) {
+          this.error = 'not-valid-email-and-passwords'
+          return
+        }
 
-      if (this.userEmail === '') {
-        this.error = 'not-valid-email'
-        return
-      }
+        if (this.userEmail === '') {
+          this.error = 'not-valid-email'
+          return
+        }
 
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!re.test(this.userEmail)) {
-        this.error = 'not-valid-email'
-        return
-      }
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!re.test(this.userEmail)) {
+          this.error = 'not-valid-email'
+          return
+        }
 
-      if (this.userPass === '' || this.confirmPass === '') {
-        this.error = 'passwords-dont-match'
-        return
-      }
+        if (this.userPass === '' || this.confirmPass === '') {
+          this.error = 'passwords-dont-match'
+          return
+        }
 
-      // Проверка на совпадение паролей
-      if (this.userPass !== this.confirmPass) {
-        this.error = 'passwords-dont-match';
-        return;
-      }
+        // Проверка на совпадение паролей
+        if (this.userPass !== this.confirmPass) {
+          this.error = 'passwords-dont-match'
+          return
+        }
 
-      // Отправка данных на сервер
-      await AuthService.register({
-          username: this.userEmail,
+        // Отправка данных на сервер
+        await AuthService.register({
+          email: this.userEmail,
           password: this.userPass,
-        });
+        })
 
+        this.error = '' // Сброс ошибок
+        alert('Регистрация прошла успешно!')
 
-      this.error = '' // Сброс ошибок
-      alert('Регистрация прошла успешно!')
-
-      this.$router.push('/home') // Перенаправляем на главную страницу
-      }
-      catch (error){
-        console.error(error);
-        this.error = "ERROR-Registration";
+        this.$router.push('/home') // Перенаправляем на главную страницу
+      } catch (error) {
+        console.error(error)
+        this.error = 'ERROR-Registration'
       }
     },
   },

@@ -41,8 +41,8 @@
     v-on:input="writeConfirmPass(($event.target as HTMLInputElement).value)"
     :placeholder="
     error === 'not-valid-email-and-passwords' || error === 'passwords-dont-match'
-    ? 'Введите пароль'
-    : 'Пароль'"
+    ? 'Подтвердите пароль'
+    : 'Подтвердите пароль'"
     required
   />
 </template>
@@ -71,45 +71,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Базовый стиль для поля ввода */
-.input-field {
-  outline: none; /* Убирает стандартную обводку */
-  width: 53%; /* Ширина поля */
-  border: 2px solid #355299; /* Синяя рамка */
-  border-radius: 25px; /* Закругленные углы */
-  padding: 3% 8.5%; /* Внутренние отступы */
-  margin: 5px 0; /* Внешние отступы */
-  color: #355299; /* Цвет текста */
-  font-size: 16px; /* Размер шрифта */
-  font-weight: bold; /* Жирный текст */
-  background-color: #bdcdf6; /* Фоновый цвет */
-}
-
-/* Стиль для текста-заполнителя */
-.input-field::placeholder {
-  color: #355299; /* Цвет текста-заполнителя */
-  font-weight: normal; /* Обычный текст */
-}
-
-/* Стиль для поля с ошибкой */
-.input-field-error {
-  outline: none; /* Убирает стандартную обводку */
-  width: 53%; /* Ширина поля */
-  border: 2px solid red; /* Красная рамка */
-  border-radius: 25px; /* Закругленные углы */
-  padding: 3% 8.5%; /* Внутренние отступы */
-  margin: 5px 0; /* Внешние отступы */
-  color: #b18888; /* Цвет текста */
-  font-size: 16px; /* Размер шрифта */
-  font-weight: bold; /* Жирный текст */
-  background-color: #bdcdf6; /* Фоновый цвет */
-}
-
-/* Стиль для текста-заполнителя поля с ошибкой */
-.input-field-error::placeholder {
-  color: #b18888; /* Цвет текста-заполнителя */
-  font-weight: bold; /* Жирный текст */
-}
-</style>
