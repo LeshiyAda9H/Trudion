@@ -1,0 +1,84 @@
+.container {  
+  width: 30%;
+  
+
+  display: grid;
+  place-items: center;
+
+  margin: 6em auto;
+  padding: 1em;
+
+  text-align: center;
+
+}
+
+.image-ava {
+  width: 50%;
+  max-width: 200px;
+  height: auto;
+  margin-bottom: 10px;
+  /* border-radius: 50%; */
+  /* border: 2px solid #355299; */
+}
+
+/* Базовый стиль для поля ввода */
+.input {
+  width: 70%;
+  margin: 5px 0;
+}
+
+/* Стиль для текста-заполнителя */
+.input::placeholder {
+  color: #8894B1; /* Цвет текста-заполнителя */
+  font-weight: normal; /* Обычный текст */
+}
+
+/* Стиль для поля с ошибкой */
+.input-error {
+  
+  border: 2px solid var(--error-color);
+  border-radius: var(--border-radius);
+  outline: none;
+
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+  
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: bold;
+
+  width: 70%;
+  margin: 5px 0;
+}
+.input-error::placeholder {
+  color: #b18888; 
+  font-weight: bold; 
+}
+
+.button {
+  margin-top: 5px;
+
+  min-width: 70%;
+
+  background-color: var(--primary-color);
+  color: #fff;
+  border-radius: var(--border-radius); 
+
+}
+
+.footer-text {
+  color: #8894b1;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.link {
+  cursor: pointer;
+  opacity: 0.9;
+  color: #355299;
+  text-decoration: none;
+}
+.link:hover {
+  color: #a68136;
+}

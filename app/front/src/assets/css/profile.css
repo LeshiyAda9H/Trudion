@@ -1,0 +1,110 @@
+
+.title {
+    color: #A68136;
+    margin-top: 1em;
+    font-size: 47px;
+    text-align: center;
+    
+}
+
+.container {  
+    width: 30%;
+    
+  
+    display: grid;
+    place-items: center;
+  
+    margin: 1em auto;
+    padding: 1em 0;
+  
+    text-align: center;
+  
+  }
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-user {
+    font-size: 50px;
+    color: #c39e42;
+}
+
+.add-photo {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    background-color: #8894B140;
+    color: #355299;
+    font-weight: bold;
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Базовый стиль для поля ввода */
+.input {
+    width: 70%;
+    margin: 5px 0;
+}
+.input::placeholder {
+    color: #8894B1; 
+    font-weight: bold;
+}
+
+.select {
+    width: 70%;
+    margin: 5px 0;
+}
+
+.form-textarea {
+    min-width: 70%;
+    max-width: 50%;
+    min-height: 5em;
+    max-height: 10em;
+
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    outline: none;
+
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: bold;
+
+    width: 70%;
+    margin: 5px 0;
+}
+.form-textarea::placeholder{
+    color: #8894B1;
+    font-weight: bold;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.button {
+    background-color: #A68136;
+    
+    width: 25%;
+    
+
+    display: grid;
+    place-items: center;
+  
+    margin: 0 auto;
+
+}
+

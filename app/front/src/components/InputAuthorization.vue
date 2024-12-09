@@ -5,8 +5,8 @@
     :class="
       // Если ошибка связана с email или с обоими полями, применяем класс с ошибкой
       error === 'not-valid-email-and-password' || error === 'not-valid-email'
-        ? 'input-field-error'
-        : 'input-field'
+        ? 'input-error'
+        : 'input'
     "
     v-on:input="writeEmail(($event.target as HTMLInputElement).value)"
     :placeholder="
@@ -24,8 +24,8 @@
     :class="
       // Если ошибка связана с паролем или с обоими полями, применяем класс с ошибкой
       error === 'not-valid-email-and-password' || error === 'not-valid-password'
-        ? 'input-field-error'
-        : 'input-field'
+        ? 'input-error'
+        : 'input'
     "
     v-on:input="writePass(($event.target as HTMLInputElement).value)"
     :placeholder="

@@ -1,4 +1,6 @@
-import './assets/main.css';
+import './assets/css/variables.css'; // Переменные
+import './assets/css/base.css'; // Глобальные стили
+import './assets/css/main.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';

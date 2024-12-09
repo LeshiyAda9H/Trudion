@@ -21,48 +21,31 @@ export default defineComponent({
 </script>
 
 <style>
+
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  /* display: flex;
-  justify-content: flex-end; */
-  padding: 5px;
-  background-color: #fff;
-}
-
-
-.navbar-content {
   display: flex;
-  align-items: center;
-  width: 100%;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  z-index: 1000;
 }
 
-.nav-home{
-  top: 0;
-  left: 0;
-  padding: 5px 10px;
-  text-decoration: none;
-  color: #007bff;
-  border-radius: 5px;
-}
-.nav-home:hover {
-  background-color: #e2e6ea;
-  color: #0056b3;
+.navbar .nav-link {
+  color: white;
+  margin: 0 10px;
+  transition: color 0.3s;
+  
 }
 
-.nav-link {
+.navbar .nav-link:hover {
+  color: var(--secondary-color);
 
-  padding: 5px 10px;
-  text-decoration: none;
-  color: #007bff;
-  border-radius: 5px;
 }
 
-.nav-link:hover {
-  background-color: #e2e6ea;
-  color: #0056b3;
-}
 
 </style>

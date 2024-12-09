@@ -1,14 +1,14 @@
 <template>
-  <div class="auth-container">
+  <div class="container">
     <p>Авторизация</p>
 
-    <div style="display: flex; justify-content: center; align-items: center">
-      <img :src="imagePath" class="image-ava" />
-    </div>
+
+    <img :src="imagePath" class="image-ava" />
+
 
     <InputAuthorization :writeEmail="writeEmail" :writePass="writePass" :error="error" />
 
-    <button class="auth-button" @click="sendData">Войти</button>
+    <button class="button" @click="sendData">Войти</button>
 
     <div class="footer-text">
       Нет аккаунта?
@@ -26,7 +26,7 @@ import InputAuthorization from '../components/InputAuthorization.vue'
 import AuthService from '../services/AuthService' // Подключаем AuthService
 import StorageService from '../services/StorageService' // Подключаем StorageService
 import { AxiosError } from 'axios'
-import '../assets/authentication.css'
+import '../assets/css/authentication.css'
 
 export default defineComponent({
   name: 'AuthorizationPage',

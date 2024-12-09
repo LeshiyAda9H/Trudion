@@ -64,6 +64,21 @@ class AuthService {
     }
   }
 
+  async updateProfile(data: Partial<User>): Promise<void> {
+    try {
+      const token = StorageService.getToken();
+      if (!token) throw new Error('Вы не авторизованы');
+
+      await this.api.put('/profile', data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log('Профиль обновлен успешно');
+    } catch (error) {
+      console.error('Ошибка при обновлении профиля:', error);
+      throw new Error('Не удалось обновить профиль');
+    }
+  }
+
   // Метод для проверки валидности токена
   async verifyToken(): Promise<boolean> {
     try {

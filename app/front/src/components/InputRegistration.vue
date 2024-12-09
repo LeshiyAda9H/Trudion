@@ -3,8 +3,8 @@
     type="email"
     :class="
     error === 'not-valid-email-and-passwords' || error === 'not-valid-email'
-    ? 'input-field-error'
-    : 'input-field'
+    ? 'input-error'
+    : 'input'
     "
     v-on:input="writeEmail(($event.target as HTMLInputElement).value)"
     :placeholder="
@@ -19,8 +19,8 @@
     type="password"
     :class="
     error === 'not-valid-email-and-passwords' || error === 'passwords-dont-match'
-    ? 'input-field-error'
-    : 'input-field'"
+    ? 'input-error'
+    : 'input'"
 
     v-on:input="writePass(($event.target as HTMLInputElement).value)"
     :placeholder="
@@ -35,8 +35,8 @@
   type="password"
     :class="
     error === 'not-valid-email-and-passwords' || error === 'passwords-dont-match'
-    ? 'input-field-error'
-    : 'input-field'"
+    ? 'input-error'
+    : 'input'"
 
     v-on:input="writeConfirmPass(($event.target as HTMLInputElement).value)"
     :placeholder="

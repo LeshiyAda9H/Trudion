@@ -6,7 +6,7 @@
   <body>
     <h1 class="title">МОЙ ПРОФИЛЬ</h1>
 
-    <div class="auth-container">
+    <div class="container">
 
       <div class="avatar-container">
         <div class="avatar">
@@ -15,17 +15,38 @@
         </div>
       </div>
 
-      <input type="text" placeholder="Никнейм" class="input-field" />
-      <select class="form-select">
-        <option value="" disabled selected>Выбери свой пол</option>
-        <option value="skill1">Мужчина</option>
-        <option value="skill2">Женщина</option>
-        <option value="skill3">Абоба</option>
-      </select>
-      <textarea placeholder="О себе" class="form-textarea"></textarea>
+      <!-- Поле для ввода никнейма -->
+      <input
+        type="text"
+        placeholder="Никнейм"
+        class="input"
+        v-model="userStore.registrationData.nickname"
+      />
 
-      <select class="form-select">
-        <option value="" disabled selected>Навыки</option>
+      <!-- Выбор пола -->
+      <select
+        class="select"
+        v-model="userStore.registrationData.gender"
+      >
+        <option value="" disabled>Выбери свой пол</option>
+        <option value="male">Мужчина</option>
+        <option value="female">Женщина</option>
+        <option value="other">Абоба</option>
+      </select>
+
+      <!-- Поле "О себе" -->
+      <textarea
+        placeholder="О себе"
+        class="form-textarea"
+        v-model="userStore.registrationData.bio"
+      ></textarea>
+
+      <!-- Выбор навыков -->
+      <select
+        class="select"
+        v-model="userStore.registrationData.skills"
+      >
+        <option value="" disabled>Навыки</option>
         <option value="skill1">Навык 1</option>
         <option value="skill2">Навык 2</option>
         <option value="skill3">Навык 3</option>
@@ -33,7 +54,7 @@
 
     </div>
 
-    <button class="auth-button">Сохранить изменения</button>
+    <button class="button"  @click="updateProfile">Сохранить изменения</button>
 
   </body>
 
@@ -41,33 +62,56 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useRouter } from 'vue-router'; // Импортируем useRouter для навигации
-import '../assets/profile.css'
-import Navbar from '../components/Navbar.vue'
+import Navbar from '../components/Navbar.vue';
+import { useUserStore } from '../stores/UserStore';
+import { useRouter } from 'vue-router';
+import '../assets/css/profile.css'
+import AuthService from '../services/AuthService';
 
 export default defineComponent({
   name: 'ProfilePage',
   components: {Navbar},
+
   setup() {
+    const userStore = useUserStore();
     const router = useRouter();
 
-    // Функция для перехода на страницу списка пользователей
-    const goToUsersList = () => {
-      router.push('/users-list');
+    const updateProfile = async () => {
+      try {
+        const { nickname, gender } = userStore.registrationData;
+
+        if (!nickname || !gender) {
+          alert('Пожалуйста, заполните никнейм и выберите пол');
+          return;
+        }
+
+        // Отправляем данные профиля на сервер через AuthService
+        await AuthService.updateProfile({ nickname, gender });
+
+        // Сохраняем данные в Pinia-хранилище
+        userStore.setRegistrationData({ nickname, gender });
+
+        alert('Профиль успешно обновлен!');
+
+        // Перенаправляем пользователя на главную страницу
+        router.push('/home');
+
+      } catch (error) {
+        console.error('Ошибка при обновлении профиля:', error);
+        alert('Ошибка при обновлении профиля');
+      }
     };
 
-    return { goToUsersList };
+    return {
+      userStore,
+      updateProfile,
+    };
+
+
+
   },
 
-  methods: {
-    // Метод для выхода из аккаунта
-    logout() {
-      // Удаляем токен из localStorage
-      localStorage.removeItem('authToken');
 
-      // Перенаправляем пользователя на страницу авторизации
-      this.$router.push('/login');
-    },
-  },
+
 });
 </script>
