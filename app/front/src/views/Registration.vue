@@ -2,9 +2,16 @@
   <div class="auth-container">
     <p>Регистрация</p>
 
-    <div style="display: flex; justify-content: center; align-items: center">
-      <img :src="imagePath" class="image-ava" />
-    </div>
+
+    <img :src="imagePath" class="image-ava" />
+
+    <!-- Поле для ввода никнейма -->
+    <input
+      type="text"
+      placeholder="Никнейм"
+      class="input-field"
+      v-model="userNickname"
+    />
 
     <InputRegistration
       :writeEmail="writeEmail"
@@ -12,6 +19,15 @@
       :writeConfirmPass="writeConfirmPass"
       :error="error"
     />
+
+    <!-- Выпадающий список для выбора пола -->
+    <select class="form-select" v-model="userGender">
+      <option value="" disabled>Выбери свой пол</option>
+      <option value="male">Мужчина</option>
+      <option value="female">Женщина</option>
+      <option value="other">Абоба</option>
+    </select>
+
 
     <button class="auth-button" @click="sendData">Зарегистрироваться</button>
 
@@ -39,9 +55,11 @@ export default defineComponent({
   data() {
     return {
       error: '' as string, // Ошибка
+      userNickname: '' as string, // Никнейм
       userEmail: '' as string, // Электронная почта
       userPass: '' as string, // Пароль
       confirmPass: '' as string, // Подтверждение пароля
+      userGender: '' as string, // Пол
     }
   },
   methods: {
@@ -57,6 +75,12 @@ export default defineComponent({
     async sendData(): Promise<void> {
       try {
         //Валидация данных
+        if (!this.userEmail || !this.userPass || !this.confirmPass || !this.userNickname || !this.userGender) {
+          this.error = 'Заполните все поля';
+          return;
+        }
+
+
         if (this.userEmail === '' && (this.userPass === '' || this.confirmPass === '')) {
           this.error = 'not-valid-email-and-passwords'
           return
@@ -88,12 +112,14 @@ export default defineComponent({
         await AuthService.register({
           email: this.userEmail,
           password: this.userPass,
+          nickname: this.userNickname,
+          gender: this.userGender,
         })
 
         this.error = '' // Сброс ошибок
         alert('Регистрация прошла успешно!')
 
-        this.$router.push('/home') // Перенаправляем на главную страницу
+        this.$router.push('/profile') // Перенаправляем на профиль
       } catch (error) {
         console.error(error)
         this.error = 'ERROR-Registration'
@@ -102,3 +128,4 @@ export default defineComponent({
   },
 })
 </script>
+

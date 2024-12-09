@@ -2,11 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // Импортируем типы с использованием type-only import
 import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
-
-// import Registration from './views/Registration.vue';
-// import Authorization from './views/Authorization.vue';
-// import Home from './views/Home.vue';
-
 import AuthService from './services/AuthService';
 
 const isAuthenticated = (): boolean => AuthService.isAuth();
@@ -62,7 +57,7 @@ const routes = [
       next: NavigationGuardNext
     ) => {
       if (!isAuthenticated()) {
-        next('/register');
+        next('/login');
       } else {
         next();
       }
@@ -73,6 +68,22 @@ const routes = [
   //   name: 'UsersList',
   //   component: UsersList,
   // },
+  {
+    path: '/profile',
+    name: 'ProfilePage',
+    component: () => import("./views/Profile.vue"),
+    // beforeEnter: (
+    //   to: RouteLocationNormalized,
+    //   from: RouteLocationNormalized,
+    //   next: NavigationGuardNext
+    // ) => {
+    //   if (!isAuthenticated()) {
+    //     next('/register');
+    //   } else {
+    //     next();
+    //   }
+    // },
+  },
 
   {
     path: '/:pathMatch(.*)*',

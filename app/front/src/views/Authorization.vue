@@ -26,6 +26,7 @@ import InputAuthorization from '../components/InputAuthorization.vue'
 import AuthService from '../services/AuthService' // Подключаем AuthService
 import StorageService from '../services/StorageService' // Подключаем StorageService
 import { AxiosError } from 'axios'
+import '../assets/authentication.css'
 
 export default defineComponent({
   name: 'AuthorizationPage',
@@ -92,7 +93,8 @@ export default defineComponent({
         // Успешная авторизация
         StorageService.setToken(authedUser.access_token) // Сохранение токена
         this.$router.push('/home') // Перенаправляем на главную страницу
-      } catch (error: unknown) {
+      }
+      catch (error: unknown) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
             this.error = 'Неверный логин или пароль.'
@@ -108,3 +110,4 @@ export default defineComponent({
   },
 })
 </script>
+

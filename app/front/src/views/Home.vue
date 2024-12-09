@@ -1,43 +1,52 @@
 <template>
-  <div class="home">
-    <h1>Добро пожаловать на главную страницу!</h1>
-    <p>Здесь будет содержимое вашей главной страницы.</p>
 
-    <!-- Кнопка для выхода из аккаунта -->
-    <button class="logout-button" @click="logout">Выйти</button>
-  </div>
+  <header>
+      <Navbar/>
+  </header>
 
-  <button @click="goToUsersList" class="go-to-users-button">
-      Перейти к списку пользователей
-    </button>
+  <body>
+    <div class="home">
+      <h1>Добро пожаловать на главную страницу!</h1>
+      <p>Здесь будет содержимое вашей главной страницы.</p>
+
+      <!-- Кнопка для выхода из аккаунта -->
+      <button class="logout-button" @click="logout">Выйти</button>
+    </div>
+
+    <!-- <button @click="goToUsersList" class="go-to-users-button">
+        Перейти к списку пользователей
+    </button> -->
+
+
+  </body>
+
+
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useRouter } from 'vue-router'; // Импортируем useRouter для навигации
+import { useRouter } from 'vue-router'; // Импортируем роутер для навигации
+import AuthService from '@/services/AuthService'; // Импорт AuthService
+import Navbar from '../components/Navbar.vue'
 
 export default defineComponent({
   name: 'HomePage',
+  components: {Navbar},
   setup() {
-    const router = useRouter();
+    const router = useRouter(); // Используем useRouter для перенаправлений
 
-    // Функция для перехода на страницу списка пользователей
-    const goToUsersList = () => {
-      router.push('/users-list');
+    // Метод выхода из системы
+    const logout = () => {
+      AuthService.logout(); // Очищаем данные через AuthService
+      router.push('/login'); // Перенаправляем пользователя на страницу авторизации
     };
 
-    return { goToUsersList };
-  },
+    // Переход к списку пользователей (для примера)
+    const goToUsersList = () => {
+      router.push('/profile');
+    };
 
-  methods: {
-    // Метод для выхода из аккаунта
-    logout() {
-      // Удаляем токен из localStorage
-      localStorage.removeItem('authToken');
-
-      // Перенаправляем пользователя на страницу авторизации
-      this.$router.push('/login');
-    },
+    return { logout, goToUsersList };
   },
 });
 </script>

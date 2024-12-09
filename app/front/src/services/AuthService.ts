@@ -1,8 +1,9 @@
 import axios from 'axios' // Импортируем библиотеку Axios для выполнения HTTP-запросов
 import type { AxiosInstance } from 'axios' // Импортируем тип AxiosInstance
-import type { User, AuthedUser } from '../classes' // Импортируем типы данных User и AuthedUser
+import type { User, LoginPayload, AuthedUser } from '../classes' // Импортируем типы данных User и AuthedUser
 import apiClient from './ApiClient' // Импортируем экземпляр Axios для взаимодействия с API
 import StorageService from './StorageService' // Импортируем сервис для работы с хранилищем
+
 
 // Константы для URL-путей
 const REGISTER_URL = '/register';
@@ -36,7 +37,7 @@ class AuthService {
   }
 
   // Метод для входа пользователя в систему
-  async login(data: User): Promise<AuthedUser> {
+  async login(data: LoginPayload): Promise<AuthedUser> {
     try {
       const response = await this.api.post(LOGIN_URL, data) // Отправляем POST-запрос на вход
       const token = response.data.access_token // Извлекаем токен из ответа
@@ -69,8 +70,8 @@ class AuthService {
       const token = StorageService.getToken() // Получаем токен из хранилища
       if (!token) return false // Если токена нет, возвращаем false
 
-      await this.api.post(TOKEN_VERIFY_URL, { token }) // Отправляем POST-запрос на проверку токена
-      console.log("Token verified successfully"); // Логирование успешной проверки токена
+      // await this.api.post(TOKEN_VERIFY_URL, { token }) // Отправляем POST-запрос на проверку токена
+      // console.log("Token verified successfully"); // Логирование успешной проверки токена
       return true // Если токен валиден, возвращаем true
     }
     catch (error: unknown) {
@@ -84,8 +85,14 @@ class AuthService {
 
   // Метод для выхода пользователя из системы
   logout(): void {
-    StorageService.clear() // Очистка всех данных в хранилище
-    console.log("User logged out successfully"); // Логирование успешного выхода
+    try {
+      this.api.post('/logout'); // Запрос на сервер для завершения сессии
+    } catch (error) {
+      console.error('Error logging out on server:', error);
+    } finally {
+      StorageService.clear(); // Очищаем локальное хранилище в любом случае
+      console.log("User logged out successfully");
+    }
   }
 
   // Метод для проверки, аутентифицирован ли пользователь

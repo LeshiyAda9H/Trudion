@@ -1,0 +1,98 @@
+.auth-button {
+    background-color: #A68136;
+    margin-top: 20px;
+    padding: 17px 15%;
+}
+
+.title {
+    color: #A68136;
+    margin-bottom: 5px;
+    font-size: 47px;
+    text-align: center;
+    
+}
+
+.avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-user {
+    font-size: 50px;
+    color: #c39e42;
+}
+
+.add-photo {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    background-color: #8894B140;
+    color: #355299;
+    font-weight: bold;
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Базовый стиль для поля ввода */
+.input-field {
+    outline: none; /* Убирает стандартную обводку */
+    width: 53%; /* Ширина поля */
+    border: 2px solid #355299; /* Синяя рамка */
+    border-radius: 25px; /* Закругленные углы */
+    padding: 3% 8.5%; /* Внутренние отступы */
+    margin: 5px 0; /* Внешние отступы */
+    color: #355299; /* Цвет текста */
+    font-size: 16px; /* Размер шрифта */
+    font-weight: bold; /* Жирный текст */
+    background-color: #bdcdf6; /* Фоновый цвет */
+  }
+  
+  /* Стиль для текста-заполнителя */
+  .input-field::placeholder {
+    color: #355299; /* Цвет текста-заполнителя */
+    font-weight: normal; /* Обычный текст */
+    font-weight: bold;
+  }
+
+.form-textarea {
+    height: 80px;
+    outline: none; /* Убирает стандартную обводку */
+    max-width: 53%;
+    min-width: 53%;
+    border: 2px solid #355299; /* Синяя рамка */
+    border-radius: 25px; /* Закругленные углы */
+    padding: 3% 8.5%; /* Внутренние отступы */
+    margin: 5px 0; /* Внешние отступы */
+    color: #355299; /* Цвет текста */
+    font-size: 16px; /* Размер шрифта */
+    font-weight: bold; /* Жирный текст */
+    background-color: #bdcdf6; /* Фоновый цвет */
+}
+.form-textarea::placeholder{
+    color: #355299; /* Цвет текста-заполнителя */
+    font-weight: normal; /* Обычный текст */
+    font-weight: bold;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+
+
