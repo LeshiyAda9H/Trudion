@@ -23,9 +23,9 @@
 import { defineComponent } from 'vue'
 import myImage from '../assets/trudion.png'
 import InputRegistration from '../components/InputRegistration.vue'
-//import AuthService from '../services/AuthService'
 import '../assets/css/authentication.css'
 import { useUserStore } from '../stores/UserStore'; // Импортируем хранилище Pinia
+import AuthService from '../services/AuthService'; // Импортируем AuthService для регистрации
 
 export default defineComponent({
   name: 'RegistrationPage',
@@ -59,59 +59,6 @@ export default defineComponent({
     writeConfirmPass(text_confirmPass: string): void {
       this.confirmPass = text_confirmPass
     },
-    // async sendData(): Promise<void> {
-    //   try {
-    //     //Валидация данных
-    //     if (!this.userEmail || !this.userPass || !this.confirmPass || !this.userNickname || !this.userGender) {
-    //       this.error = 'Заполните все поля';
-    //       return;
-    //     }
-
-    //     if (this.userEmail === '' && (this.userPass === '' || this.confirmPass === '')) {
-    //       this.error = 'not-valid-email-and-passwords'
-    //       return
-    //     }
-
-    //     if (this.userEmail === '') {
-    //       this.error = 'not-valid-email'
-    //       return
-    //     }
-
-    //     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    //     if (!re.test(this.userEmail)) {
-    //       this.error = 'not-valid-email'
-    //       return
-    //     }
-
-    //     if (this.userPass === '' || this.confirmPass === '') {
-    //       this.error = 'passwords-dont-match'
-    //       return
-    //     }
-
-    //     // Проверка на совпадение паролей
-    //     if (this.userPass !== this.confirmPass) {
-    //       this.error = 'passwords-dont-match'
-    //       return
-    //     }
-
-    //     // Отправка данных на сервер
-    //     await AuthService.register({
-    //       email: this.userEmail,
-    //       password: this.userPass,
-    //       nickname: this.userNickname,
-    //       gender: this.userGender,
-    //     })
-
-
-    //     this.error = '' // Сброс ошибок
-    //     alert('Регистрация прошла успешно!')
-
-    //     this.$router.push('/profile') // Перенаправляем на профиль
-    //   } catch (error) {
-    //     console.error(error)
-    //     this.error = 'ERROR-Registration'
-    //   }
-    // },
   },
   setup() {
     const userStore = useUserStore();
@@ -127,10 +74,26 @@ export default defineComponent({
       userStore.setRegistrationData({
         email: userStore.registrationData.email,
         password: userStore.registrationData.password,
+        nickname: userStore.registrationData.nickname,
+        gender: userStore.registrationData.gender,
       });
 
-      // Переходим на страницу профиля
-      window.location.href = '/profile';
+      try {
+        // Регистрируем пользователя через AuthService
+        await AuthService.register({
+          email: userStore.registrationData.email,
+          password: userStore.registrationData.password,
+          nickname: userStore.registrationData.nickname,
+          gender: userStore.registrationData.gender,
+        });
+
+        // Переходим на страницу профиля, где пользователь сможет обновить информацию
+        window.location.href = '/profile'; // Переход на страницу профиля для дальнейшего обновления данных
+      }
+      catch (error) {
+        console.error('Ошибка при регистрации:', error);
+        alert('Ошибка при регистрации');
+      }
     };
 
     return {
