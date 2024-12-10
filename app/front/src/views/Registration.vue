@@ -16,95 +16,98 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import myImage from '../assets/trudion.png'
 import InputRegistration from '../components/InputRegistration.vue'
 import '../assets/css/authentication.css'
 import { useUserStore } from '../stores/UserStore'; // Импортируем хранилище Pinia
 import AuthService from '../services/AuthService'; // Импортируем AuthService для регистрации
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router"; // Используем Composition API для роутера
 
 export default defineComponent({
   name: 'RegistrationPage',
 
   components: { InputRegistration },
 
-  computed: {
-    imagePath(): string {
-      return myImage // Путь к изображению
-    },
-  },
+  setup() {
+    const router = useRouter(); // Инициализация роутера
+    const userStore = useUserStore(); // Инициализация хранилища Pinia
 
-  data() {
-    return {
-      error: '' as string, // Ошибка
-      userEmail: '' as string, // Электронная почта
-      userPass: '' as string, // Пароль
-      confirmPass: '' as string, // Подтверждение пароля
-    }
-  },
+    const imagePath = myImage;
+    const error = ref(''); // Ошибка
+    const userEmail = ref(''); // Электронная почта
+    const userPass = ref(''); // Пароль
+    const confirmPass = ref(''); // Подтверждение пароля
 
-  methods: {
-    writeEmail(text_email: string): void {
-      this.userEmail = text_email
-    },
-    writePass(text_pass: string): void {
-      this.userPass = text_pass
-    },
-    writeConfirmPass(text_confirmPass: string): void {
-      this.confirmPass = text_confirmPass
-    },
+    const writeEmail = (text_email: string): void => {
+      userEmail.value = text_email;
+    };
 
+    const writePass = (text_pass: string): void => {
+      userPass.value = text_pass;
+    };
 
-    async sendData() {
+    const writeConfirmPass = (text_confirmPass: string): void => {
+      confirmPass.value = text_confirmPass;
+    };
+
+    const sendData = async () => {
       try {
-        //Валидация данных
-        if (this.userEmail === '' && (this.userPass === '' || this.confirmPass === '')) {
-          this.error = 'not-valid-email-and-passwords'
-          return
+        // Валидация данных
+        if (userEmail.value === '' && (userPass.value === '' || confirmPass.value === '')) {
+          error.value = 'not-valid-email-and-passwords';
+          return;
         }
-        if (this.userEmail === '') {
-          this.error = 'not-valid-email'
-          return
-        }
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!re.test(this.userEmail)) {
-          this.error = 'not-valid-email'
-          return
-        }
-        if (this.userPass === '' || this.confirmPass === '') {
-          this.error = 'passwords-dont-match'
-          return
-        }
-        // Проверка на совпадение паролей
-        if (this.userPass !== this.confirmPass) {
-          this.error = 'passwords-dont-match'
-          return
-        }
-
-        const isEmailAvailable = await AuthService.verifyEmail(this.userEmail);
-        if (!isEmailAvailable) {
-          this.error = "Этот email уже зарегистрирован.";
+        if (userEmail.value === '') {
+          error.value = 'not-valid-email';
           return;
         }
 
-        const userStore = useUserStore();
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!re.test(userEmail.value)) {
+          error.value = 'not-valid-email';
+          return;
+        }
+        if (userPass.value === '' || confirmPass.value === '') {
+          error.value = 'passwords-dont-match';
+          return;
+        }
+
+        if (userPass.value !== confirmPass.value) {
+          error.value = 'passwords-dont-match';
+          return;
+        }
+
+        const isEmailAvailable = await AuthService.verifyEmail(userEmail.value);
+        if (!isEmailAvailable) {
+          error.value = "Этот email уже зарегистрирован.";
+          return;
+        }
+
         userStore.setRegistrationData({
-          email: this.userEmail,
-          password: this.userPass,
+          email: userEmail.value,
+          password: userPass.value,
         });
 
-        // Перенаправляем пользователя на страницу профиля
-        const router = useRouter();
-        router.push("/profile");
+        // Перенаправление на страницу профиля
+        router.push("/profile-setup");
+      } catch (err) {
+        console.error("Ошибка при проверке email:", err);
+        error.value = "Не удалось проверить email. Попробуйте позже.";
       }
-      catch (error) {
-        console.error("Ошибка при проверке email:", error);
-        this.error = "Не удалось проверить email. Попробуйте позже.";
-      }
-    },
+    };
+
+    return {
+      imagePath,
+      error,
+      userEmail,
+      userPass,
+      confirmPass,
+      writeEmail,
+      writePass,
+      writeConfirmPass,
+      sendData
+    };
   },
-
-
-})
+});
 </script>

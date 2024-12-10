@@ -6,10 +6,10 @@ import StorageService from './StorageService' // Импортируем серв
 
 
 // Константы для URL-путей
-const REGISTER_URL = '/register';
-const LOGIN_URL = '/login';
-const VERIFY_TOKEN_URL = '/verify/token';
-const VERIFY_EMAIL_URL = '/verify/email';
+const REGISTER_URL = '/api/v1/register';
+const LOGIN_URL = '/api/v1/login';
+const VERIFY_TOKEN_URL = '/api/v1/verify/token';
+const VERIFY_EMAIL_URL = '/api/v1/verify/email';
 
 // Класс AuthService для управления аутентификацией и регистрацией пользователей
 class AuthService {
@@ -36,6 +36,19 @@ class AuthService {
       throw new Error('Ошибка при регистрации.') // Обрабатываем другие ошибки
     }
   }
+
+  // Новый метод для завершения регистрации
+  async completeProfile(data: { email: string; password: string; nickname: string; gender: string }): Promise<void> {
+    try {
+      await this.api.post('/api/v1/register', data); // API для завершения регистрации
+      console.log("Profile completed successfully");
+    } catch (error) {
+      console.error("Error completing profile:", error);
+      throw new Error("Ошибка завершения регистрации.");
+    }
+  }
+
+
 
   // Метод для входа пользователя в систему
   async login(data: LoginPayload): Promise<AuthedUser> {
@@ -70,7 +83,7 @@ class AuthService {
       const token = StorageService.getToken();
       if (!token) throw new Error('Вы не авторизованы');
 
-      await this.api.put('/profile', data, {
+      await this.api.put('api/v1/profile', data, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log('Профиль обновлен успешно');
@@ -86,8 +99,8 @@ class AuthService {
       const token = StorageService.getToken() // Получаем токен из хранилища
       if (!token) return false // Если токена нет, возвращаем false
 
-      await this.api.post(VERIFY_TOKEN_URL, { token }) // Отправляем POST-запрос на проверку токена
-      console.log("Token verified successfully"); // Логирование успешной проверки токена
+      // await this.api.post(VERIFY_TOKEN_URL, { token }) // Отправляем POST-запрос на проверку токена
+      // console.log("Token verified successfully"); // Логирование успешной проверки токена
       return true // Если токен валиден, возвращаем true
     }
     catch (error: unknown) {
@@ -113,7 +126,7 @@ class AuthService {
   // Метод для выхода пользователя из системы
   logout(): void {
     try {
-      this.api.post('/logout'); // Запрос на сервер для завершения сессии
+      this.api.post('/api/v1/logout'); // Запрос на сервер для завершения сессии
     } catch (error) {
       console.error('Error logging out on server:', error);
     } finally {

@@ -26,21 +26,22 @@ type verifyEmailInput struct {
 // @Failure default {object} string
 // @Router /api/v1/verify/email [post]
 func VerifyEmail(c *gin.Context) {
-	var body verifyEmailInput
+	var body struct {
+		Email string `json:"email"`
+	}
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read json body"})
 		return
 	}
 
-	var count int64
-	initializers.DB.Select("email").Where("email = ?", body.Email).Count(&count)
-	if count > 0 {
+	result := initializers.DB.Select("email").Where("email = ?", body.Email)
+	if result.RowsAffected > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already in use"})
 		return
 	}
 
-	//TODO: validate email via email service (sending email with a code)
-	//...
+	// TODO: validate email via email service (sending email with a code)
+	// ...
 
 	c.JSON(http.StatusOK, gin.H{"available": true})
 }
