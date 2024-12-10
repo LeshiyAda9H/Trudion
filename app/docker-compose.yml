@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+    trudion-server:
+        build: src/
+        command: go run app.go
+        ports: 
+            - 5432:5432
+            - 8080:8080
+
+    trudion-ui:
+        build: front/
+        command: npm run dev -- --host
+        ports: 
+            - 5173:5173
+
+        depends_on:
+            - trudion-server
