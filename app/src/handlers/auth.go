@@ -42,7 +42,7 @@ func VerifyEmail(c *gin.Context) {
 	//TODO: validate email via email service (sending email with a code)
 	//...
 
-	c.JSON(http.StatusOK, gin.H{"message": "Email is available"})
+	c.JSON(http.StatusOK, gin.H{"available": true})
 }
 
 type signInInput struct {
