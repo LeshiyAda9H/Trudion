@@ -3,10 +3,14 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"os"
 	"src/handlers"
 	"src/initializers"
+
+	_ "src/docs"
 )
 
 func init() {
@@ -15,6 +19,14 @@ func init() {
 	initializers.SyncDatabase()
 }
 
+// @title	Trudion API
+// @version 1.0
+// @description API Service for Trudion Application
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.api_key ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	router := gin.Default()
 
@@ -25,12 +37,15 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	router.GET("/", handlers.RootHandler)
-	router.GET("/users", handlers.GetUsers)
-	router.POST("/register", handlers.Register)
-	router.POST("/login", handlers.Login)
-	router.POST("/verify/email", handlers.VerifyEmail)
-	//router.POST("/verify/token", handlers.VerifyToken)
+	// Add swagger documentation
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	router.GET("/api/v1", handlers.RootHandler)
+	router.GET("/api/v1/users", handlers.GetUsers)
+	router.POST("/api/v1/register", handlers.SignUp)
+	router.POST("/api/v1/login", handlers.SignIn)
+	router.POST("/api/v1/verify/email", handlers.VerifyEmail)
+	//router.POST("/api/v1/verify/token", handlers.VerifyToken)
 
 	// run server
 	port := os.Getenv("PORT")

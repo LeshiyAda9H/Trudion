@@ -11,17 +11,30 @@ import (
 	"time"
 )
 
+type verifyEmailInput struct {
+	Email string `json:"email" binding:"required"`
+}
+
+// @Summary VerifyEmail
+// @Tags auth
+// @Description check if email is available
+// @Accept json
+// @Produce json
+// @Param input body verifyEmailInput true "Email"
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Failure default {object} string
+// @Router /api/v1/verify/email [post]
 func VerifyEmail(c *gin.Context) {
-	var body struct {
-		Email string `json:"email"`
-	}
+	var body verifyEmailInput
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read json body"})
 		return
 	}
 
-	result := initializers.DB.Select("email").Where("email = ?", body.Email)
-	if result.Error == nil {
+	var count int64
+	initializers.DB.Select("email").Where("email = ?", body.Email).Count(&count)
+	if count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already in use"})
 		return
 	}
@@ -32,12 +45,25 @@ func VerifyEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Email is available"})
 }
 
-func Login(c *gin.Context) {
+type signInInput struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+// @Summary SignIn
+// @Tags auth
+// @Description login
+// @Accept json
+// @Produce json
+// @Param input body signInInput true "Email and password"
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Failure default {object} string
+// @Router /api/v1/login [post]
+func SignIn(c *gin.Context) {
 	// get the email and password from the request
-	var body struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var err error
+	var body signInInput
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
 		return
@@ -53,7 +79,7 @@ func Login(c *gin.Context) {
 	}
 
 	// compare the password
-	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(body.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(body.Password))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
 		return
@@ -77,27 +103,30 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Token generated"})
 }
 
-func Register(c *gin.Context) {
+type signUpInput struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Gender   string `json:"gender"`
+}
+
+// @Summary SignUp
+// @Tags auth
+// @Description create account
+// @Accept json
+// @Produce json
+// @Param input body signUpInput true "account info"
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Failure default {object} string
+// @Router /api/v1/register [post]
+func SignUp(c *gin.Context) {
 	var err error
-	var body struct {
-		Username string
-		Email    string
-		Password string
-		Gender   string
-	}
+	var body signUpInput
 
 	// check incoming data
 	if err = c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
-		return
-	}
-
-	var user models.User
-	result := initializers.DB.Where("email = ?", body.Email).First(&user)
-	if result.Error == nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Email is already in use",
-		})
 		return
 	}
 
@@ -109,7 +138,7 @@ func Register(c *gin.Context) {
 	}
 
 	// create a new user
-	user = models.User{
+	var user = models.User{
 		Username:      body.Username,
 		Email:         body.Email,
 		PasswordHash:  string(hashedPassword),
@@ -117,8 +146,9 @@ func Register(c *gin.Context) {
 		AccountStatus: "active",
 		OnlineStatus:  "online",
 	}
-	result = initializers.DB.Create(&user)
-	if result.Error != nil {
+
+	// Save user to database
+	if initializers.DB.Create(&user).Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
