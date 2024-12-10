@@ -6,7 +6,7 @@
   <body>
     <h1 class="title">МОЙ ПРОФИЛЬ</h1>
 
-    <div class="container">
+    <div class="prof-container">
 
       <div class="avatar-container">
         <div class="avatar">
@@ -54,7 +54,7 @@
 
     </div>
 
-    <button class="button"  @click="updateProfile">Сохранить изменения</button>
+    <button class="save-button"  @click="updateProfile">Сохранить изменения</button>
 
   </body>
 
@@ -77,28 +77,28 @@ export default defineComponent({
     const router = useRouter();
 
     const updateProfile = async () => {
+      const { email, password, nickname, gender } = userStore.registrationData;
+
+      if (!nickname || !gender) {
+        alert("Заполните никнейм и выберите пол.");
+        return;
+      }
+
       try {
-        const { nickname, gender } = userStore.registrationData;
+        await AuthService.register({
+          email,
+          password,
+          nickname,
+          gender,
+        });
 
-        if (!nickname || !gender) {
-          alert('Пожалуйста, заполните никнейм и выберите пол');
-          return;
-        }
+        userStore.completeRegistration();
 
-        // Отправляем данные профиля на сервер через AuthService
-        await AuthService.updateProfile({ nickname, gender });
-
-        // Сохраняем данные в Pinia-хранилище
-        userStore.setRegistrationData({ nickname, gender });
-
-        alert('Профиль успешно обновлен!');
-
-        // Перенаправляем пользователя на главную страницу
-        router.push('/home');
-
+        alert("Регистрация завершена!");
+        router.push("/home");
       } catch (error) {
-        console.error('Ошибка при обновлении профиля:', error);
-        alert('Ошибка при обновлении профиля');
+        console.error("Ошибка при сохранении профиля:", error);
+        alert("Не удалось завершить регистрацию.");
       }
     };
 

@@ -7,7 +7,13 @@
     
 }
 
-.container {  
+.prof-container { 
+    border-radius: 15px;
+    
+    background-color: var(--secondary-color);
+    box-shadow: 0px 4px 20px 0px #00000040;
+
+    
     width: 30%;
     
   
@@ -95,11 +101,21 @@
     font-family: 'IBM Plex Sans', sans-serif;
 }
 
-.button {
+
+.save-button {
+    padding: 15px 20px;
+  
     background-color: #A68136;
+    color: #fff;
+  
+    font-size: 16px;
+    font-weight: bold;
+  
+    text-align: center;
+    color: #fff;
+    
     
     width: 25%;
-    
 
     display: grid;
     place-items: center;

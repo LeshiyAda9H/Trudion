@@ -3,10 +3,6 @@ body {
   background-color: var(--background-color);
 }
 
-.container {
-  background-color: var(--secondary-color);
-  box-shadow: 0px 4px 20px 0px #00000040;
-}
 
 .input {
   padding: 15px 20px;
@@ -16,18 +12,6 @@ body {
   
   font-size: 16px;
   font-weight: bold;
-}
-
-.button {
-  padding: 15px 20px;
-  
-  background-color: var(--primary-color);
-  color: #fff;
-  
-  font-size: 16px;
-  font-weight: bold;
-  
-  text-align: center;
 }
 
 

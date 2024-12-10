@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="auth-container">
     <p>Авторизация</p>
 
 
@@ -8,7 +8,7 @@
 
     <InputAuthorization :writeEmail="writeEmail" :writePass="writePass" :error="error" />
 
-    <button class="button" @click="sendData">Войти</button>
+    <button class="auth-button" @click="sendData">Войти</button>
 
     <div class="footer-text">
       Нет аккаунта?
