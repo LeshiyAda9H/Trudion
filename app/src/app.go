@@ -29,6 +29,8 @@ func main() {
 	router.GET("/users", handlers.GetUsers)
 	router.POST("/register", handlers.Register)
 	router.POST("/login", handlers.Login)
+	router.POST("/verify/email", handlers.VerifyEmail)
+	//router.POST("/verify/token", handlers.VerifyToken)
 
 	// run server
 	port := os.Getenv("PORT")

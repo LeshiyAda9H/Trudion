@@ -11,6 +11,27 @@ import (
 	"time"
 )
 
+func VerifyEmail(c *gin.Context) {
+	var body struct {
+		Email string `json:"email"`
+	}
+	if err := c.Bind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read json body"})
+		return
+	}
+
+	result := initializers.DB.Select("email").Where("email = ?", body.Email)
+	if result.Error == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already in use"})
+		return
+	}
+
+	//TODO: validate email via email service (sending email with a code)
+	//...
+
+	c.JSON(http.StatusOK, gin.H{"message": "Email is available"})
+}
+
 func Login(c *gin.Context) {
 	// get the email and password from the request
 	var body struct {
