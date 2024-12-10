@@ -8,7 +8,8 @@ import StorageService from './StorageService' // Импортируем серв
 // Константы для URL-путей
 const REGISTER_URL = '/register';
 const LOGIN_URL = '/login';
-const TOKEN_VERIFY_URL = '/token/verify';
+const VERIFY_TOKEN_URL = '/verify/token';
+const VERIFY_EMAIL_URL = '/verify/email';
 
 // Класс AuthService для управления аутентификацией и регистрацией пользователей
 class AuthService {
@@ -85,8 +86,8 @@ class AuthService {
       const token = StorageService.getToken() // Получаем токен из хранилища
       if (!token) return false // Если токена нет, возвращаем false
 
-      // await this.api.post(TOKEN_VERIFY_URL, { token }) // Отправляем POST-запрос на проверку токена
-      // console.log("Token verified successfully"); // Логирование успешной проверки токена
+      await this.api.post(VERIFY_TOKEN_URL, { token }) // Отправляем POST-запрос на проверку токена
+      console.log("Token verified successfully"); // Логирование успешной проверки токена
       return true // Если токен валиден, возвращаем true
     }
     catch (error: unknown) {
@@ -97,6 +98,17 @@ class AuthService {
       return false // Возвращаем false при ошибке
     }
   }
+
+  async verifyEmail(email: string): Promise<boolean> {
+    try {
+      const response = await this.api.post(VERIFY_EMAIL_URL, { email });
+      return response.data.available; // Сервер возвращает поле available: true/false
+    } catch (error) {
+      console.error("Ошибка проверки email:", error);
+      throw new Error("Не удалось проверить email.");
+    }
+  }
+
 
   // Метод для выхода пользователя из системы
   logout(): void {

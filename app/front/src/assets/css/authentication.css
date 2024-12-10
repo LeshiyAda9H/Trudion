@@ -1,7 +1,11 @@
-.container {  
+.auth-container {  
+  border-radius: 15px;
+  
+  background-color: var(--secondary-color);
+  box-shadow: 0px 4px 20px 0px #00000040;
+  
   width: 30%;
   
-
   display: grid;
   place-items: center;
 
@@ -55,15 +59,20 @@
   font-weight: bold; 
 }
 
-.button {
+.auth-button {
+  padding: 15px 20px;
+  
+  background-color: var(--primary-color);
+  color: #fff;
+  
+  font-size: 16px;
+  font-weight: bold;
+  
+  text-align: center;
+  
   margin-top: 5px;
 
   min-width: 70%;
-
-  background-color: var(--primary-color);
-  color: #fff;
-  border-radius: var(--border-radius); 
-
 }
 
 .footer-text {
