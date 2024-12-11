@@ -34,8 +34,9 @@ func VerifyEmail(c *gin.Context) {
 		return
 	}
 
-	result := initializers.DB.Select("email").Where("email = ?", body.Email)
-	if result.RowsAffected > 0 {
+	var count int64
+	initializers.DB.Model(&models.User{}).Select("email").Where("email = ?", body.Email).Count(&count)
+	if count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already in use"})
 		return
 	}

@@ -10,7 +10,7 @@ import (
 	"src/handlers"
 	"src/initializers"
 
-	// "src/docs"
+	_ "src/docs"
 )
 
 func init() {
