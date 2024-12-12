@@ -4,18 +4,12 @@
   padding: 0;
   box-sizing: border-box;
 }
-header{
-  height: 10%;
-  font-family: var(--font-family);
-}
+
 html, body {
   width: 100%;
-  height: 80%;
+  height: 100%;
   font-family: var(--font-family);
-}
-footer{
-  height: 10%;
-  font-family: var(--font-family);
+  background-color: var(--background-color);
 }
 
 button {
@@ -30,28 +24,23 @@ button:hover {
   opacity: 0.9;
 }
 
-input {
+input, select {
   width: 100%;
   border: 2px solid var(--primary-color);
   border-radius: var(--border-radius);
-  outline: none; /* Убирает стандартную обводку */
+  outline: none;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
 }
-
-select {
-  width: 100%;
-  border: 2px solid var(--primary-color);
-  border-radius: var(--border-radius);
-  outline: none; /* Убирает стандартную обводку */
-}
-
 
 a {
   text-decoration: none;
   color: inherit;
 }
 
-
 .hidden {
   display: none;
 }
-  

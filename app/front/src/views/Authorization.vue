@@ -1,10 +1,10 @@
 <template>
-  <div class="auth-container">
-    <p>Авторизация</p>
 
+
+  <div class="auth-container">
+    <p class="auth-title">Авторизация</p>
 
     <img :src="imagePath" class="image-ava" />
-
 
     <InputAuthorization :writeEmail="writeEmail" :writePass="writePass" :error="error" />
 
@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import myImage from '../assets/trudion.png'
+import myImage from '../assets/trudion.svg'
 import InputAuthorization from '../components/InputAuthorization.vue'
 import AuthService from '../services/AuthService' // Подключаем AuthService
 import StorageService from '../services/StorageService' // Подключаем StorageService
@@ -56,26 +56,33 @@ export default defineComponent({
         this.error = '' // Сброс ошибки, если пользователь начинает ввод
       }
     },
+
+    validateData(): boolean {
+      if (this.userEmail === '' && this.userPass === '') {
+        this.error = 'not-valid-email-and-password';
+        return false;
+      }
+      if (this.userEmail === '') {
+        this.error = 'not-valid-email';
+        return false;
+      }
+      if (this.userPass === '') {
+        this.error = 'not-valid-password';
+        return false;
+      }
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(this.userEmail)) {
+        this.error = 'not-valid-email';
+        return false;
+      }
+      return true;
+    },
+
     async sendData(): Promise<void> {
       try {
         // Валидация данных
-        if (this.userEmail === '' && this.userPass === '') {
-          this.error = 'not-valid-email-and-password'
-          return
-        }
-        if (this.userEmail === '') {
-          this.error = 'not-valid-email'
-          return
-        }
-        if (this.userPass === '') {
-          this.error = 'not-valid-password'
-          return
-        }
-
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!re.test(this.userEmail)) {
-          this.error = 'not-valid-email'
-          return
+        if (!this.validateData()) {
+          return;
         }
 
         // Авторизация пользователя через AuthService
@@ -93,15 +100,18 @@ export default defineComponent({
         // Успешная авторизация
         StorageService.setToken(authedUser.access_token) // Сохранение токена
         this.$router.push('/home') // Перенаправляем на главную страницу
+
       }
       catch (error: unknown) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
             this.error = 'Неверный логин или пароль.'
-          } else {
+          }
+          else {
             this.error = 'Ошибка на сервере. Пожалуйста, попробуйте позже.'
           }
-        } else {
+        }
+        else {
           console.error(error)
           this.error = 'Неизвестная ошибка.'
         }
@@ -111,3 +121,8 @@ export default defineComponent({
 })
 </script>
 
+
+<style>
+
+
+</style>

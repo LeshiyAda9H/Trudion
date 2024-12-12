@@ -1,11 +1,18 @@
+interface StorageKeys {
+  token: string;
+  email: string;
+}
+
 class StorageService {
-  private tokenKey = "token";
-  private emailKey = "email";
+  private keys: StorageKeys = {
+    token: "token",
+    email: "email",
+  };
 
   // Сохранение токена
   setToken(token: string): void {
     try {
-      localStorage.setItem(this.tokenKey, token);
+      localStorage.setItem(this.keys.token, token);
     }
     catch (error) {
       console.error("Error setting token:", error);
@@ -15,7 +22,7 @@ class StorageService {
   // Получение токена
   getToken(): string | null {
     try {
-      return localStorage.getItem(this.tokenKey);
+      return localStorage.getItem(this.keys.token);
     }
     catch (error) {
       console.error("Error getting token:", error);
@@ -26,27 +33,27 @@ class StorageService {
   // Удаление токена
   removeToken(): void {
     try {
-      localStorage.removeItem(this.tokenKey);
+      localStorage.removeItem(this.keys.token);
     }
     catch (error) {
       console.error("Error removing token:", error);
     }
   }
 
-  // Сохранение имени пользователя
+  // Сохранение email пользователя
   setEmail(email: string): void {
     try {
-      localStorage.setItem(this.emailKey, email);
+      localStorage.setItem(this.keys.email, email);
     }
     catch (error) {
       console.error("Error setting email:", error);
     }
   }
 
-  // Получение имени пользователя
+  // Получение email пользователя
   getEmail(): string | null {
     try {
-      return localStorage.getItem(this.emailKey);
+      return localStorage.getItem(this.keys.email);
     }
     catch (error) {
       console.error("Error getting email:", error);
@@ -54,10 +61,10 @@ class StorageService {
     }
   }
 
-  // Удаление имени пользователя
+  // Удаление email пользователя
   removeEmail(): void {
     try {
-      localStorage.removeItem(this.emailKey);
+      localStorage.removeItem(this.keys.email);
     }
     catch (error) {
       console.error("Error removing email:", error);

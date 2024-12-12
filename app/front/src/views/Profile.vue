@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <input type="text" placeholder="Никнейм" class="input" v-model="userStore.registrationData.nickname" />
+      <input type="text" placeholder="Никнейм" class="input" v-model="userStore.registrationData.username" />
       <select class="select" v-model="userStore.registrationData.gender">
         <option value="" disabled>Выбери свой пол</option>
         <option value="male">Мужчина</option>

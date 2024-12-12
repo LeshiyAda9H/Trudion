@@ -51,14 +51,14 @@
     }
   );
 
-  // Новый метод для проверки email
-  export const verifyEmail = (email: string) => {
-    return apiClient.post("/api/v1/verify/email", { email });
-  };
+  // // Метод для проверки email
+  // export const verifyEmail = (email: string) => {
+  //   return apiClient.post("/api/v1/verify/email", { email });
+  // };
 
-  // Новый метод для отправки данных профиля
-  export const completeProfile = (data: { email: string; password: string; nickname: string; gender: string }) => {
-    return apiClient.post("/api/v1/complete/profile", data);
-  };
+  // // Метод для отправки данных профиля
+  // export const completeProfile = (data: { username: string; email: string; password: string;  gender: string }) => {
+  //   return apiClient.post("/api/v1/complete/profile", data);
+  // };
 
   export default apiClient;

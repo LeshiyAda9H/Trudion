@@ -1,8 +1,13 @@
 <template>
   <div class="auth-container">
-    <p>Регистрация</p>
+    <p class="auth-title">Регистрация</p>
 
-    <img :src="imagePath" class="image-ava" />
+
+    <div class="image-container">
+      <img :src="imagePath" class="image-ava" />
+      <!-- Всплывающее облачко -->
+      <TooltipMessage :message="modalMessage" :visible="showModal" :position="tooltipPosition" />
+    </div>
 
     <InputRegistration :writeEmail="writeEmail" :writePass="writePass" :writeConfirmPass="writeConfirmPass"
       :error="error" />
@@ -12,22 +17,28 @@
     <div class="footer-text">
       Уже есть аккаунт? <router-link to="/login" class="link">Войти</router-link>
     </div>
+
+    <!-- Модальное окно -->
+    <ModalWindow :message="modalMessage" :visible="showModal" @close="showModal = false" />
+
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import myImage from '../assets/trudion.png'
+import { defineComponent, ref, reactive } from 'vue'
+import myImage from '../assets/trudion.svg'
 import InputRegistration from '../components/InputRegistration.vue'
 import '../assets/css/authentication.css'
 import { useUserStore } from '../stores/UserStore'; // Импортируем хранилище Pinia
 import AuthService from '../services/AuthService'; // Импортируем AuthService для регистрации
 import { useRouter } from "vue-router"; // Используем Composition API для роутера
+//import ModalWindow from '../components/ModalWindow.vue';
+import TooltipMessage from '../components/TooltipMessage.vue';
 
 export default defineComponent({
   name: 'RegistrationPage',
 
-  components: { InputRegistration },
+  components: { InputRegistration, TooltipMessage },
 
   setup() {
     const router = useRouter(); // Инициализация роутера
@@ -38,6 +49,12 @@ export default defineComponent({
     const userEmail = ref(''); // Электронная почта
     const userPass = ref(''); // Пароль
     const confirmPass = ref(''); // Подтверждение пароля
+
+    const showModal = ref(false); // Флаг видимости модального окна
+    const modalMessage = ref(''); // Сообщение для модального окна
+
+    // Позиция облачка
+    const tooltipPosition = reactive({ top: 0, left: 0 });
 
     const writeEmail = (text_email: string): void => {
       userEmail.value = text_email;
@@ -51,36 +68,59 @@ export default defineComponent({
       confirmPass.value = text_confirmPass;
     };
 
-    const sendData = async () => {
+    const showError = (errorCode: string, message: string) => {
+      error.value = errorCode;
+      modalMessage.value = message;
+      showModal.value = true;
+
+      // Вычисляем позицию облачка относительно изображения
+      const imageElement = document.querySelector('.image-ava');
+      if (imageElement) {
+        tooltipPosition.top = -15;
+        tooltipPosition.left = 55;
+      }
+    };
+
+    const validateData = (): boolean => {
+      if (userEmail.value === '') {
+        showError('not-valid-email', "Поле email обязательно для заполнения.");
+        return false;
+      }
+
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(userEmail.value)) {
+        showError('not-valid-email', "Некорректный формат email.");
+        return false;
+      }
+
+      if (userPass.value === '' || confirmPass.value === '') {
+        showError('passwords-dont-match', "Поля с паролем обязательны для заполнения.");
+        return false;
+      }
+
+      if (userPass.value !== confirmPass.value) {
+        showError('passwords-dont-match', "Пароли не совпадают. Попробуйте ещё раз.");
+        return false;
+      }
+
+      if (userPass.value.length < 6) {
+        showError('passwords-too-short', "Пароль должен быть не короче 6 символов.");
+        return false;
+      }
+
+      return true;
+    };
+
+    const sendData = async (): Promise<void> => {
       try {
         // Валидация данных
-        if (userEmail.value === '' && (userPass.value === '' || confirmPass.value === '')) {
-          error.value = 'not-valid-email-and-passwords';
-          return;
-        }
-        if (userEmail.value === '') {
-          error.value = 'not-valid-email';
-          return;
-        }
-
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!re.test(userEmail.value)) {
-          error.value = 'not-valid-email';
-          return;
-        }
-        if (userPass.value === '' || confirmPass.value === '') {
-          error.value = 'passwords-dont-match';
-          return;
-        }
-
-        if (userPass.value !== confirmPass.value) {
-          error.value = 'passwords-dont-match';
+        if (!validateData()) {
           return;
         }
 
         const isEmailAvailable = await AuthService.verifyEmail(userEmail.value);
         if (!isEmailAvailable) {
-          error.value = "Этот email уже зарегистрирован.";
+          showError('email-already-exists', "Этот email уже зарегистрирован.");
           return;
         }
 
@@ -93,7 +133,7 @@ export default defineComponent({
         router.push("/profile-setup");
       } catch (err) {
         console.error("Ошибка при проверке email:", err);
-        error.value = "Не удалось проверить email. Попробуйте позже.";
+        showError('server-error', "Не удалось проверить email. Попробуйте позже.");
       }
     };
 
@@ -106,8 +146,76 @@ export default defineComponent({
       writeEmail,
       writePass,
       writeConfirmPass,
-      sendData
+      sendData,
+      showModal, // Флаг видимости модального окна
+      modalMessage, // Сообщение для модального окна
+      tooltipPosition,
     };
   },
 });
 </script>
+
+
+<style scoped>
+.auth-container {
+  border-radius: 15px;
+  background-color: var(--secondary-color);
+  box-shadow: 0px 4px 20px 0px #00000040;
+  width: 30%;
+  display: grid;
+  place-items: center;
+  margin: 6em auto;
+  padding: 1em;
+  text-align: center;
+  position: relative;
+  /* Добавлено для позиционирования */
+}
+
+.auth-title {
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 1em;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-ava {
+  width: 50%;
+  max-width: 400px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.auth-button {
+  padding: 15px 20px;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 5px;
+  min-width: 70%;
+}
+
+.footer-text {
+  color: #8894b1;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.link {
+  cursor: pointer;
+  opacity: 0.9;
+  color: #355299;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #a68136;
+}
+</style>

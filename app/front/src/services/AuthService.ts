@@ -4,12 +4,14 @@ import type { User, LoginPayload, AuthedUser } from '../classes' // Импорт
 import apiClient from './ApiClient' // Импортируем экземпляр Axios для взаимодействия с API
 import StorageService from './StorageService' // Импортируем сервис для работы с хранилищем
 
-
 // Константы для URL-путей
-const REGISTER_URL = '/api/v1/register';
-const LOGIN_URL = '/api/v1/login';
-const VERIFY_TOKEN_URL = '/api/v1/verify/token';
-const VERIFY_EMAIL_URL = '/api/v1/verify/email';
+const REGISTER_URL = '/api/v1/register'
+const LOGIN_URL = '/api/v1/login'
+const LOGOUT_URL = '/api/v1/logout'
+const PROFILE_URL = 'api/v1/profile'
+
+// const VERIFY_TOKEN_URL = '/api/v1/verify/token'
+const VERIFY_EMAIL_URL = '/api/v1/verify/email'
 
 // Класс AuthService для управления аутентификацией и регистрацией пользователей
 class AuthService {
@@ -24,31 +26,33 @@ class AuthService {
   async register(data: User): Promise<void> {
     try {
       await this.api.post(REGISTER_URL, data) // Отправляем POST-запрос на регистрацию
-      console.log("User registered successfully"); // Логирование успешной регистрации
-    }
-    catch (error: unknown) {
+      console.log('User registered successfully') // Логирование успешной регистрации
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
           throw new Error('Пользователь с таким email уже существует.') // Обрабатываем ошибку 400
         }
-        console.error("Registration error:", error); // Логирование ошибки регистрации
+        console.error('Registration error:', error) // Логирование ошибки регистрации
       }
       throw new Error('Ошибка при регистрации.') // Обрабатываем другие ошибки
     }
   }
 
-  // Новый метод для завершения регистрации
-  async completeProfile(data: { email: string; password: string; nickname: string; gender: string }): Promise<void> {
+  // Метод для завершения регистрации
+  async completeProfile(data: {
+    username: string
+    email: string
+    password: string
+    gender: string
+  }): Promise<void> {
     try {
-      await this.api.post('/api/v1/register', data); // API для завершения регистрации
-      console.log("Profile completed successfully");
+      await this.api.post(REGISTER_URL, data) // API для завершения регистрации
+      console.log('Profile completed successfully')
     } catch (error) {
-      console.error("Error completing profile:", error);
-      throw new Error("Ошибка завершения регистрации.");
+      console.error('Error completing profile:', error)
+      throw new Error('Ошибка завершения регистрации.')
     }
   }
-
-
 
   // Метод для входа пользователя в систему
   async login(data: LoginPayload): Promise<AuthedUser> {
@@ -62,17 +66,16 @@ class AuthService {
       }
 
       StorageService.setToken(token) // Сохраняем токен в хранилище
-      StorageService.setEmail(authedUser.email) // Сохраняем email в хранилище
+      // StorageService.setEmail(authedUser.email) // Сохраняем email в хранилище
 
-      console.log("User logged in successfully"); // Логирование успешного входа
+      console.log('User logged in successfully') // Логирование успешного входа
       return authedUser // Возвращаем аутентифицированного пользователя
-    }
-    catch (error: unknown) {
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error('Неверный логин или пароль.') // Обрабатываем ошибку 401
         }
-        console.error("Login error:", error); // Логирование ошибки входа
+        console.error('Login error:', error) // Логирование ошибки входа
       }
       throw new Error('Ошибка при входе.') // Обрабатываем другие ошибки
     }
@@ -80,16 +83,16 @@ class AuthService {
 
   async updateProfile(data: Partial<User>): Promise<void> {
     try {
-      const token = StorageService.getToken();
-      if (!token) throw new Error('Вы не авторизованы');
+      const token = StorageService.getToken()
+      if (!token) throw new Error('Вы не авторизованы')
 
-      await this.api.put('api/v1/profile', data, {
+      await this.api.put(PROFILE_URL, data, {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log('Профиль обновлен успешно');
+      })
+      console.log('Профиль обновлен успешно')
     } catch (error) {
-      console.error('Ошибка при обновлении профиля:', error);
-      throw new Error('Не удалось обновить профиль');
+      console.error('Ошибка при обновлении профиля:', error)
+      throw new Error('Не удалось обновить профиль')
     }
   }
 
@@ -102,11 +105,10 @@ class AuthService {
       // await this.api.post(VERIFY_TOKEN_URL, { token }) // Отправляем POST-запрос на проверку токена
       // console.log("Token verified successfully"); // Логирование успешной проверки токена
       return true // Если токен валиден, возвращаем true
-    }
-    catch (error: unknown) {
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         StorageService.clear() // Очищаем хранилище при ошибке
-        console.error("Token verification error:", error); // Логирование ошибки проверки токена
+        console.error('Token verification error:', error) // Логирование ошибки проверки токена
       }
       return false // Возвращаем false при ошибке
     }
@@ -114,24 +116,23 @@ class AuthService {
 
   async verifyEmail(email: string): Promise<boolean> {
     try {
-      const response = await this.api.post(VERIFY_EMAIL_URL, { email });
-      return response.data.available; // Сервер возвращает поле available: true/false
+      const response = await this.api.post(VERIFY_EMAIL_URL, { email })
+      return response.data.available // Сервер возвращает поле available: true/false
     } catch (error) {
-      console.error("Ошибка проверки email:", error);
-      throw new Error("Не удалось проверить email.");
+      console.error('Ошибка проверки email:', error)
+      throw new Error('Не удалось проверить email.')
     }
   }
-
 
   // Метод для выхода пользователя из системы
   logout(): void {
     try {
-      this.api.post('/api/v1/logout'); // Запрос на сервер для завершения сессии
+      this.api.post(LOGOUT_URL) // Запрос на сервер для завершения сессии
     } catch (error) {
-      console.error('Error logging out on server:', error);
+      console.error('Error logging out on server:', error)
     } finally {
-      StorageService.clear(); // Очищаем локальное хранилище в любом случае
-      console.log("User logged out successfully");
+      StorageService.clear() // Очищаем локальное хранилище в любом случае
+      console.log('User logged out successfully')
     }
   }
 

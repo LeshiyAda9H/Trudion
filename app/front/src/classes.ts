@@ -1,5 +1,5 @@
 export interface User {
-  nickname: string;
+  username: string;
   email: string;
   password: string;
   gender: string;
@@ -15,11 +15,3 @@ export interface AuthedUser {
   email: string;
 };
 
-export interface FullLink {
-  url: string;
-}
-
-export interface ShortLink {
-  full_url: string;
-  short_link: string;
-}
