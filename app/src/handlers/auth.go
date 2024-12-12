@@ -5,12 +5,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"os"
 	"src/initializers"
 	"src/models"
+	"src/repository"
 	"src/types"
 	"time"
 )
+
+const (
+	salt      = "hK3B6z4a2pwPUmQdcrCxE9"
+	secretKey = "b0nN_4;>-dj!PCtIYdqw0`C1&Uw;gS"
+	tokenTTL  = 12 * time.Hour
+)
+
+type tokenClaims struct {
+	jwt.StandardClaims
+	UserId uint `json:"user_id"`
+}
 
 // @Summary VerifyEmail
 // @Tags auth
@@ -62,11 +73,9 @@ func SignIn(c *gin.Context) {
 	}
 
 	// look up requested user
-	var user models.User
-	initializers.DB.First(&user, "email = ?", body.Email)
-
-	if user.UserId == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email or password"})
+	user, err := repository.GetUserByEmail(body.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email"})
 		return
 	}
 
@@ -78,21 +87,14 @@ func SignIn(c *gin.Context) {
 	}
 
 	// generate JWT token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.UserId,
-		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	token, err := generateToken(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
 	// return the token
-	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
-	c.JSON(http.StatusOK, gin.H{"message": "Token generated"})
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 // @Summary SignUp
@@ -132,6 +134,13 @@ func SignUp(c *gin.Context) {
 		OnlineStatus:  "online",
 	}
 
+	// check if email is already in use
+	_, err = repository.GetUserByEmail(body.Email)
+	if err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already in use"})
+		return
+	}
+
 	// Save user to database
 	if initializers.DB.Create(&user).Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
@@ -139,4 +148,17 @@ func SignUp(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "User created"})
+}
+
+func generateToken(user *models.User) (string, error) {
+	// generate JWT token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(tokenTTL).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+		user.UserId,
+	})
+
+	return token.SignedString([]byte(secretKey))
 }
