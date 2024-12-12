@@ -149,7 +149,13 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User created"})
+	// generate JWT token
+	token, err := generateToken(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func generateToken(user *models.User) (string, error) {
