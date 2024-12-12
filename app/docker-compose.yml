@@ -5,7 +5,7 @@ services:
         build: src/
         command: go run app.go
         ports: 
-            - 5432:5432
+            - 5433:5432
             - 8080:8080
 
     trudion-ui:

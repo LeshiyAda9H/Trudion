@@ -26,9 +26,7 @@ type verifyEmailInput struct {
 // @Failure default {object} string
 // @Router /api/v1/verify/email [post]
 func VerifyEmail(c *gin.Context) {
-	var body struct {
-		Email string `json:"email"`
-	}
+	var body verifyEmailInput
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read json body"})
 		return
