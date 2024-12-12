@@ -8,12 +8,9 @@ import (
 	"os"
 	"src/initializers"
 	"src/models"
+	"src/types"
 	"time"
 )
-
-type verifyEmailInput struct {
-	Email string `json:"email" binding:"required"`
-}
 
 // @Summary VerifyEmail
 // @Tags auth
@@ -26,7 +23,7 @@ type verifyEmailInput struct {
 // @Failure default {object} string
 // @Router /api/v1/verify/email [post]
 func VerifyEmail(c *gin.Context) {
-	var body verifyEmailInput
+	var body types.VerifyEmailPayload
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read json body"})
 		return
@@ -45,11 +42,6 @@ func VerifyEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"available": true})
 }
 
-type signInInput struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
 // @Summary SignIn
 // @Tags auth
 // @Description login
@@ -63,7 +55,7 @@ type signInInput struct {
 func SignIn(c *gin.Context) {
 	// get the email and password from the request
 	var err error
-	var body signInInput
+	var body types.SignInPayload
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
 		return
@@ -103,13 +95,6 @@ func SignIn(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Token generated"})
 }
 
-type signUpInput struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Gender   string `json:"gender"`
-}
-
 // @Summary SignUp
 // @Tags auth
 // @Description create account
@@ -122,7 +107,7 @@ type signUpInput struct {
 // @Router /api/v1/register [post]
 func SignUp(c *gin.Context) {
 	var err error
-	var body signUpInput
+	var body types.SignUpPayload
 
 	// check incoming data
 	if err = c.Bind(&body); err != nil {
