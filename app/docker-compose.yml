@@ -2,14 +2,14 @@ version: "3"
 
 services:
     trudion-server:
-        build: src/
+        build: backend/
         command: go run app.go
         ports: 
             - 5433:5432
             - 8080:8080
 
     trudion-ui:
-        build: front/
+        build: frontend/
         command: npm run dev -- --host
         ports: 
             - 5173:5173
