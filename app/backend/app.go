@@ -24,7 +24,7 @@ func init() {
 // @description API Service for Trudion Application
 // @host localhost:8080
 // @BasePath /
-// @securityDefinitions.api_key ApiKeyAuth
+// @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
 func main() {
@@ -45,6 +45,7 @@ func main() {
 	router.POST("/api/v1/register", handlers.SignUp)
 	router.POST("/api/v1/login", handlers.SignIn)
 	router.POST("/api/v1/verify/email", handlers.VerifyEmail)
+	router.GET("/api/v1/profile", handlers.UserProfile)
 	//router.POST("/api/v1/verify/token", handlers.VerifyToken)
 
 	// run server

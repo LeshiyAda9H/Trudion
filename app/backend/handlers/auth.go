@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -28,7 +29,7 @@ type tokenClaims struct {
 // @Description check if email is available
 // @Accept json
 // @Produce json
-// @Param input body verifyEmailInput true "Email"
+// @Param input body types.VerifyEmailPayload true "Email"
 // @Success 200 {object} string
 // @Failure 400,500 {object} string
 // @Failure default {object} string
@@ -58,7 +59,7 @@ func VerifyEmail(c *gin.Context) {
 // @Description login
 // @Accept json
 // @Produce json
-// @Param input body signInInput true "Email and password"
+// @Param input body types.SignInPayload true "Email and password"
 // @Success 200 {object} string
 // @Failure 400,500 {object} string
 // @Failure default {object} string
@@ -103,7 +104,7 @@ func SignIn(c *gin.Context) {
 // @Description create account
 // @Accept json
 // @Produce json
-// @Param input body signUpInput true "account info"
+// @Param input body types.SignUpPayload true "account info"
 // @Success 200 {object} string
 // @Failure 400,500 {object} string
 // @Failure default {object} string
@@ -169,4 +170,24 @@ func generateToken(user *models.User) (string, error) {
 	})
 
 	return token.SignedString([]byte(secretKey))
+}
+
+func parseToken(accessToken string) (uint, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("invalid signing method")
+		}
+
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	claims, ok := token.Claims.(*tokenClaims)
+	if !ok {
+		return 0, fmt.Errorf("token claims are not of type *tokenClaims")
+	}
+
+	return claims.UserId, nil
 }

@@ -18,6 +18,20 @@ func RootHandler(c *gin.Context) {
 	})
 }
 
+// @Summary UserProfile
+// @Description get user profile information
+// @Security ApiKeyAuth
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 500 {object} string
+// @Router /api/v1/profile [get]
+func UserProfile(c *gin.Context) {
+	UserIdentity(c)
+
+	id, _ := c.Get("userId")
+	c.JSON(http.StatusOK, gin.H{"id": id})
+}
+
 // @Summary GetUsers
 // @Description get all users
 // @Produce  json
