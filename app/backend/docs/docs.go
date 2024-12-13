@@ -52,7 +52,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.signInInput"
+                            "$ref": "#/definitions/types.SignInPayload"
                         }
                     }
                 ],
@@ -84,6 +84,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/profile": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user profile information",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "UserProfile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/register": {
             "post": {
                 "description": "create account",
@@ -104,7 +132,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.signUpInput"
+                            "$ref": "#/definitions/types.SignUpPayload"
                         }
                     }
                 ],
@@ -179,7 +207,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.verifyEmailInput"
+                            "$ref": "#/definitions/types.VerifyEmailPayload"
                         }
                     }
                 ],
@@ -213,7 +241,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.signInInput": {
+        "types.SignInPayload": {
             "type": "object",
             "required": [
                 "email",
@@ -228,8 +256,14 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.signUpInput": {
+        "types.SignUpPayload": {
             "type": "object",
+            "required": [
+                "email",
+                "gender",
+                "password",
+                "username"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -245,7 +279,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.verifyEmailInput": {
+        "types.VerifyEmailPayload": {
             "type": "object",
             "required": [
                 "email"
@@ -255,6 +289,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

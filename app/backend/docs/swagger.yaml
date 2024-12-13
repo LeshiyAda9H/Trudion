@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  handlers.signInInput:
+  types.SignInPayload:
     properties:
       email:
         type: string
@@ -10,7 +10,7 @@ definitions:
     - email
     - password
     type: object
-  handlers.signUpInput:
+  types.SignUpPayload:
     properties:
       email:
         type: string
@@ -20,8 +20,13 @@ definitions:
         type: string
       username:
         type: string
+    required:
+    - email
+    - gender
+    - password
+    - username
     type: object
-  handlers.verifyEmailInput:
+  types.VerifyEmailPayload:
     properties:
       email:
         type: string
@@ -57,7 +62,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/handlers.signInInput'
+          $ref: '#/definitions/types.SignInPayload'
       produces:
       - application/json
       responses:
@@ -80,6 +85,23 @@ paths:
       summary: SignIn
       tags:
       - auth
+  /api/v1/profile:
+    get:
+      description: get user profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: UserProfile
   /api/v1/register:
     post:
       consumes:
@@ -91,7 +113,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/handlers.signUpInput'
+          $ref: '#/definitions/types.SignUpPayload'
       produces:
       - application/json
       responses:
@@ -140,7 +162,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/handlers.verifyEmailInput'
+          $ref: '#/definitions/types.VerifyEmailPayload'
       produces:
       - application/json
       responses:
@@ -163,4 +185,9 @@ paths:
       summary: VerifyEmail
       tags:
       - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
