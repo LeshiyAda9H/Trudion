@@ -4,9 +4,14 @@
 
 
     <div class="image-container">
-      <img :src="imagePath" class="image-ava" />
+
       <!-- Всплывающее облачко -->
-      <TooltipMessage :message="modalMessage" :visible="showModal" :position="tooltipPosition" />
+      <TooltipMessage
+      :message="modalMessage"
+      :visible="showModal"
+      :position="tooltipPosition"
+      />
+      <img :src="imagePath" class="image-ava" />
     </div>
 
     <InputRegistration :writeEmail="writeEmail" :writePass="writePass" :writeConfirmPass="writeConfirmPass"
@@ -54,7 +59,10 @@ export default defineComponent({
     const modalMessage = ref(''); // Сообщение для модального окна
 
     // Позиция облачка
-    const tooltipPosition = reactive({ top: 0, left: 0 });
+    const tooltipPosition = reactive({
+    top: 0,
+    left: 100
+  });
 
     const writeEmail = (text_email: string): void => {
       userEmail.value = text_email;
@@ -72,13 +80,6 @@ export default defineComponent({
       error.value = errorCode;
       modalMessage.value = message;
       showModal.value = true;
-
-      // Вычисляем позицию облачка относительно изображения
-      const imageElement = document.querySelector('.image-ava');
-      if (imageElement) {
-        tooltipPosition.top = -15;
-        tooltipPosition.left = 55;
-      }
     };
 
     const validateData = (): boolean => {
@@ -133,7 +134,7 @@ export default defineComponent({
         router.push("/profile-setup");
       } catch (err) {
         console.error("Ошибка при проверке email:", err);
-        showError('server-error', "Не удалось проверить email. Попробуйте позже.");
+        showError('server-error', "Этот email уже зарегистрирован.");
       }
     };
 
@@ -181,13 +182,25 @@ export default defineComponent({
 .image-container {
   position: relative;
   display: inline-block;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
 }
 
 .image-ava {
-  width: 50%;
-  max-width: 400px;
-  height: auto;
-  margin-bottom: 10px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Стили для позиционирования тултипа */
+:deep(.tooltip) {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  transform: translateX(10px);
+  /* Отступ от изображения */
+  z-index: 1000;
 }
 
 .auth-button {

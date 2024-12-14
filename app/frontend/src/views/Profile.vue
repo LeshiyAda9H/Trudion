@@ -4,6 +4,8 @@
   </header>
 
   <body>
+    <LoadingSpinner v-if="isLoading" />
+
     <h1 class="title">Мой профиль</h1>
 
     <div class="prof-container">
@@ -15,6 +17,7 @@
       </div>
 
       <input type="text" placeholder="Никнейм" class="input" v-model="profileStore.temporaryData.username" />
+
       <select class="select" v-model="profileStore.temporaryData.gender">
         <option value="" disabled>Выбери свой пол</option>
         <option value="male">Мужчина</option>
@@ -37,19 +40,41 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import Navbar from '../components/Navbar.vue';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useProfileStore } from '../stores/ProfileStore';
 import AuthService from '../services/AuthService';
 import '../assets/css/profile.css'
 
 export default defineComponent({
   name: 'ProfilePage',
-  components: { Navbar },
+  components: {
+    Navbar,
+    LoadingSpinner
+  },
 
   setup() {
     const profileStore = useProfileStore();
-    // const router = useRouter(); // Инициализация роутера
+    const isLoading = ref(false);
+
+    const fetchProfileData = async () => {
+      isLoading.value = true;
+      try {
+        const data = await AuthService.getProfile();
+        profileStore.temporaryData = {
+          username: data.username,
+          gender: data.gender,
+          biography: data.biography,
+          label: data.label,
+        };
+      } catch (error) {
+        console.error("Ошибка при получении данных профиля:", error);
+        alert("Не удалось загрузить данные профиля");
+      } finally {
+        isLoading.value = false;
+      }
+    };
 
     const validateData = (): boolean => {
       const { username, gender } = profileStore.temporaryData;
@@ -61,7 +86,6 @@ export default defineComponent({
     };
 
     const updateProfile = async () => {
-
       if (!validateData()) {
         return;
       }
@@ -74,20 +98,24 @@ export default defineComponent({
           label: profileStore.temporaryData.label,
         });
 
-        profileStore.completeUpdateProfile(); // Очищаем временные данные
-
+        profileStore.completeUpdateProfile();
         alert("Данные обновлены!");
-
       }
       catch (error) {
         console.error("Ошибка при сохранении профиля:", error);
-        alert("Не удалось обновить профиль :()");
+        alert("Не удалось обновить профиль :(");
       }
     };
+
+    // Загружаем данные при монтировании компонента
+    onMounted(() => {
+      fetchProfileData();
+    });
 
     return {
       profileStore,
       updateProfile,
+      isLoading
     };
   },
 });

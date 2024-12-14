@@ -1,28 +1,28 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
-import AuthService from './services/AuthService';
-import { useUserStore } from './stores/UserStore';
-import { storeToRefs } from 'pinia';
+import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
+import AuthService from './services/AuthService'
+import { useUserStore } from './stores/UserStore'
+import { storeToRefs } from 'pinia'
 
 // Функция для проверки аутентификации
 const checkAuthentication = (next: NavigationGuardNext): void => {
   if (!AuthService.isAuth()) {
-    next('/login'); // Если пользователь не аутентифицирован, перенаправляем на страницу входа
+    next('/login') // Если пользователь не аутентифицирован, перенаправляем на страницу входа
   } else {
-    next(); // Иначе продолжаем переход
+    next() // Иначе продолжаем переход
   }
-};
+}
 
 // Функция для проверки заполненности профиля
 const checkProfileFilled = async (next: NavigationGuardNext): Promise<void> => {
-  const userStore = useUserStore();
-  const { userProfileFilled } = storeToRefs(userStore);
+  const userStore = useUserStore()
+  const { userProfileFilled } = storeToRefs(userStore)
   if (!(await userProfileFilled.value)) {
-    next('/profile-setup'); // Если профиль не заполнен, перенаправляем на страницу настройки профиля
+    next('/profile-setup') // Если профиль не заполнен, перенаправляем на страницу настройки профиля
   } else {
-    next(); // Иначе продолжаем переход
+    next() // Иначе продолжаем переход
   }
-};
+}
 
 // Определение маршрутов
 const routes = [
@@ -35,11 +35,15 @@ const routes = [
     path: '/register',
     name: 'RegistrationPage',
     component: () => import('./views/Registration.vue'),
-    beforeEnter: (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+    beforeEnter: (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext,
+    ) => {
       if (AuthService.isAuth()) {
-        next('/home'); // Если пользователь уже аутентифицирован, перенаправляем на домашнюю страницу
+        next('/home') // Если пользователь уже аутентифицирован, перенаправляем на домашнюю страницу
       } else {
-        next(); // Иначе продолжаем переход
+        next() // Иначе продолжаем переход
       }
     },
   },
@@ -48,11 +52,15 @@ const routes = [
     path: '/login',
     name: 'AuthorizationPage',
     component: () => import('./views/Authorization.vue'),
-    beforeEnter: (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+    beforeEnter: (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext,
+    ) => {
       if (AuthService.isAuth()) {
-        next('/home'); // Если пользователь уже аутентифицирован, перенаправляем на домашнюю страницу
+        next('/home') // Если пользователь уже аутентифицирован, перенаправляем на домашнюю страницу
       } else {
-        next(); // Иначе продолжаем переход
+        next() // Иначе продолжаем переход
       }
     },
   },
@@ -61,8 +69,12 @@ const routes = [
     path: '/home',
     name: 'HomePage',
     component: () => import('./views/Home.vue'),
-    beforeEnter: (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-      checkAuthentication(next); // Проверяем аутентификацию
+    beforeEnter: (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext,
+    ) => {
+      checkAuthentication(next) // Проверяем аутентификацию
     },
   },
 
@@ -70,8 +82,12 @@ const routes = [
     path: '/profile',
     name: 'ProfilePage',
     component: () => import('./views/Profile.vue'),
-    beforeEnter: async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-      checkAuthentication(next); // Проверяем аутентификацию
+    beforeEnter: async (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext,
+    ) => {
+      checkAuthentication(next) // Проверяем аутентификацию
       // await checkProfileFilled(next); // Проверяем заполненность профиля
     },
   },
@@ -80,22 +96,55 @@ const routes = [
     path: '/profile-setup',
     name: 'ProfileSetupPage',
     component: () => import('./views/ProfileSetup.vue'),
-    beforeEnter: async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+    beforeEnter: async (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext,
+    ) => {
       next()
-      await checkProfileFilled(next); // Проверяем заполненность профиля
+      await checkProfileFilled(next) // Проверяем заполненность профиля
     },
+  },
+
+  {
+    path: '/messenger',
+    name: 'messengerPage',
+    component: () => import('./views/Messenger.vue'),
+    beforeEnter: (
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      next: NavigationGuardNext,
+    ) => {
+      checkAuthentication(next)
+    },
+    children: [
+      {
+        path: 'chat',
+        name: 'chatPage',
+        component: () => import('./views/Chat.vue'),
+      },
+      {
+        path: 'match',
+        name: 'matchPage',
+        component: () => import('./views/Match.vue'),
+      },
+      {
+        path: '',
+        redirect: '/messenger/chat', // По умолчанию показываем чат
+      },
+    ],
   },
 
   {
     path: '/:pathMatch(.*)*',
     redirect: '/', // Перенаправление на главную страницу для несуществующих маршрутов
   },
-];
+]
 
 // Создание роутера
 const router = createRouter({
   history: createWebHistory(),
   routes,
-});
+})
 
-export default router;
+export default router

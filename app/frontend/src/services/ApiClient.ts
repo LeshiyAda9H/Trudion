@@ -1,64 +1,66 @@
-  import axios from "axios";
+import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
 
-  // Константы для ключей localStorage
-  const TOKEN_KEY = "token";
-  const EMAIL_KEY = "email";
+export class ApiClient {
+  private static instance: ApiClient
+  private api: AxiosInstance
 
-  // Создаём экземпляр клиента
-  const apiClient = axios.create({
-    baseURL: "http://localhost:8080", // Укажите базовый URL вашего API
-  });
+  private constructor() {
+    this.api = axios.create({
+      baseURL: 'http://localhost:8080',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
-  // Добавляем перехватчик запросов
-  apiClient.interceptors.request.use(
-    (config) => {
-      // Получаем токен из localStorage
-      const token = localStorage.getItem(TOKEN_KEY);
+    // Интерцептор для запросов
+    this.api.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token')
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
+        return config
+      },
+      (error) => {
+        return Promise.reject(error)
+      },
+    )
 
-      if (token) {
-        // Если токен существует, добавляем его в заголовок Authorization
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+    // Интерцептор для ответов
+    this.api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          // Если получаем 401, значит токен невалидный или истек
+          localStorage.removeItem('token')
+          // Можно добавить редирект на страницу логина
+        }
+        return Promise.reject(error)
+      },
+    )
+  }
 
-      console.log("Request:", config); // Логирование запроса
-      return config; // Возвращаем обновлённый config
-    },
-    (error) => {
-      console.error("Request error:", error); // Логирование ошибки запроса
-      return Promise.reject(error);
+  // Метод для получения экземпляра ApiClient
+  public static getInstance(): ApiClient {
+    if (!ApiClient.instance) {
+      ApiClient.instance = new ApiClient()
     }
-  );
+    return ApiClient.instance
+  }
 
-  // Добавляем перехватчик ответов
-  apiClient.interceptors.response.use(
-    (response) => {
-      console.log("Response:", response); // Логирование ответа
-      return response;
-    },
-    (error) => {
-      console.error("Response error:", error); // Логирование ошибки ответа
+  // Метод для отправки GET-запроса
+  public async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.api.get<T>(url, config)
+    return response.data
+  }
 
-      // Если ответ имеет ошибку
-      if (error.response?.status === 401) {
-        // Если статус ошибки 401 (Unauthorized), разлогиниваем пользователя
-        localStorage.removeItem(TOKEN_KEY); // Удаляем токен
-        localStorage.removeItem(EMAIL_KEY); // Удаляем email пользователя
-        location.reload(); // Перезагружаем страницу (возврат на страницу логина)
-      }
+  // Метод для отправки POST-запроса
+  public async post<T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.api.post<T>(url, data, config)
+    return response.data
+  }
 
-      // Пропускаем ошибку дальше для обработки в компонентах
-      return Promise.reject(error);
-    }
-  );
+  // Другие методы (put, delete и т.д.)
+}
 
-  // // Метод для проверки email
-  // export const verifyEmail = (email: string) => {
-  //   return apiClient.post("/api/v1/verify/email", { email });
-  // };
-
-  // // Метод для отправки данных профиля
-  // export const completeProfile = (data: { username: string; email: string; password: string;  gender: string }) => {
-  //   return apiClient.post("/api/v1/complete/profile", data);
-  // };
-
-  export default apiClient;
+export default ApiClient.getInstance()

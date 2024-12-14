@@ -92,10 +92,10 @@ export default defineComponent({
         })
 
         // Проверка токена через сервер
-        const isTokenValid = await AuthService.verifyToken()
-        if (!isTokenValid) {
-          throw new Error('Недействительный токен.')
-        }
+        // const isTokenValid = await AuthService.verifyToken()
+        // if (!isTokenValid) {
+        //   throw new Error('Недействительный токен.')
+        // }
 
         // Успешная авторизация
         StorageService.setToken(authedUser.access_token) // Сохранение токена

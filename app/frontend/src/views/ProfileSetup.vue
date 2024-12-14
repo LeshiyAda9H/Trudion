@@ -87,10 +87,10 @@ export default defineComponent({
         userStore.completeRegistration(); // Очищаем временные данные
 
         // Проверка токена через сервер
-        const isTokenValid = await AuthService.verifyToken()
-        if (!isTokenValid) {
-          throw new Error('Недействительный токен.')
-        }
+        // const isTokenValid = await AuthService.verifyToken()
+        // if (!isTokenValid) {
+        //   throw new Error('Недействительный токен.')
+        // }
 
 
         alert("Регистрация завершена!");

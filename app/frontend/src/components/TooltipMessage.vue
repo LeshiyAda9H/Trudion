@@ -31,10 +31,30 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.tooltip {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+}
+
 .tooltip-container {
   position: absolute;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
+  width: max-content;
+  max-width: 250px;
+  top: 10px;
+  left: 50%;
+  transform: translate(-50%, -100%);
 }
 
 .tooltip-content {
@@ -45,6 +65,8 @@ export default defineComponent({
   font-size: 14px;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .tooltip-arrow {
