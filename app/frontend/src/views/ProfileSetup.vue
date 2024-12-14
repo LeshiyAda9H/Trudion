@@ -1,7 +1,5 @@
   <template>
-    <header>
-      <Navbar />
-    </header>
+
 
     <body>
       <h1 class="title">Завершите регистрацию</h1>
@@ -23,9 +21,9 @@
           <option value="other">Абоба</option>
         </select>
 
-        <textarea placeholder="О себе" class="form-textarea" v-model="userStore.registrationData.bio"></textarea>
+        <textarea placeholder="О себе" class="form-textarea" v-model="userStore.registrationData.biography"></textarea>
 
-        <select class="select" v-model="userStore.registrationData.skills">
+        <select class="select" v-model="userStore.registrationData.label">
           <option value="" disabled>Навыки</option>
           <option value="skill1">Навык 1</option>
           <option value="skill2">Навык 2</option>
@@ -39,19 +37,20 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Navbar from '../components/Navbar.vue';
 import { useUserStore } from '../stores/UserStore';
 import { useRouter } from 'vue-router';
 import AuthService from '../services/AuthService';
 import '../assets/css/profile.css'
+import StorageService from '../services/StorageService' // Подключаем StorageService
+
 
 export default defineComponent({
   name: 'ProfileSetupPage',
-  components: { Navbar },
+  //components: {  },
 
   setup() {
     const userStore = useUserStore();
-    const router = useRouter();
+    const router = useRouter(); // Инициализация роутера
 
     const validateData = (): boolean => {
       const { username, gender } = userStore.registrationData;
@@ -74,11 +73,28 @@ export default defineComponent({
           email: userStore.registrationData.email,
           password: userStore.registrationData.password,
           gender: userStore.registrationData.gender,
+          biography: userStore.registrationData.biography,
+          label: userStore.registrationData.label,
         });
+
+        const authedUser = await AuthService.login({
+          email: userStore.registrationData.email,
+          password: userStore.registrationData.password,
+        })
+
+        StorageService.setToken(authedUser.access_token) // Сохранение токена
 
         userStore.completeRegistration(); // Очищаем временные данные
 
+        // Проверка токена через сервер
+        const isTokenValid = await AuthService.verifyToken()
+        if (!isTokenValid) {
+          throw new Error('Недействительный токен.')
+        }
+
+
         alert("Регистрация завершена!");
+
         router.push("/home");
       }
       catch (error) {

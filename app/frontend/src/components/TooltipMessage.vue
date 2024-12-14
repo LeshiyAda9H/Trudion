@@ -63,6 +63,7 @@ export default defineComponent({
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

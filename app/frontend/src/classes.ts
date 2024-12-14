@@ -3,6 +3,8 @@ export interface User {
   email: string;
   password: string;
   gender: string;
+  biography: string;
+  label: string;
 };
 
 export interface LoginPayload {
@@ -13,5 +15,12 @@ export interface LoginPayload {
 export interface AuthedUser {
   access_token: string;
   email: string;
+};
+
+export interface ProfileUser {
+  username: string;
+  gender: string;
+  biography: string;
+  label: string;
 };
 

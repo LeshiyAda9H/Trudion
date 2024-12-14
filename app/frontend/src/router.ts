@@ -72,7 +72,7 @@ const routes = [
     component: () => import('./views/Profile.vue'),
     beforeEnter: async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
       checkAuthentication(next); // Проверяем аутентификацию
-      await checkProfileFilled(next); // Проверяем заполненность профиля
+      // await checkProfileFilled(next); // Проверяем заполненность профиля
     },
   },
 

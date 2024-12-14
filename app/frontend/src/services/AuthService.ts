@@ -1,6 +1,6 @@
 import axios from 'axios' // Импортируем библиотеку Axios для выполнения HTTP-запросов
 import type { AxiosInstance } from 'axios' // Импортируем тип AxiosInstance
-import type { User, LoginPayload, AuthedUser } from '../classes' // Импортируем типы данных User и AuthedUser
+import type { User, LoginPayload, AuthedUser, ProfileUser } from '../classes' // Импортируем типы данных User и AuthedUser
 import apiClient from './ApiClient' // Импортируем экземпляр Axios для взаимодействия с API
 import StorageService from './StorageService' // Импортируем сервис для работы с хранилищем
 
@@ -23,7 +23,7 @@ class AuthService {
   }
 
   // Метод для регистрации нового пользователя
-  async register(data: User): Promise<void> {
+  async register(data: Partial<User>): Promise<void> {
     try {
       await this.api.post(REGISTER_URL, data) // Отправляем POST-запрос на регистрацию
       console.log('User registered successfully') // Логирование успешной регистрации
@@ -39,12 +39,7 @@ class AuthService {
   }
 
   // Метод для завершения регистрации
-  async completeProfile(data: {
-    username: string
-    email: string
-    password: string
-    gender: string
-  }): Promise<void> {
+  async completeProfile(data: Partial<User>): Promise<void> {
     try {
       await this.api.post(REGISTER_URL, data) // API для завершения регистрации
       console.log('Profile completed successfully')
@@ -70,7 +65,8 @@ class AuthService {
 
       console.log('User logged in successfully') // Логирование успешного входа
       return authedUser // Возвращаем аутентифицированного пользователя
-    } catch (error: unknown) {
+    }
+    catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error('Неверный логин или пароль.') // Обрабатываем ошибку 401
@@ -81,7 +77,7 @@ class AuthService {
     }
   }
 
-  async updateProfile(data: Partial<User>): Promise<void> {
+  async updateProfile(data: Partial<ProfileUser>): Promise<void> {
     try {
       const token = StorageService.getToken()
       if (!token) throw new Error('Вы не авторизованы')

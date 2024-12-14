@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia' // Импортируем функцию для создания хранилища из Pinia
 import type { AuthedUser } from '../classes' // Импортируем тип данных аутентифицированного пользователя
-import AuthService from '../services/AuthService';
+import AuthService from '../services/AuthService'
 
 // Определяем хранилище с именем 'user'
 export const useUserStore = defineStore('user', {
@@ -9,14 +9,14 @@ export const useUserStore = defineStore('user', {
     // Инициализируем состояние 'user' данными из localStorage или null, если данных нет
     user: JSON.parse(localStorage.getItem('user') || 'null') as AuthedUser | null,
 
-    // Временные данные для многоэтапной регистрации
+    // Временные данные
     registrationData: {
       username: '' as string,
       email: '' as string,
       password: '' as string,
       gender: '' as string,
-      bio: '' as string,
-      skills: '' as string,
+      biography: '' as string,
+      label: '' as string,
     },
   }),
 
@@ -27,8 +27,6 @@ export const useUserStore = defineStore('user', {
       this.user = userData // Обновляем состояние 'user'
       localStorage.setItem('user', JSON.stringify(userData)) // Сохраняем данные пользователя в localStorage
     },
-
-
 
     // Устанавливаем временные данные для регистрации (например, email и password)
     setRegistrationData(partialData: Partial<typeof this.registrationData>) {
@@ -45,20 +43,14 @@ export const useUserStore = defineStore('user', {
           email: '',
           password: '',
           gender: '',
-          bio: '',
-          skills: '',
+          biography: '',
+          label: '',
         }
       } catch (error) {
         console.error('Ошибка регистрации:', error)
         throw new Error('Ошибка регистрации')
       }
     },
-
-    //  // Действие для выхода пользователя
-    //  logout() {
-    //   this.user = null // Устанавливаем состояние 'user' в null
-    //   localStorage.removeItem('user') // Удаляем данные пользователя из localStorage
-    // },
   },
 
   // Определяем геттеры, которые возвращают данные из состояния
@@ -67,7 +59,7 @@ export const useUserStore = defineStore('user', {
     isAuthenticated: (state) => !!state.user,
 
     // Геттер, который возвращает email пользователя (уверены, что state.user не null)
-    email: (state) => state.user ? state.user.email : null,
+    email: (state) => (state.user ? state.user.email : null),
 
     userProfileFilled: (state) => {
       return state.registrationData.username && state.registrationData.gender
