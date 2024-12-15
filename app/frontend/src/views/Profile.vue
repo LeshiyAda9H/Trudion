@@ -27,12 +27,19 @@
 
       <textarea placeholder="О себе" class="form-textarea" v-model="profileStore.temporaryData.biography"></textarea>
 
-      <select class="select" v-model="profileStore.temporaryData.label">
-        <option value="" disabled>Навыки</option>
-        <option value="skill1">Навык 1</option>
-        <option value="skill2">Навык 2</option>
-        <option value="skill3">Навык 3</option>
-      </select>
+      <div class="label-container">
+          <h3>Выберите ваши интересы:</h3>
+          <div class="label-grid">
+            <div
+              v-for="label in availablelabel"
+              :key="label.id"
+              :class="['label-item', { 'selected': selectedlabel.includes(label.value) }]"
+              @click="toggleLabel(label.value)"
+            >
+              {{ label.name }}
+            </div>
+          </div>
+        </div>
     </div>
 
     <button class="save-button" @click="updateProfile">Сохранить изменения</button>
@@ -58,6 +65,32 @@ export default defineComponent({
     const profileStore = useProfileStore();
     const isLoading = ref(false);
 
+    const availablelabel = [
+      { id: 0, name: 'ExampleLabel', value: 'ExampleLabel' },
+      { id: 1, name: 'Программирование', value: 'programming' },
+      { id: 2, name: 'Иностранные языки', value: 'languages' },
+      { id: 3, name: 'Спорт', value: 'sports' },
+      { id: 4, name: 'Кулинария', value: 'cooking' },
+      { id: 5, name: 'Музыка', value: 'music' },
+      { id: 6, name: 'Искусство', value: 'art' },
+      { id: 7, name: 'Фотография', value: 'photography' },
+      { id: 8, name: 'Путешествия', value: 'traveling' },
+      { id: 9, name: 'Наука', value: 'science' },
+      { id: 10, name: 'Литература', value: 'literature' }
+    ];
+
+    const selectedlabel = ref<string[]>([]);
+
+    const toggleLabel = (value: string) => {
+      const index = selectedlabel.value.indexOf(value);
+      if (index === -1) {
+        selectedlabel.value.push(value);
+      } else {
+        selectedlabel.value.splice(index, 1);
+      }
+      profileStore.temporaryData.label = selectedlabel.value;
+    };
+
     const fetchProfileData = async () => {
       isLoading.value = true;
       try {
@@ -67,11 +100,15 @@ export default defineComponent({
           gender: data.gender,
           biography: data.biography,
           label: data.label,
+          online_status: data.online_status,
         };
-      } catch (error) {
+        selectedlabel.value = data.label || [];
+      }
+      catch (error) {
         console.error("Ошибка при получении данных профиля:", error);
         alert("Не удалось загрузить данные профиля");
-      } finally {
+      }
+      finally {
         isLoading.value = false;
       }
     };
@@ -96,6 +133,7 @@ export default defineComponent({
           gender: profileStore.temporaryData.gender,
           biography: profileStore.temporaryData.biography,
           label: profileStore.temporaryData.label,
+          online_status: profileStore.temporaryData.online_status,
         });
 
         profileStore.completeUpdateProfile();
@@ -115,8 +153,43 @@ export default defineComponent({
     return {
       profileStore,
       updateProfile,
-      isLoading
+      isLoading,
+      availablelabel,
+      selectedlabel,
+      toggleLabel
     };
   },
 });
 </script>
+
+<style scoped>
+.label-container {
+  margin: 20px 0;
+}
+
+.label-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 15px;
+}
+
+.label-item {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.label-item:hover {
+  background-color: #f0f0f0;
+}
+
+.label-item.selected {
+  background-color: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+</style>

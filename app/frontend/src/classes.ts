@@ -4,7 +4,7 @@ export interface User {
   password: string;
   gender: string;
   biography: string;
-  label: string;
+  label: string[];
 };
 
 export interface LoginPayload {
@@ -21,6 +21,8 @@ export interface ProfileUser {
   username: string;
   gender: string;
   biography: string;
-  label: string;
+  label: string[];
+  online_status : string;
 };
+
 

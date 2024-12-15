@@ -14,7 +14,8 @@ export const useProfileStore = defineStore('user', {
       username: '' as string,
       gender: '' as string,
       biography: '' as string,
-      label: '' as string,
+      label: [] as string[],
+      online_status: '' as string,
     },
   }),
 
@@ -29,7 +30,8 @@ export const useProfileStore = defineStore('user', {
           username: '',
           gender: '',
           biography: '',
-          label: '',
+          label: [],
+          online_status: '',
         }
       } catch (error) {
         console.error('Profile update error:', error)

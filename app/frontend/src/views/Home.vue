@@ -1,93 +1,134 @@
 <template>
-
   <header>
-      <Navbar/>
+    <Navbar />
   </header>
 
-  <body>
-    <div class="home">
-      <h1>Добро пожаловать на главную страницу!</h1>
-      <p>Здесь будет содержимое вашей главной страницы.</p>
+  <div class="home-container">
+    <aside class="filter-sidebar">
+      <FilterComponent @filter-changed="handleFilterChange" />
+    </aside>
 
-      <!-- Кнопка для выхода из аккаунта -->
-      <button class="logout-button" @click="logout">Выйти</button>
-    </div>
+    <main class="users-grid">
+      <div v-if="error" class="error-message">
+        {{ error }}
+      </div>
+      <LoadingSpinner v-else-if="isLoading" />
 
-    <!-- <button @click="goToUsersList" class="go-to-users-button">
-        Перейти к списку пользователей
-    </button> -->
-
-
-  </body>
-
-
+      <div v-else class="users-list">
+        <UserCard v-for="user in users" :key="user.username" :user="user" />
+      </div>
+    </main>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useRouter } from 'vue-router'; // Импортируем роутер для навигации
-import AuthService from '@/services/AuthService'; // Импорт AuthService
-import Navbar from '../components/Navbar.vue'
+import { defineComponent, ref, onMounted } from 'vue';
+import Navbar from '../components/Navbar.vue';
+import FilterComponent from '../components/FilterComponent.vue';
+import UserCard from '../components/UserCard.vue';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
+import AuthService from '../services/AuthService';
+import { type ProfileUser } from '../classes';
+
+// Сначала определим интерфейс для фильтров
+interface FilterParams {
+  usersNumber: number;
+  labels?: string[];
+}
+
+interface ApiResponse {
+  data: ProfileUser[];
+}
 
 export default defineComponent({
   name: 'HomePage',
-  components: {Navbar},
-  setup() {
-    const router = useRouter(); // Используем useRouter для перенаправлений
-
-    // Метод выхода из системы
-    const logout = () => {
-      AuthService.logout(); // Очищаем данные через AuthService
-      router.push('/login'); // Перенаправляем пользователя на страницу авторизации
-    };
-
-    // Переход к списку пользователей (для примера)
-    const goToUsersList = () => {
-      router.push('/profile');
-    };
-
-    return { logout, goToUsersList };
+  components: {
+    Navbar,
+    FilterComponent,
+    UserCard,
+    LoadingSpinner
   },
+  setup() {
+    const users = ref<ProfileUser[]>([]);
+    const isLoading = ref(false);
+    const error = ref<string | null>(null);
+
+    const fetchUsers = async (params: FilterParams) => {
+      isLoading.value = true;
+      error.value = null;
+
+      try {
+        const response = await AuthService.getUsers(params) as ApiResponse;
+        if (response && 'data' in response) {
+          users.value = response.data;
+        } else {
+          error.value = 'Некорректный ответ от сервера';
+          users.value = [];
+        }
+      } catch  {
+        error.value = 'Ошибка при загрузке пользователей';
+        users.value = [];
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    const handleFilterChange = (filters: FilterParams) => {
+      fetchUsers(filters);
+    };
+
+    onMounted(() => {
+      fetchUsers({ usersNumber: 10 });
+    });
+
+    return {
+      users,
+      isLoading,
+      error,
+      handleFilterChange
+    };
+  }
 });
 </script>
 
 <style scoped>
-.home {
+
+
+.home-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-top: 5em;
+}
+
+.filter-sidebar {
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.users-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.error-message {
+  color: #dc3545;
+  padding: 1rem;
   text-align: center;
-  margin-top: 50px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin-bottom: 1rem;
 }
-
-.logout-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #ff4c4c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.logout-button:hover {
-  background-color: #ff2a2a;
-}
-
-.go-to-users-button {
-  margin-top: 20px;
-  background-color: #355299;
-  border: none;
-  border-radius: 25px;
-  color: white;
-  padding: 10px 30px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 500ms ease;
-}
-
-.go-to-users-button:hover {
-  transform: scale(1.05) translateY(-0.5px);
-  opacity: 0.9;
-}
-
 </style>
