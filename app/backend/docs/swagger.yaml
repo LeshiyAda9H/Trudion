@@ -165,15 +165,13 @@ paths:
           schema:
             type: string
       summary: GetUsers
-  /api/v1/userscount:
+  /api/v1/usersnumber:
     get:
-      consumes:
-      - application/json
-      description: get numver of users
+      description: get number of users
       parameters:
-      - description: Get number of users
-        in: header
-        name: GetUsersNumber
+      - description: Number of users to fetch
+        in: query
+        name: usersnumber
         required: true
         type: integer
       produces:
@@ -191,8 +189,6 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      security:
-      - ApiKeyAuth: []
       summary: GetUsersNumber
   /api/v1/verify/email:
     post:

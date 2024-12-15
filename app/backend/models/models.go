@@ -13,7 +13,7 @@ type User struct {
 	AccountStatus    string     `gorm:"size:255;not null;check:account_status IN ('active', 'inactive', 'pending');default:'active'" json:"account_status"`
 	Inactive         *time.Time `gorm:"defalut:null" json:"inactive"`
 	Gender           string     `gorm:"size:255;not null;check:gender IN ('male', 'female', 'prefer_not_to_say');default:prefer_not_to_say" json:"gender"`
-	Biography        string     `gorm:"type:text;not null;default:' '" json:"biography"`
+	Biography        string     `gorm:"type:text;not null;default:''" json:"biography"`
 	OnlineStatus     string     `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away');default:'offline'" json:"online_status"`
 	IsBanned         bool       `gorm:"not null; default:false" json:"is_banned"`
 }

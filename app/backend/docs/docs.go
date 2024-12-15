@@ -199,17 +199,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/userscount": {
+        "/api/v1/usersnumber": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get numver of users",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "get number of users",
                 "produces": [
                     "application/json"
                 ],
@@ -217,9 +209,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Get number of users",
-                        "name": "GetUsersNumber",
-                        "in": "header",
+                        "description": "Number of users to fetch",
+                        "name": "usersnumber",
+                        "in": "query",
                         "required": true
                     }
                 ],
