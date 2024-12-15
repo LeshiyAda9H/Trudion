@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"src/initializers"
 	"src/models"
+	"src/repository"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -20,18 +21,49 @@ func RootHandler(c *gin.Context) {
 	})
 }
 
+type userProfileResponse struct {
+	Username     string `json:"username"`
+	Gender       string `json:"gender"`
+	Biography    string `json:"biography"`
+	Label        string `json:"label"`
+	OnlineStatus string `json:"online_status"`
+}
+
 // @Summary UserProfile
 // @Description get user profile information
 // @Security ApiKeyAuth
 // @Produce  json
 // @Success 200 {object} string
-// @Failure 500 {object} string
+// @Failure 400,401 {object} string
 // @Router /api/v1/profile [get]
-func UserProfile(c *gin.Context) {
+func GetUserProfile(c *gin.Context) {
 	UserIdentity(c)
 
-	id, _ := c.Get("userId")
-	c.JSON(http.StatusOK, gin.H{"id": id})
+	if c.IsAborted() {
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found"})
+		return
+	}
+
+	user, err := repository.GetUserByID(id.(uint))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Can't find user profile"})
+		return
+	}
+
+	response := userProfileResponse{
+		Username:     user.Username,
+		Gender:       user.Gender,
+		Biography:    user.Biography,
+		Label:        "ExampleLabel",
+		OnlineStatus: user.OnlineStatus,
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 // @Summary GetUsers

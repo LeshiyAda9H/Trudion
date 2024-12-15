@@ -17,12 +17,14 @@ func UserIdentity(c *gin.Context) {
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "empty authorization header"})
+		c.Abort()
 		return
 	}
 
 	headerParts := strings.Split(header, " ")
 	if len(headerParts) != 2 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization header"})
+		c.Abort()
 		return
 	}
 
@@ -30,6 +32,7 @@ func UserIdentity(c *gin.Context) {
 	userId, err := parseToken(headerParts[1])
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.Abort()
 		return
 	}
 

@@ -46,7 +46,7 @@ func main() {
 	router.POST("/api/v1/register", handlers.SignUp)
 	router.POST("/api/v1/login", handlers.SignIn)
 	router.POST("/api/v1/verify/email", handlers.VerifyEmail)
-	router.GET("/api/v1/profile", handlers.UserProfile)
+	router.GET("/api/v1/profile", handlers.GetUserProfile)
 	//router.POST("/api/v1/verify/token", handlers.VerifyToken)
 
 	// run server
