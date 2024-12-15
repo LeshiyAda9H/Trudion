@@ -88,16 +88,13 @@ class AuthService {
   }
 
   // Метод для выхода пользователя из системы
-  logout(): void {
+  async logout(): Promise<void> {
     try {
-      this.api.post<void>(LOGOUT_URL)
-    }
-    catch (error) {
-      console.error('Error logging out on server:', error)
-    }
-    finally {
-      localStorage.removeItem('token')
-      console.log('User logged out successfully')
+      await this.api.post<void>(LOGOUT_URL);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    } finally {
+      localStorage.removeItem('token');
     }
   }
 
@@ -118,9 +115,19 @@ class AuthService {
     }
   }
 
-  // Метод для получения списка пользователей 
+  // Метод для получения списка пользователей
   async getUsers(params: { usersNumber: number, labels?: string[] }) {
-    return await this.api.get('/api/v1/users', { params });
+    try {
+      const queryParams = {
+        usersnumber: params.usersNumber,
+        labels: params.labels
+      };
+      const response = await this.api.get<{ result: ProfileUser[] }>('/api/v1/usersnumber', { params: queryParams });
+      return response;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw error;
+    }
   }
 }
 

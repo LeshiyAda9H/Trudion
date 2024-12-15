@@ -79,10 +79,13 @@ export default defineComponent({
 
 <style scoped>
 .filter-container {
+
+  position:fixed;
   padding: 20px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  width: 25em;
 }
 
 .filter-section {

@@ -1,0 +1,185 @@
+<template>
+  <div v-if="show" class="modal-overlay" @click="closeModal">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <div class="avatar">
+          <img :src="defaultAvatar" alt="avatar" />
+        </div>
+        <h2 class="nickname">{{ user.username }}</h2>
+      </div>
+
+      <div class="user-details">
+        <div class="info-item">
+          <span class="label">Пол:</span>
+          <span>{{ user.gender === 'male' ? 'Мужской' : 'Женский' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">О себе:</span>
+          <p>{{ user.biography }}</p>
+        </div>
+
+        <div class="labels">
+          <span v-for="label in user.label" :key="label" class="label-tag">
+            {{ label }}
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="friend-button" @click="handleFriendRequest">Дружить</button>
+        <button class="report-button" @click="handleReport">Жалоба</button>
+      </div>
+
+      <button class="close-button" @click="closeModal">&times;</button>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { type ProfileUser } from '../classes';
+import defaultAvatar from '../assets/default-avatar.png';
+
+export default defineComponent({
+  name: 'UserModal',
+  props: {
+    show: {
+      type: Boolean,
+      required: true
+    },
+    user: {
+      type: Object as PropType<ProfileUser>,
+      required: true
+    }
+  },
+  setup(props, { emit }) {
+    const closeModal = () => {
+      emit('close');
+    };
+
+    const handleFriendRequest = () => {
+      // Логика добавления в друзья
+    };
+
+    const handleReport = () => {
+      // Логика отправки жалобы
+    };
+
+    return {
+      closeModal,
+      handleFriendRequest,
+      handleReport,
+      defaultAvatar
+    };
+  }
+});
+</script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+}
+
+.modal-content {
+  background: var(--secondary-color);
+  padding: 2em;
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nickname {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 1em 0;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.avatar img {
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-details {
+  margin: 1em 0;
+}
+
+.info-item {
+  margin: 1em 0;
+}
+
+.labels {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+  gap: 0.5em;
+  margin: 1em 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  margin-top: 2em;
+}
+
+.friend-button, .report-button {
+  padding: 0.5em 2em;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.friend-button {
+  background: #b08d57;
+  color: white;
+  width: 10em;
+}
+
+.report-button {
+  background: var(--primary-color);
+  color: white;
+  width: 10em;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+
+
+.label-tag {
+  background: var(--secondary-color);
+  padding: 0.3em 0.7em;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--primary-color);
+}
+</style>

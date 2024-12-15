@@ -24,11 +24,12 @@
 
       <div class="nav-icon settings-icon" @click="toggleSettings">
         <i class="fas fa-cog"></i>
-        <!-- Выпадающее меню настроек (пока скрыто) -->
         <div v-if="showSettings" class="dropdown-menu settings">
           <div class="dropdown-content">
-            <!-- Здесь будет контент настроек -->
-            <p>Настройки пока недоступны</p>
+            <button class="settings-button" @click="confirmLogout">
+              <i class="fas fa-sign-out-alt"></i>
+              Выйти
+            </button>
           </div>
         </div>
       </div>
@@ -38,17 +39,37 @@
       </RouterLink>
     </div>
   </nav>
+
+  <!-- Модальное окно подтверждения -->
+  <div v-if="showLogoutModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="modal-title">Подтверждение выхода</h3>
+      <p class="modal-text">Вы уверены, что хотите выйти?</p>
+      <div class="modal-buttons">
+        <button class="modal-button confirm" @click="handleLogout" title="Подтвердить">
+          <i class="fas fa-check"></i>
+        </button>
+        <button class="modal-button cancel" @click="showLogoutModal = false" title="Отменить">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import AuthService from '../services/AuthService';
 import defaultAvatarImage from '../assets/default-avatar.png'; // Добавьте дефолтную аватарку
 
 export default defineComponent({
   name: 'NavbarHeader',
   setup() {
+    const router = useRouter();
     const showNotifications = ref(false);
     const showSettings = ref(false);
+    const showLogoutModal = ref(false);
     const userAvatar = ref(''); // Здесь должен быть путь к аватарке пользователя
     const defaultAvatar = defaultAvatarImage;
 
@@ -62,13 +83,31 @@ export default defineComponent({
       showNotifications.value = false; // Закрываем другое меню
     };
 
+    const confirmLogout = () => {
+      showSettings.value = false;
+      showLogoutModal.value = true;
+    };
+
+    const handleLogout = async () => {
+      try {
+        showLogoutModal.value = false;
+        await AuthService.logout();
+        router.push('/login');
+      } catch (error) {
+        console.error('Ошибка при выходе:', error);
+      }
+    };
+
     return {
       showNotifications,
       showSettings,
       toggleNotifications,
       toggleSettings,
       userAvatar,
-      defaultAvatar
+      defaultAvatar,
+      showLogoutModal,
+      confirmLogout,
+      handleLogout
     };
   },
 });
@@ -157,9 +196,97 @@ export default defineComponent({
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.settings-button {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-button:hover {
+  background-color: var(--color-secondary);
+  border-radius: var(--border-radius);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+.modal-text {
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.modal-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-button i {
+  font-size: 1.2rem;
+}
+
+.confirm {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.modal-button:hover {
+  transform: scale(1.1);
+  opacity: 0.9;
 }
 </style>

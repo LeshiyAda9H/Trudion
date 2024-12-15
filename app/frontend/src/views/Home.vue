@@ -4,6 +4,7 @@
   </header>
 
   <div class="home-container">
+
     <aside class="filter-sidebar">
       <FilterComponent @filter-changed="handleFilterChange" />
     </aside>
@@ -17,6 +18,7 @@
       <div v-else class="users-list">
         <UserCard v-for="user in users" :key="user.username" :user="user" />
       </div>
+
     </main>
   </div>
 </template>
@@ -34,10 +36,6 @@ import { type ProfileUser } from '../classes';
 interface FilterParams {
   usersNumber: number;
   labels?: string[];
-}
-
-interface ApiResponse {
-  data: ProfileUser[];
 }
 
 export default defineComponent({
@@ -58,14 +56,18 @@ export default defineComponent({
       error.value = null;
 
       try {
-        const response = await AuthService.getUsers(params) as ApiResponse;
-        if (response && 'data' in response) {
-          users.value = response.data;
+        const response = await AuthService.getUsers(params) as { result: ProfileUser[] };
+        console.log('API Response:', response);
+
+        if (response && response.result && Array.isArray(response.result)) {
+          users.value = response.result;
+          console.log('Users loaded:', users.value);
         } else {
           error.value = 'Некорректный ответ от сервера';
           users.value = [];
         }
-      } catch  {
+      } catch (err: unknown) {
+        console.error('Error in fetchUsers:', err);
         error.value = 'Ошибка при загрузке пользователей';
         users.value = [];
       } finally {
@@ -96,30 +98,24 @@ export default defineComponent({
 
 .home-container {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 400px 1fr;
   gap: 20px;
-  padding: 20px;
-  max-width: 1400px;
   margin: 0 auto;
   margin-top: 5em;
-}
-
-.filter-sidebar {
-  position: sticky;
-  top: 20px;
-  height: fit-content;
 }
 
 .users-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+
 }
 
 .users-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  padding: 20px;
+
 }
 
 .error-message {
@@ -130,5 +126,19 @@ export default defineComponent({
   border: 1px solid #f5c6cb;
   border-radius: 4px;
   margin-bottom: 1rem;
+}
+
+
+
+@media (max-width: 1024px) {
+  .users-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .users-list {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
