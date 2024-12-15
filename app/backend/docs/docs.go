@@ -84,6 +84,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/usersnumber": {
+            "get": {
+                "description": "get count of users",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "GetUsersCount",
+                "parameters": [
+                    {
+                        "description": "users number",
+                        "name": "usersnumber",
+                        "in": "query",
+                        "required": true,
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/profile": {
             "get": {
                 "security": [

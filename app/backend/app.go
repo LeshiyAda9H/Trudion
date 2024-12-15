@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"os"
 	"src/handlers"
 	"src/initializers"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "src/docs"
 )
@@ -39,7 +40,7 @@ func main() {
 
 	// Add swagger documentation
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
+	router.GET("/api/v1/usersnumber", handlers.GetUsersNumber)
 	router.GET("/api/v1", handlers.RootHandler)
 	router.GET("/api/v1/users", handlers.GetUsers)
 	router.POST("/api/v1/register", handlers.SignUp)

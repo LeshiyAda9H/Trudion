@@ -1,10 +1,12 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"src/initializers"
 	"src/models"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // @Summary Ping
@@ -49,5 +51,45 @@ func GetUsers(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"users": users,
+	})
+}
+
+// @Summary GetUsersNumber
+// @Description get numver of users
+// @Accept query
+// @Produce  json
+// @Param GetUsersNumber header int true "Get number of users"
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Failure 500 {object} string
+// @Router /api/v1/userscount [get]
+func GetUsersNumber(c *gin.Context) {
+	//ALTERNATIVE:
+	// result := initializers.DB.Exec("SELECT * FROM users ORDER BY RANDOM() LIMIT 5;")
+	// tmp := []int{5, 6, 8}
+	// result := initializers.DB.Table("users").Where("user_id in ?", tmp).Find(&users)
+
+	var users []models.User
+	count, correct := c.GetQuery("usersnumber")
+	if !correct {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "empty users number"})
+		return
+	}
+
+	countInt, err := strconv.Atoi(count)
+	if err != nil || countInt < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "wrong users number"})
+		return
+	}
+
+	result := initializers.DB.Table("users").Order("RANDOM()").Limit(countInt).Find(&users)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to get users",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"result": users,
 	})
 }

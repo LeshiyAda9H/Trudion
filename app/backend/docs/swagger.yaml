@@ -151,6 +151,30 @@ paths:
           schema:
             type: string
       summary: GetUsers
+  /api/v1/usersnumber:
+    get:
+      description: get count of users
+      produces:
+      - application/json
+      parameters:
+      - description: account info
+        in: query
+        name: usersnumber
+        required: true
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bar Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: GetUsersCount
   /api/v1/verify/email:
     post:
       consumes:
