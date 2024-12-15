@@ -114,7 +114,7 @@ func GetUsersNumber(c *gin.Context) {
 	// result := initializers.DB.Table("users").Where("user_id in ?", tmp).Find(&users)
 
 	type UserPage struct {
-		UserId       uint     `json:"user_id"`
+		UserId       uint     `json:"-"`
 		Username     string   `gorm:"size:20;not null" json:"username"`
 		Gender       string   `gorm:"size:255;not null;check:gender IN ('male', 'female', 'prefer_not_to_say');default:prefer_not_to_say" json:"gender"`
 		Biography    string   `gorm:"type:text;not null;default:' '" json:"biography"`
