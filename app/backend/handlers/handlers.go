@@ -22,11 +22,11 @@ func RootHandler(c *gin.Context) {
 }
 
 type userProfileResponse struct {
-	Username     string `json:"username"`
-	Gender       string `json:"gender"`
-	Biography    string `json:"biography"`
-	Label        string `json:"label"`
-	OnlineStatus string `json:"online_status"`
+	Username     string   `json:"username"`
+	Gender       string   `json:"gender"`
+	Biography    string   `json:"biography"`
+	Labels       []string `json:"label"`
+	OnlineStatus string   `json:"online_status"`
 }
 
 // @Summary UserProfile
@@ -55,11 +55,12 @@ func GetUserProfile(c *gin.Context) {
 		return
 	}
 
+	labels := []string{"label1", "label2", "label3"}
 	response := userProfileResponse{
 		Username:     user.Username,
 		Gender:       user.Gender,
 		Biography:    user.Biography,
-		Label:        "ExampleLabel",
+		Labels:       labels,
 		OnlineStatus: user.OnlineStatus,
 	}
 
