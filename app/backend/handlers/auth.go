@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"net/http"
 	"src/initializers"
 	"src/models"
@@ -133,6 +135,7 @@ func SignUp(c *gin.Context) {
 		Email:         body.Email,
 		PasswordHash:  string(hashedPassword),
 		Gender:        body.Gender,
+		Biography:     body.Biography,
 		AccountStatus: "active",
 		OnlineStatus:  "online",
 	}
@@ -148,6 +151,39 @@ func SignUp(c *gin.Context) {
 	if initializers.DB.Create(&user).Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
+	}
+
+	// Process labels if provided
+	if len(body.Label) > 0 {
+		for _, labelName := range body.Label {
+			var label models.LabelInfo
+
+			// Check if label already exists
+			if err := initializers.DB.Where("label_name = ?", labelName).First(&label).Error; err != nil {
+				// If not found, create a new label
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					label = models.LabelInfo{LabelName: labelName}
+					if initializers.DB.Create(&label).Error != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create label"})
+						return
+					}
+				} else {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check label existence"})
+					return
+				}
+			}
+
+			// Create UserLabel relationship
+			userLabel := models.UserLabel{
+				UserID:  user.UserId,
+				LabelID: label.LabelID,
+			}
+
+			if initializers.DB.Create(&userLabel).Error != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to associate user with label"})
+				return
+			}
+		}
 	}
 
 	// generate JWT token

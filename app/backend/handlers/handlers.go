@@ -34,7 +34,7 @@ type userProfileResponse struct {
 // @Security ApiKeyAuth
 // @Produce  json
 // @Success 200 {object} string
-// @Failure 400,401 {object} string
+// @Failure 400,401,500 {object} string
 // @Router /api/v1/profile [get]
 func GetUserProfile(c *gin.Context) {
 	UserIdentity(c)
@@ -55,7 +55,19 @@ func GetUserProfile(c *gin.Context) {
 		return
 	}
 
-	labels := []string{"label1", "label2", "label3"}
+	// Get labels
+	var userLabels []models.UserLabel
+	err = initializers.DB.Preload("Label").Where("user_id = ?", user.UserId).Find(&userLabels).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user labels"})
+		return
+	}
+
+	var labels []string
+	for _, userLabel := range userLabels {
+		labels = append(labels, userLabel.Label.LabelName)
+	}
+
 	response := userProfileResponse{
 		Username:     user.Username,
 		Gender:       user.Gender,
@@ -90,7 +102,7 @@ func GetUsers(c *gin.Context) {
 // @Summary GetUsersNumber
 // @Description get numver of users
 // @Security ApiKeyAuth
-// @Accept query
+// @Accept json
 // @Produce  json
 // @Param GetUsersNumber header int true "Get number of users"
 // @Success 200 {object} string
@@ -108,7 +120,7 @@ func GetUsersNumber(c *gin.Context) {
 		Username     string   `gorm:"size:20;not null" json:"username"`
 		Gender       string   `gorm:"size:255;not null;check:gender IN ('male', 'female', 'prefer_not_to_say');default:prefer_not_to_say" json:"gender"`
 		Biography    string   `gorm:"type:text;not null;default:' '" json:"biography"`
-		Labels       []string `gorm:"type:text[]" json:"labels"'`
+		Labels       []string `gorm:"type:text[]" json:"labels"`
 		OnlineStatus string   `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away');default:'offline'" json:"online_status"`
 	}
 
@@ -133,7 +145,7 @@ func GetUsersNumber(c *gin.Context) {
 		return
 	}
 	for idx, _ := range users {
-		users[idx].Labels = []string{"sport", "lenguage", "prog"}
+		users[idx].Labels = []string{"sport", "language", "prog"}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"result": users,

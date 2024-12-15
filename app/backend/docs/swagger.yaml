@@ -12,10 +12,16 @@ definitions:
     type: object
   types.SignUpPayload:
     properties:
+      biography:
+        type: string
       email:
         type: string
       gender:
         type: string
+      label:
+        items:
+          type: string
+        type: array
       password:
         type: string
       username:
@@ -95,6 +101,14 @@ paths:
           description: OK
           schema:
             type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
@@ -151,30 +165,35 @@ paths:
           schema:
             type: string
       summary: GetUsers
-  /api/v1/usersnumber:
+  /api/v1/userscount:
     get:
-      description: get count of users
+      consumes:
+      - application/json
+      description: get numver of users
+      parameters:
+      - description: Get number of users
+        in: header
+        name: GetUsersNumber
+        required: true
+        type: integer
       produces:
       - application/json
-      parameters:
-      - description: account info
-        in: query
-        name: usersnumber
-        required: true
       responses:
         "200":
           description: OK
           schema:
             type: string
         "400":
-          description: Bar Request
+          description: Bad Request
           schema:
             type: string
         "500":
           description: Internal Server Error
           schema:
             type: string
-      summary: GetUsersCount
+      security:
+      - ApiKeyAuth: []
+      summary: GetUsersNumber
   /api/v1/verify/email:
     post:
       consumes:

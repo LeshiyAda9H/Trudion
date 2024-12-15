@@ -103,6 +103,12 @@
                             "type": "string"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -187,24 +193,39 @@
                 }
             }
         },
-        "/api/v1/usersnumber": {
+        "/api/v1/userscount": {
             "get": {
-                "description": "get number of users",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get numver of users",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "GetUsersCount",
+                "summary": "GetUsersNumber",
                 "parameters": [
                     {
-                        "description": "users number",
-                        "name": "usersnumber",
-                        "in": "query",
+                        "type": "integer",
+                        "description": "Get number of users",
+                        "name": "GetUsersNumber",
+                        "in": "header",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "type": "string"
                         }
@@ -296,11 +317,20 @@
                 "username"
             ],
             "properties": {
+                "biography": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "gender": {
                     "type": "string"
+                },
+                "label": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "password": {
                     "type": "string"

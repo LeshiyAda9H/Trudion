@@ -84,43 +84,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/usersnumber": {
-            "get": {
-                "description": "get count of users",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "GetUsersCount",
-                "parameters": [
-                    {
-                        "description": "users number",
-                        "name": "usersnumber",
-                        "in": "query",
-                        "required": true,
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/profile": {
             "get": {
                 "security": [
@@ -136,6 +99,18 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }
@@ -211,6 +186,52 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/userscount": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get numver of users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "GetUsersNumber",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Get number of users",
+                        "name": "GetUsersNumber",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "type": "string"
                         }
@@ -302,11 +323,20 @@ const docTemplate = `{
                 "username"
             ],
             "properties": {
+                "biography": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "gender": {
                     "type": "string"
+                },
+                "label": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "password": {
                     "type": "string"
