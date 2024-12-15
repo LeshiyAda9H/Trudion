@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', {
       password: '' as string,
       gender: '' as string,
       biography: '' as string,
-      label: '' as string,
+      label: [] as string[]
     },
   }),
 
@@ -44,7 +44,7 @@ export const useUserStore = defineStore('user', {
           password: '',
           gender: '',
           biography: '',
-          label: '',
+          label: []
         }
       } catch (error) {
         console.error('Ошибка регистрации:', error)

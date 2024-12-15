@@ -72,8 +72,15 @@ export default defineComponent({
 <style scoped>
 .messenger-container {
   display: flex;
-  height: calc(100vh - 60px); /* Вычитаем высоту navbar */
-  margin-top: 60px; /* Отступ для navbar */
+  height: 80vh;
+  width: 90%;
+  max-width: 1200px;
+  margin: 80px auto 0;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  /* border: 2px solid var(--primary-color); */
+  background-color: #fff;
 }
 
 .messenger-sidebar {
@@ -82,11 +89,16 @@ export default defineComponent({
   border-right: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
+  border-radius: 30px;
+  margin: 20px 0 20px 20px;
+  padding: 10px;
 }
 
 .messenger-content {
   flex: 1;
   background-color: #f5f5f5;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 
 .tab-buttons {

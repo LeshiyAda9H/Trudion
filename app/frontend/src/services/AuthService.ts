@@ -26,7 +26,8 @@ class AuthService {
     try {
       await this.api.post<void, Partial<User>>(REGISTER_URL, data)
       console.log('User registered successfully')
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Registration error:', error)
       throw new Error('Ошибка при регистрации.')
     }
@@ -115,6 +116,11 @@ class AuthService {
       console.error('Error completing profile:', error)
       throw new Error('Ошибка завершения регистрации.')
     }
+  }
+
+  // Метод для получения списка пользователей 
+  async getUsers(params: { usersNumber: number, labels?: string[] }) {
+    return await this.api.get('/api/v1/users', { params });
   }
 }
 
