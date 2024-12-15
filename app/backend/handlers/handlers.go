@@ -56,6 +56,7 @@ func GetUsers(c *gin.Context) {
 
 // @Summary GetUsersNumber
 // @Description get numver of users
+// @Security ApiKeyAuth
 // @Accept query
 // @Produce  json
 // @Param GetUsersNumber header int true "Get number of users"
@@ -69,7 +70,15 @@ func GetUsersNumber(c *gin.Context) {
 	// tmp := []int{5, 6, 8}
 	// result := initializers.DB.Table("users").Where("user_id in ?", tmp).Find(&users)
 
-	var users []models.User
+	// UserIdentity(c)
+	type UserPage struct {
+		Username     string `gorm:"size:20;not null" json:"username"`
+		Gender       string `gorm:"size:255;not null;check:gender IN ('male', 'female', 'prefer_not_to_say');default:prefer_not_to_say" json:"gender"`
+		Biography    string `gorm:"type:text;not null;default:' '" json:"biography"`
+		OnlineStatus string `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away');default:'offline'" json:"online_status"`
+	}
+
+	var users []UserPage
 	count, correct := c.GetQuery("usersnumber")
 	if !correct {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "empty users number"})
