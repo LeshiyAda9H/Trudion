@@ -3,13 +3,14 @@ package handlers
 import (
 	"math/rand"
 	"net/http"
+	"os"
 	"src/initializers"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 const (
-	pageSize     = 3
 	getPageQuery = `
 	SELECT * 
     FROM (
@@ -26,6 +27,7 @@ var (
 	primeSteps = []int{1, 2, 3, 5, 7, 11, 13, 17, 19}
 	stepsCount = 9
 	dbSize     = -1
+	pageSize   = 0
 )
 
 func setStartStep(c *gin.Context) {
@@ -46,4 +48,5 @@ func setStartStep(c *gin.Context) {
 	start = rand.Intn(int(count))
 	step = primeSteps[ind]
 	dbSize = int(count)
+	pageSize, _ = strconv.Atoi(os.Getenv("PAGESIZE"))
 }

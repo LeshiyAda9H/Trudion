@@ -181,7 +181,8 @@ func GetUsersPage(c *gin.Context) {
 		return
 	}
 
-	var rowIndices [pageSize]int
+	// var rowIndices [pageSize]int
+	var rowIndices []int = make([]int, pageSize)
 	var dbIterator = (start + (page-1)*pageSize*step) % dbSize
 	for i := range pageSize {
 		dbIterator = (dbIterator + step) % dbSize
@@ -192,7 +193,8 @@ func GetUsersPage(c *gin.Context) {
 		rowIndices[i] = dbIterator + 1
 	}
 
-	var result [pageSize]models.UserPage
+	// var result [pageSize]models.UserPage
+	var result []models.UserPage = make([]models.UserPage, pageSize)
 	if err := initializers.DB.Raw(getPageQuery, rowIndices).Scan(&result).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed get users page",
