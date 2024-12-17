@@ -166,7 +166,6 @@ func GetUsersPage(c *gin.Context) {
 		setStartStep(c)
 	}
 
-	var page int
 	pageStr, correct := c.GetQuery("page")
 	if !correct {
 		c.JSON(http.StatusBadRequest, gin.H{
