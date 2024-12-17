@@ -190,6 +190,31 @@ paths:
           schema:
             type: string
       summary: GetUsersNumber
+  /api/v1/userspage:
+    get:
+      description: get page of users
+      parameters:
+      - description: Page number of users
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: GetUsersPage
   /api/v1/verify/email:
     post:
       consumes:

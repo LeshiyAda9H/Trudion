@@ -113,16 +113,7 @@ func GetUsersNumber(c *gin.Context) {
 	// tmp := []int{5, 6, 8}
 	// result := initializers.DB.Table("users").Where("user_id in ?", tmp).Find(&users)
 
-	type UserPage struct {
-		UserId       uint     `json:"-"`
-		Username     string   `gorm:"size:20;not null" json:"username"`
-		Gender       string   `gorm:"size:255;not null;check:gender IN ('male', 'female', 'prefer_not_to_say');default:prefer_not_to_say" json:"gender"`
-		Biography    string   `gorm:"type:text;not null;default:' '" json:"biography"`
-		Labels       []string `gorm:"type:text[]" json:"label"`
-		OnlineStatus string   `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away');default:'offline'" json:"online_status"`
-	}
-
-	var users []UserPage
+	var users []models.UserPage
 	count, correct := c.GetQuery("usersnumber")
 	if !correct {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "empty users number"})
@@ -159,5 +150,65 @@ func GetUsersNumber(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"result": users,
+	})
+}
+
+// @Summary GetUsersPage
+// @Description get page of users
+// @Produce  json
+// @Param page query int true "Page number of users"
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Failure 500 {object} string
+// @Router /api/v1/userspage [get]
+func GetUsersPage(c *gin.Context) {
+	if start == -1 || step == -1 || dbSize == -1 {
+		setStartStep(c)
+	}
+
+	var page int
+	pageStr, correct := c.GetQuery("page")
+	if !correct {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Empty page query",
+		})
+		return
+	}
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page <= 0 || (dbSize+pageSize)/pageSize < page {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid page value",
+		})
+		return
+	}
+
+	var rowIndices [pageSize]int
+	var dbIterator = (start + (page-1)*pageSize*step) % dbSize
+	for i := range pageSize {
+		dbIterator = (dbIterator + step) % dbSize
+		if dbIterator == start {
+			rowIndices[i] = start + 1
+			break
+		}
+		rowIndices[i] = dbIterator + 1
+	}
+
+	var result [pageSize]models.UserPage
+	if err := initializers.DB.Raw(getPageQuery, rowIndices).Scan(&result).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed get users page",
+		})
+		return
+	}
+
+	usersOnPage := pageSize
+	if page > dbSize/pageSize {
+		usersOnPage = dbSize % pageSize
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"page":        page,
+		"users_count": usersOnPage,
+		"result":      result,
 	})
 }

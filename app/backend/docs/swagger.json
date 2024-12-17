@@ -231,6 +231,44 @@
                 }
             }
         },
+        "/api/v1/userspage": {
+            "get": {
+                "description": "get page of users",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "GetUsersPage",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number of users",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/verify/email": {
             "post": {
                 "description": "check if email is available",

@@ -40,13 +40,16 @@ func main() {
 
 	// Add swagger documentation
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.GET("/api/v1/usersnumber", handlers.GetUsersNumber)
 	router.GET("/api/v1", handlers.RootHandler)
 	router.GET("/api/v1/users", handlers.GetUsers)
+	router.GET("/api/v1/profile", handlers.GetUserProfile)
+	router.GET("/api/v1/usersnumber", handlers.GetUsersNumber)
+	router.GET("/api/v1/userspage", handlers.GetUsersPage)
+	
+
 	router.POST("/api/v1/register", handlers.SignUp)
 	router.POST("/api/v1/login", handlers.SignIn)
 	router.POST("/api/v1/verify/email", handlers.VerifyEmail)
-	router.GET("/api/v1/profile", handlers.GetUserProfile)
 	//router.POST("/api/v1/verify/token", handlers.VerifyToken)
 
 	// run server
