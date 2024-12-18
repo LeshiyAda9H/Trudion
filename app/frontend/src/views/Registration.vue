@@ -120,7 +120,7 @@ export default defineComponent({
         }
 
         const isEmailAvailable = await AuthService.verifyEmail(userEmail.value);
-        if (!isEmailAvailable) {
+        if (!isEmailAvailable.available) {
           showError('email-already-exists', "Этот email уже зарегистрирован.");
           return;
         }
