@@ -1,5 +1,5 @@
-<?XML VERSION="1.0" ENCODING="UTF-8"?>
-<!DOCTYPE TECHNICAL_SPECIFICATION SYSTEM "TECHNICAL_SPECIFICATION.DTD">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE TECHNICAL_SPECIFICATION SYSTEM "tz.DTD">
 <TECHNICAL_SPECIFICATION>
     <PROJECT>
         <NAME>Trudion</NAME>
@@ -8,11 +8,11 @@
     <FUNCTIONS>
         <PRESENTATION_LAYER>
             <PAGES>
-                <PAGE>Авторизации</PAGE>
-                <PAGE>Регистрации</PAGE>
-                <PAGE>Профиля</PAGE>
+                <PAGE>Авторизация</PAGE>
+                <PAGE>Регистрация</PAGE>
+                <PAGE>Профиль</PAGE>
                 <PAGE>Главная (страница для поиска напарников)</PAGE>
-                <PAGE>Коммуникаций</PAGE>
+                <PAGE>Коммуникации</PAGE>
             </PAGES>
             <NAVIGATION>
                 <ITEM>Переход на главную страницу</ITEM>
@@ -23,7 +23,7 @@
             </NAVIGATION>
         </PRESENTATION_LAYER>
         <BL_LAYER>
-            <FUNCTION>Регистрация, авторизация и генерация токена пользователя</FUNCTION>
+            <FUNCTION>Регистрация и авторизация пользователя</FUNCTION>
             <FUNCTION>Поиск людей по маркерам</FUNCTION>
             <FUNCTION>Упорядочение пользователей по интересам</FUNCTION>
             <FUNCTION>Редактирование профиля</FUNCTION>
