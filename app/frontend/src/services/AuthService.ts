@@ -36,17 +36,18 @@ class AuthService {
   // Метод для входа пользователя в систему
   async login(data: LoginPayload): Promise<AuthedUser> {
     try {
-      const response = await this.api.post<AuthedUser, LoginPayload>(LOGIN_URL, data)
-      const token = response.access_token
+      const response = await this.api.post<{ token: string }>(LOGIN_URL, data)
+      console.log('Ответ сервера при логине:', response);
 
-      const authedUser: AuthedUser = {
-        email: data.email,
-        access_token: token,
+      if (!response || !response.token) {
+        console.error('Неверная структура ответа:', response);
+        throw new Error('Неверный формат ответа от сервера');
       }
 
-      localStorage.setItem('token', token)
-      console.log('User logged in successfully')
-      return authedUser
+      return {
+        email: data.email,
+        token: response.token // Используем token вместо access_token
+      }
     }
     catch (error) {
       console.error('Login error:', error)
@@ -118,11 +119,23 @@ class AuthService {
   // Метод для получения списка пользователей
   async getUsers(params: { usersNumber: number, labels?: string[] }) {
     try {
+      console.log('Отправляем запрос с параметрами:', params);
+
+      // Формируем правильные параметры запроса
       const queryParams = {
         usersnumber: params.usersNumber,
-        labels: params.labels
+        // Преобразуем массив меток в строку, если они есть
+        labels: params.labels ? params.labels.join(',') : undefined
       };
-      const response = await this.api.get<{ result: ProfileUser[] }>('/api/v1/usersnumber', { params: queryParams });
+
+      console.log('Подготовленные параметры запроса:', queryParams);
+
+      const response = await this.api.get<{ result: ProfileUser[] }>('/api/v1/usersnumber', {
+        params: queryParams
+      });
+
+      console.log('Ответ от сервера:', response);
+
       return response;
     } catch (error) {
       console.error('Error fetching users:', error);

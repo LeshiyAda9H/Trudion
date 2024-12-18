@@ -13,9 +13,9 @@ export interface LoginPayload {
 }
 
 export interface AuthedUser {
-  access_token: string;
   email: string;
-};
+  token: string;
+}
 
 export interface ProfileUser {
   username: string;

@@ -1,5 +1,7 @@
 <template>
+   <!-- При клике на overlay вызывается closeModal -->
   <div v-if="show" class="modal-overlay" @click="closeModal">
+    <!-- .stop предотвращает всплытие события клика к overlay -->
     <div class="modal-content" @click.stop>
       <div class="modal-header">
         <div class="avatar">
@@ -21,7 +23,7 @@
 
         <div class="labels">
           <span v-for="label in user.label" :key="label" class="label-tag">
-            {{ label }}
+            {{ getInterestName(label) }}
           </span>
         </div>
       </div>
@@ -31,49 +33,45 @@
         <button class="report-button" @click="handleReport">Жалоба</button>
       </div>
 
+      <!-- Добавляем кнопку закрытия, которая также вызывает closeModal -->
       <button class="close-button" @click="closeModal">&times;</button>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { type ProfileUser } from '../classes';
-import defaultAvatar from '../assets/default-avatar.png';
+<script setup lang="ts">
+import type { ProfileUser } from '../classes'
+import defaultAvatar from '../assets/default-avatar.png'
+import { interests } from '../config/interests'
 
-export default defineComponent({
-  name: 'UserModal',
-  props: {
-    show: {
-      type: Boolean,
-      required: true
-    },
-    user: {
-      type: Object as PropType<ProfileUser>,
-      required: true
-    }
-  },
-  setup(props, { emit }) {
-    const closeModal = () => {
-      emit('close');
-    };
+defineProps<{
+  show: boolean
+  user: ProfileUser
+}>()
 
-    const handleFriendRequest = () => {
-      // Логика добавления в друзья
-    };
+const emit = defineEmits<{
+  close: []
+}>()
 
-    const handleReport = () => {
-      // Логика отправки жалобы
-    };
+// Этот метод вызывается при клике на overlay или кнопку закрытия
+const closeModal = () => {
+  emit('close')
+}
 
-    return {
-      closeModal,
-      handleFriendRequest,
-      handleReport,
-      defaultAvatar
-    };
-  }
-});
+const handleFriendRequest = () => {
+  // Логика добавления в друзья
+  console.log('Добавление в друзья из модального окна')
+}
+
+const handleReport = () => {
+  // Логика отправки жалобы
+  console.log('Отправка жалобы')
+}
+
+const getInterestName = (value: string): string => {
+  const interest = interests.find(i => i.value === value);
+  return interest ? interest.name : value;
+};
 </script>
 
 <style scoped>
@@ -88,7 +86,6 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   z-index: 1000;
-
 }
 
 .modal-content {
@@ -144,7 +141,8 @@ export default defineComponent({
   margin-top: 2em;
 }
 
-.friend-button, .report-button {
+.friend-button,
+.report-button {
   padding: 0.5em 2em;
   border-radius: var(--border-radius);
   border: none;
@@ -173,8 +171,6 @@ export default defineComponent({
   font-size: 1.5em;
   cursor: pointer;
 }
-
-
 
 .label-tag {
   background: var(--secondary-color);

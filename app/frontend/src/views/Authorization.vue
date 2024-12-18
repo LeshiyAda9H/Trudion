@@ -25,7 +25,6 @@ import myImage from '../assets/trudion.svg'
 import InputAuthorization from '../components/InputAuthorization.vue'
 import AuthService from '../services/AuthService' // Подключаем AuthService
 import StorageService from '../services/StorageService' // Подключаем StorageService
-import { AxiosError } from 'axios'
 import '../assets/css/authentication.css'
 
 export default defineComponent({
@@ -80,41 +79,37 @@ export default defineComponent({
 
     async sendData(): Promise<void> {
       try {
-        // Валидация данных
-        if (!this.validateData()) {
-          return;
-        }
+        if (!this.validateData()) return;
 
-        // Авторизация пользователя через AuthService
+        console.log('Отправляем данные:', {
+          email: this.userEmail,
+          password: this.userPass,
+        });
+
         const authedUser = await AuthService.login({
           email: this.userEmail,
           password: this.userPass,
         })
 
-        // Проверка токена через сервер
-        // const isTokenValid = await AuthService.verifyToken()
-        // if (!isTokenValid) {
-        //   throw new Error('Недействительный токен.')
-        // }
+        console.log('Ответ от AuthService:', authedUser);
 
-        // Успешная авторизация
-        StorageService.setToken(authedUser.access_token) // Сохранение токена
-        this.$router.push('/home') // Перенаправляем на главную страницу
+        if (!authedUser || !authedUser.token) {
+          throw new Error('Не получен токен авторизации');
+        }
 
-      }
-      catch (error: unknown) {
-        if (error instanceof AxiosError) {
-          if (error.response?.status === 401) {
-            this.error = 'Неверный логин или пароль.'
-          }
-          else {
-            this.error = 'Ошибка на сервере. Пожалуйста, попробуйте позже.'
-          }
+        StorageService.setToken(authedUser.token);
+
+        const savedToken = localStorage.getItem('token');
+        console.log('Проверка сохраненного токена:', savedToken);
+
+        if (!savedToken) {
+          throw new Error('Токен не был сохранен');
         }
-        else {
-          console.error(error)
-          this.error = 'Неизвестная ошибка.'
-        }
+
+        this.$router.push('/home')
+      } catch (error) {
+        console.error('Ошибка при авторизации:', error);
+        this.error = 'Ошибка при авторизации';
       }
     },
   },
@@ -122,7 +117,4 @@ export default defineComponent({
 </script>
 
 
-<style>
-
-
-</style>
+<style></style>

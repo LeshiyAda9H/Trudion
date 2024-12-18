@@ -122,7 +122,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 2em;
+  padding: 20px 2em;
   border-bottom: 1px solid #e0e0e0;
 
   background-color: #fff;
@@ -133,11 +133,12 @@ export default defineComponent({
 .navbar-left {
   display: flex;
   align-items: center;
+  margin-left: 5em;
 }
 
 .logo-ellipse {
   background-color: var(--primary-color);
-  padding: 8px 20px;
+  padding: 8px 30px;
   border-radius: 20px;
   color: white;
   font-weight: bold;

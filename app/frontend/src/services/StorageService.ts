@@ -12,7 +12,9 @@ class StorageService {
   // Сохранение токена
   setToken(token: string): void {
     try {
+      console.log('StorageService: сохраняем токен:', token);
       localStorage.setItem(this.keys.token, token);
+      console.log('StorageService: проверка сохраненного токена:', localStorage.getItem(this.keys.token));
     }
     catch (error) {
       console.error("Error setting token:", error);

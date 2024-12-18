@@ -39,12 +39,13 @@
         </div>
 
         <div class="profile-actions">
-          <button class="decline-btn large" @click="declineUser(selectedUser)">
-            <i class="fas fa-times"></i>
-          </button>
           <button class="accept-btn large" @click="acceptMatch(selectedUser)">
             <i class="fas fa-check"></i>
           </button>
+          <button class="decline-btn large" @click="declineUser(selectedUser)">
+            <i class="fas fa-times"></i>
+          </button>
+
         </div>
       </div>
     </div>

@@ -27,19 +27,13 @@
 
       <textarea placeholder="О себе" class="form-textarea" v-model="profileStore.temporaryData.biography"></textarea>
 
-      <div class="label-container">
-          <h3>Выберите ваши интересы:</h3>
-          <div class="label-grid">
-            <div
-              v-for="label in availablelabel"
-              :key="label.id"
-              :class="['label-item', { 'selected': selectedlabel.includes(label.value) }]"
-              @click="toggleLabel(label.value)"
-            >
-              {{ label.name }}
-            </div>
-          </div>
-        </div>
+      <div class="interests-section">
+        <h3>Ваши интересы</h3>
+        <InterestSelector
+          v-model="profileStore.temporaryData.label"
+          placeholder="Выберите ваши интересы"
+        />
+      </div>
     </div>
 
     <button class="save-button" @click="updateProfile">Сохранить изменения</button>
@@ -53,56 +47,39 @@ import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useProfileStore } from '../stores/ProfileStore';
 import AuthService from '../services/AuthService';
 import '../assets/css/profile.css'
+import { useRouter } from 'vue-router';
+import InterestSelector from '../components/InterestSelector.vue';
 
 export default defineComponent({
   name: 'ProfilePage',
   components: {
     Navbar,
-    LoadingSpinner
+    LoadingSpinner,
+    InterestSelector
   },
 
   setup() {
     const profileStore = useProfileStore();
     const isLoading = ref(false);
-
-    const availablelabel = [
-      { id: 0, name: 'ExampleLabel', value: 'ExampleLabel' },
-      { id: 1, name: 'Программирование', value: 'programming' },
-      { id: 2, name: 'Иностранные языки', value: 'languages' },
-      { id: 3, name: 'Спорт', value: 'sports' },
-      { id: 4, name: 'Кулинария', value: 'cooking' },
-      { id: 5, name: 'Музыка', value: 'music' },
-      { id: 6, name: 'Искусство', value: 'art' },
-      { id: 7, name: 'Фотография', value: 'photography' },
-      { id: 8, name: 'Путешествия', value: 'traveling' },
-      { id: 9, name: 'Наука', value: 'science' },
-      { id: 10, name: 'Литература', value: 'literature' }
-    ];
-
-    const selectedlabel = ref<string[]>([]);
-
-    const toggleLabel = (value: string) => {
-      const index = selectedlabel.value.indexOf(value);
-      if (index === -1) {
-        selectedlabel.value.push(value);
-      } else {
-        selectedlabel.value.splice(index, 1);
-      }
-      profileStore.temporaryData.label = selectedlabel.value;
-    };
+    const router = useRouter();
 
     const fetchProfileData = async () => {
       isLoading.value = true;
       try {
         const data = await AuthService.getProfile();
+        const labels = data.label ?
+          (Array.isArray(data.label) ? data.label : [data.label]) :
+          [];
+
         profileStore.temporaryData = {
           username: data.username,
           gender: data.gender,
           biography: data.biography,
-          label: data.label,
+          label: labels,
           online_status: data.online_status,
         };
-        selectedlabel.value = data.label || [];
+
+        console.log('Загруженные интересы:', labels);
       }
       catch (error) {
         console.error("Ошибка при получении данных профиля:", error);
@@ -113,19 +90,17 @@ export default defineComponent({
       }
     };
 
-    const validateData = (): boolean => {
-      const { username, gender } = profileStore.temporaryData;
-      if (!username || !gender) {
-        alert("Заполните никнейм и выберите пол.");
-        return false;
-      }
-      return true;
-    };
-
-    const updateProfile = async () => {
-      if (!validateData()) {
+    onMounted(async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/login');
         return;
       }
+      await fetchProfileData();
+    });
+
+    const updateProfile = async () => {
+      if (!validateData()) return;
 
       try {
         await AuthService.updateProfile({
@@ -145,51 +120,30 @@ export default defineComponent({
       }
     };
 
-    // Загружаем данные при монтировании компонента
-    onMounted(() => {
-      fetchProfileData();
-    });
+    const validateData = (): boolean => {
+      const { username, gender } = profileStore.temporaryData;
+      if (!username || !gender) {
+        alert("Заполните никнейм и выберите пол.");
+        return false;
+      }
+      return true;
+    };
 
     return {
       profileStore,
       updateProfile,
-      isLoading,
-      availablelabel,
-      selectedlabel,
-      toggleLabel
+      isLoading
     };
   },
 });
 </script>
 
 <style scoped>
-.label-container {
+.interests-section {
   margin: 20px 0;
 }
 
-.label-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-  padding: 15px;
-}
-
-.label-item {
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.label-item:hover {
-  background-color: #f0f0f0;
-}
-
-.label-item.selected {
-  background-color: #007bff;
-  color: white;
-  border-color: #0056b3;
+.interests-section h3 {
+  margin-bottom: 10px;
 }
 </style>

@@ -16,6 +16,7 @@ export class ApiClient {
     this.api.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token')
+        console.log('Токен в интерцепторе:', token);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`
         }

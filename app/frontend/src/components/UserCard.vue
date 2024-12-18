@@ -1,29 +1,43 @@
 <template>
   <div class="user-card" @click="openModal">
-
-    <div class="more-options">...</div>
+    <div class="more-options" @click.stop="toggleOptions">
+      <span class="options-icon">...</span>
+      <div v-if="showOptions" class="options-menu">
+        <button @click="handleReport">Пожаловаться</button>
+        <button @click="handleBlock">Заблокировать</button>
+      </div>
+    </div>
 
     <div class="avatar">
-      <!-- <img :src="user.avatar || '/default-avatar.png'" alt="avatar" /> -->
       <img :src="defaultAvatar" alt="avatar" />
+      <div
+        v-if="user.online_status"
+        :class="['online-status', user.online_status]"
+        :title="getStatusText(user.online_status)"
+      ></div>
     </div>
 
     <div class="user-info">
-
       <h3 class="nickname">{{ user.username }}</h3>
-
       <div class="labels">
-        <span v-for="label in user.label" :key="label" class="label-tag">
-          {{ label }}
+        <span v-for="label in user.label"
+              :key="label"
+              class="label-tag"
+              :title="getInterestName(label)">
+          {{ getInterestName(label) }}
         </span>
       </div>
 
-      <button class="friend-button" @click="handleFriendRequest">
-        Дружить
+      <button
+        class="friend-button"
+        @click.stop="handleFriendRequest"
+        :disabled="isFriendRequestPending"
+      >
+        {{ friendButtonText }}
       </button>
     </div>
-
   </div>
+
   <UserModal
     :show="isModalOpen"
     :user="user"
@@ -31,64 +45,90 @@
   />
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType, ref } from 'vue';
-import { type ProfileUser } from '../classes';
-import defaultAvatar from '../assets/default-avatar.png';
-import UserModal from './UserModal.vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import type { ProfileUser } from '../classes'
+import defaultAvatar from '../assets/default-avatar.png'
+import UserModal from './UserModal.vue'
+import { interests } from '../config/interests'
 
-export default defineComponent({
-  name: 'UserCard',
-  components: {
-    UserModal
-  },
-  props: {
-    user: {
-      type: Object as PropType<ProfileUser>,
-      required: true
-    }
-  },
-  setup() {
-    const isModalOpen = ref(false);
+defineProps<{
+  user: ProfileUser
+}>()
 
-    const openModal = () => {
-      isModalOpen.value = true;
-    };
+const isModalOpen = ref(false)
+const showOptions = ref(false)
+const isFriendRequestPending = ref(false)
 
-    const closeModal = () => {
-      isModalOpen.value = false;
-    };
-
-    const handleFriendRequest = () => {
-      // Логика добавления в друзья
-    };
-
-    return {
-      isModalOpen,
-      openModal,
-      closeModal,
-      handleFriendRequest,
-      defaultAvatar
-    };
+const friendButtonText = computed(() => {
+  if (isFriendRequestPending.value) {
+    return 'Обработка...'
   }
-});
+  return 'Дружить'
+})
+
+const openModal = () => {
+  isModalOpen.value = true
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+}
+
+const toggleOptions = () => {
+  showOptions.value = !showOptions.value
+}
+
+const handleFriendRequest = async () => {
+  try {
+    isFriendRequestPending.value = true
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    console.log('Добавление в друзья')
+  } catch (error) {
+    console.error('Ошибка при добавлении в друзья:', error)
+  } finally {
+    isFriendRequestPending.value = false
+  }
+}
+
+const handleReport = () => {
+  console.log('Отправка жалобы')
+  showOptions.value = false
+}
+
+const handleBlock = () => {
+  console.log('Блокировка пользователя')
+  showOptions.value = false
+}
+
+const getStatusText = (status: string) => {
+  const statusMap: Record<string, string> = {
+    online: 'В сети',
+    offline: 'Не в сети',
+    away: 'Отошел'
+  }
+  return statusMap[status] || status
+}
+
+const getInterestName = (value: string): string => {
+  const interest = interests.find(i => i.value === value);
+  return interest ? interest.name : value;
+};
 </script>
 
 <style scoped>
-
 .user-card {
   background: #fff;
   border-radius: var(--border-radius);
+  border: 3px solid var(--primary-color);
   padding: 15px;
-  width: 20em;
-  height: auto;
+  width: 21em;
+  height: 32em;
   box-shadow: 0px 4px 20px 0px #00000040;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
-
   background-color: var(--secondary-color);
 }
 
@@ -102,6 +142,10 @@ export default defineComponent({
   position: absolute;
   right: 10px;
   top: 10px;
+}
+
+.avatar {
+  position: relative;
 }
 
 .avatar img {
@@ -144,5 +188,64 @@ export default defineComponent({
   cursor: pointer;
   font-size: 24px;
 
+}
+
+.options-icon {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.options-menu {
+  position: absolute;
+  top: 30px;
+  right: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 8px;
+  z-index: 100;
+}
+
+.options-menu button {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.options-menu button:hover {
+  background: #f5f5f5;
+}
+
+.online-status {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.online-status.online {
+  background: #4CAF50;
+}
+
+.online-status.offline {
+  background: #9e9e9e;
+}
+
+.online-status.away {
+  background: #FFC107;
+}
+
+.friend-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>
