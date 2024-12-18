@@ -1,114 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE technical_specification SYSTEM "technical_specification.dtd">
-<technical_specification>
-    <project>
-        <name>Trudion</name>
-        <description>Trudion — это веб-сервис, который позволяет пользователям находить напарников для совместного изучения различных дисциплин и тем, таких как иностранные языки, программирование, подготовка к экзаменам и решение математических задач. Основной функционал сервиса строится на подборе пользователей по интересам и предпочтениям с возможностью коммуникации через чаты и уведомления.</description>
-    </project>
-    <functions>
-        <presentation_layer>
-            <pages>
-                <page>Авторизации</page>
-                <page>Регистрации</page>
-                <page>Профиля</page>
-                <page>Главная (страница для поиска напарников)</page>
-                <page>Коммуникаций</page>
-            </pages>
-            <navigation>
-                <item>Переход на главную страницу</item>
-                <item>Переход на страницу коммуникаций</item>
-                <item>Панель уведомлений</item>
-                <item>Панель настроек</item>
-                <item>Переход на страницу профиля</item>
-            </navigation>
-        </presentation_layer>
-        <bl_layer>
-            <function>Регистрация, авторизация и генерация токена пользователя</function>
-            <function>Поиск людей по маркерам</function>
-            <function>Упорядочение пользователей по интересам</function>
-            <function>Редактирование профиля</function>
-            <function>Обмен сообщениями (чаты)</function>
-            <function>Чат с техподдержкой</function>
-            <function>Механизм банов пользователей</function>
-        </bl_layer>
-        <data_service_layer>
-            <function>Получение и изменение информации профиля</function>
-            <function>Создание новых профилей</function>
-            <function>Получение истории переписки</function>
-            <function>Фильтрация пользователей по маркерам</function>
-            <function>Проверка лайков и количества маркеров</function>
-            <function>Получение списка уведомлений</function>
-        </data_service_layer>
-        <database_layer>
-            <description>Модель данных представлена на ER-диаграмме.</description>
-        </database_layer>
-    </functions>
-    <roles>
-        <role>
-            <name>Стандартный пользователь</name>
-            <description>Может регистрироваться, редактировать профиль, искать напарников, обмениваться сообщениями, получать уведомления.</description>
-            <responsibility>Активное использование системы для поиска напарников.</responsibility>
-            <user_count>Потенциально неограниченное</user_count>
-        </role>
-        <role>
-            <name>Администратор</name>
-            <description>Управляет системой, блокирует пользователей, обеспечивает поддержку.</description>
-            <responsibility>Поддержание работоспособности и безопасности системы.</responsibility>
-            <user_count>Ограниченное</user_count>
-        </role>
-    </roles>
-    <technology_stack>
-        <frontend>Vue.ts</frontend>
-        <backend>Golang</backend>
-        <database>PostgreSQL</database>
-        <ui_design>Разработка интерфейсов в Figma с последующей реализацией на frontend.</ui_design>
-    </technology_stack>
-    <data_constraints>
-        <data>
-            <item>Пользователи: данные о профиле, статусе и предпочтениях</item>
-            <item>Маркеры (labels): интересы и фильтры для поиска</item>
-            <item>Сообщения: переписка между пользователями</item>
-            <item>Уведомления: статус взаимодействий</item>
-            <item>Лайки: симпатии между пользователями</item>
-            <item>Блокировки: данные о заблокированных пользователях</item>
-        </data>
-        <integrity_constraints>
-            <constraint>Уникальность email и username для каждого пользователя</constraint>
-            <constraint>Проверка корректности маркеров (связи с таблицей Labels_info)</constraint>
-            <constraint>Ограничение на отправку сообщений (например, только между взаимно заинтересованными пользователями)</constraint>
-        </integrity_constraints>
-    </data_constraints>
-    <ui_details>
-        <colors>
-            <color name="фон" code="#FFFFFF"/>
-            <color name="текст" code="#000000"/>
-            <color name="кнопка" code="#355299"/>
-            <color name="текст 1" code="#8984B1"/>
-            <color name="ошибка 1" code="#993535"/>
-            <color name="ошибка 2" code="#B18888"/>
-        </colors>
-        <fonts>
-            <font name="IBM Plex Sans">
-                <size>72 bold (Заголовок 1)</size>
-                <size>42 bold (Заголовок 2)</size>
-                <size>24 bold (Заголовок 3)</size>
-                <size>22 regular (Описание)</size>
-            </font>
-        </fonts>
-        <rounded_elements>
-            <object>30px</object>
-            <button>40px</button>
-        </rounded_elements>
-    </ui_details>
-    <er_diagram>
-        <description>Основные таблицы: Users, Likes, Messages, Notifications, Blocks, Labels_info, User_labels</description>
-    </er_diagram>
-    <transactions>
-        <transaction>
-            <description>Создание нового профиля: транзакция включает создание записи в Users и начальную настройку User_labels.</description>
-        </transaction>
-        <transaction>
-            <description>Отправка сообщения: запись в Messages с обновлением времени последней активности пользователя.</description>
-        </transaction>
-    </transactions>
-</technical_specification>
+<!DOCTYPE TECHNICAL_SPECIFICATION SYSTEM "tz.DTD">
+<TECHNICAL_SPECIFICATION>
+    <PROJECT>
+        <NAME>Trudion</NAME>
+        <DESCRIPTION>Trudion — это веб-сервис, который позволяет пользователям находить напарников для совместного изучения различных дисциплин и тем, таких как иностранные языки, программирование, подготовка к экзаменам и решение математических задач. Основной функционал сервиса строится на подборе пользователей по интересам и предпочтениям с возможностью коммуникации через чаты и уведомления.</DESCRIPTION>
+    </PROJECT>
+    <FUNCTIONS>
+        <PRESENTATION_LAYER>
+            <PAGES>
+                <PAGE>Авторизация</PAGE>
+                <PAGE>Регистрация</PAGE>
+                <PAGE>Профиль</PAGE>
+                <PAGE>Главная (страница для поиска напарников)</PAGE>
+                <PAGE>Коммуникации</PAGE>
+            </PAGES>
+            <NAVIGATION>
+                <ITEM>Переход на главную страницу</ITEM>
+                <ITEM>Переход на страницу коммуникаций</ITEM>
+                <ITEM>Панель уведомлений</ITEM>
+                <ITEM>Панель настроек</ITEM>
+                <ITEM>Переход на страницу профиля</ITEM>
+            </NAVIGATION>
+        </PRESENTATION_LAYER>
+        <BL_LAYER>
+            <FUNCTION>Регистрация и авторизация пользователя</FUNCTION>
+            <FUNCTION>Поиск людей по маркерам</FUNCTION>
+            <FUNCTION>Упорядочение пользователей по интересам</FUNCTION>
+            <FUNCTION>Редактирование профиля</FUNCTION>
+            <FUNCTION>Обмен сообщениями (чаты)</FUNCTION>
+            <FUNCTION>Чат с техподдержкой</FUNCTION>
+            <FUNCTION>Механизм банов пользователей</FUNCTION>
+        </BL_LAYER>
+        <DATA_SERVICE_LAYER>
+            <FUNCTION>Получение и изменение информации профиля</FUNCTION>
+            <FUNCTION>Создание новых профилей</FUNCTION>
+            <FUNCTION>Получение истории переписки</FUNCTION>
+            <FUNCTION>Фильтрация пользователей по маркерам</FUNCTION>
+            <FUNCTION>Проверка лайков и количества маркеров</FUNCTION>
+            <FUNCTION>Получение списка уведомлений</FUNCTION>
+        </DATA_SERVICE_LAYER>
+        <DATABASE_LAYER>
+            <DESCRIPTION>Модель данных представлена на ER-диаграмме.</DESCRIPTION>
+        </DATABASE_LAYER>
+    </FUNCTIONS>
+    <ROLES>
+        <ROLE>
+            <NAME>Стандартный пользователь</NAME>
+            <DESCRIPTION>Может регистрироваться, редактировать профиль, искать напарников, обмениваться сообщениями, получать уведомления.</DESCRIPTION>
+            <RESPONSIBILITY>Активное использование системы для поиска напарников.</RESPONSIBILITY>
+            <USER_COUNT>Потенциально неограниченное</USER_COUNT>
+        </ROLE>
+        <ROLE>
+            <NAME>Администратор</NAME>
+            <DESCRIPTION>Управляет системой, блокирует пользователей, обеспечивает поддержку.</DESCRIPTION>
+            <RESPONSIBILITY>Поддержание работоспособности и безопасности системы.</RESPONSIBILITY>
+            <USER_COUNT>Ограниченное</USER_COUNT>
+        </ROLE>
+    </ROLES>
+    <TECHNOLOGY_STACK>
+        <FRONTEND>Vue.ts</FRONTEND>
+        <BACKEND>Golang</BACKEND>
+        <DATABASE>PostgreSQL</DATABASE>
+        <UI_DESIGN>Разработка интерфейсов в Figma с последующей реализацией на frontend.</UI_DESIGN>
+    </TECHNOLOGY_STACK>
+    <DATA_CONSTRAINTS>
+        <DATA>
+            <ITEM>Пользователи: данные о профиле, статусе и предпочтениях</ITEM>
+            <ITEM>Маркеры (labels): интересы и фильтры для поиска</ITEM>
+            <ITEM>Сообщения: переписка между пользователями</ITEM>
+            <ITEM>Уведомления: статус взаимодействий</ITEM>
+            <ITEM>Лайки: симпатии между пользователями</ITEM>
+            <ITEM>Блокировки: данные о заблокированных пользователях</ITEM>
+        </DATA>
+        <INTEGRITY_CONSTRAINTS>
+            <CONSTRAINT>Уникальность email и username для каждого пользователя</CONSTRAINT>
+            <CONSTRAINT>Проверка корректности маркеров (связи с таблицей Labels_info)</CONSTRAINT>
+            <CONSTRAINT>Ограничение на отправку сообщений (например, только между взаимно заинтересованными пользователями)</CONSTRAINT>
+        </INTEGRITY_CONSTRAINTS>
+    </DATA_CONSTRAINTS>
+    <UI_DETAILS>
+        <COLORS>
+            <COLOR NAME="фон" CODE="#FFFFFF"/>
+            <COLOR NAME="текст" CODE="#000000"/>
+            <COLOR NAME="кнопка" CODE="#355299"/>
+            <COLOR NAME="текст 1" CODE="#8984B1"/>
+            <COLOR NAME="ошибка 1" CODE="#993535"/>
+            <COLOR NAME="ошибка 2" CODE="#B18888"/>
+        </COLORS>
+        <FONTS>
+            <FONT NAME="IBM Plex Sans">
+                <SIZE>72 bold (Заголовок 1)</SIZE>
+                <SIZE>42 bold (Заголовок 2)</SIZE>
+                <SIZE>24 bold (Заголовок 3)</SIZE>
+                <SIZE>22 regular (Описание)</SIZE>
+            </FONT>
+        </FONTS>
+        <ROUNDED_ELEMENTS>
+            <OBJECT>30px</OBJECT>
+            <BUTTON>40px</BUTTON>
+        </ROUNDED_ELEMENTS>
+    </UI_DETAILS>
+    <ER_DIAGRAM>
+        <DESCRIPTION>Основные таблицы: Users, Likes, Messages, Notifications, Blocks, Labels_info, User_labels</DESCRIPTION>
+    </ER_DIAGRAM>
+    <TRANSACTIONS>
+        <TRANSACTION>
+            <DESCRIPTION>Создание нового профиля: транзакция включает создание записи в Users и начальную настройку User_labels.</DESCRIPTION>
+        </TRANSACTION>
+        <TRANSACTION>
+            <DESCRIPTION>Отправка сообщения: запись в Messages с обновлением времени последней активности пользователя.</DESCRIPTION>
+        </TRANSACTION>
+    </TRANSACTIONS>
+</TECHNICAL_SPECIFICATION>

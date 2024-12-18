@@ -1,56 +1,56 @@
-<!ELEMENT technical_specification (project, functions, roles, technology_stack, data_constraints, ui_details, er_diagram, transactions)>
+<!ELEMENT TECHNICAL_SPECIFICATION (PROJECT, FUNCTIONS, ROLES, TECHNOLOGY_STACK, DATA_CONSTRAINTS, UI_DETAILS, ER_DIAGRAM, TRANSACTIONS)>
 
-<!ELEMENT project (name, description)>
-<!ELEMENT name (#PCDATA)>
-<!ELEMENT description (#PCDATA)>
+<!ELEMENT PROJECT (NAME, DESCRIPTION)>
+<!ELEMENT NAME (#PCDATA)>
+<!ELEMENT DESCRIPTION (#PCDATA)>
 
-<!ELEMENT functions (presentation_layer, bl_layer, data_service_layer, database_layer)>
+<!ELEMENT FUNCTIONS (PRESENTATION_LAYER, BL_LAYER, DATA_SERVICE_LAYER, DATABASE_LAYER)>
 
-<!ELEMENT presentation_layer (pages, navigation)>
-<!ELEMENT pages (page+)>
-<!ELEMENT page (#PCDATA)>
-<!ELEMENT navigation (item+)>
-<!ELEMENT item (#PCDATA)>
+<!ELEMENT PRESENTATION_LAYER (PAGES, NAVIGATION)>
+<!ELEMENT PAGES (PAGE+)>
+<!ELEMENT PAGE (#PCDATA)>
+<!ELEMENT NAVIGATION (ITEM+)>
+<!ELEMENT ITEM (#PCDATA)>
 
-<!ELEMENT bl_layer (function+)>
-<!ELEMENT data_service_layer (function+)>
-<!ELEMENT database_layer (description)>
-<!ELEMENT function (#PCDATA)>
+<!ELEMENT BL_LAYER (FUNCTION+)>
+<!ELEMENT DATA_SERVICE_LAYER (FUNCTION+)>
+<!ELEMENT DATABASE_LAYER (DESCRIPTION)>
+<!ELEMENT FUNCTION (#PCDATA)>
 
-<!ELEMENT roles (role+)>
-<!ELEMENT role (name, description, responsibility, user_count)>
-<!ELEMENT responsibility (#PCDATA)>
-<!ELEMENT user_count (#PCDATA)>
+<!ELEMENT ROLES (ROLE+)>
+<!ELEMENT ROLE (NAME, DESCRIPTION, RESPONSIBILITY, USER_COUNT)>
+<!ELEMENT RESPONSIBILITY (#PCDATA)>
+<!ELEMENT USER_COUNT (#PCDATA)>
 
-<!ELEMENT technology_stack (frontend, backend, database, ui_design)>
-<!ELEMENT frontend (#PCDATA)>
-<!ELEMENT backend (#PCDATA)>
-<!ELEMENT database (#PCDATA)>
-<!ELEMENT ui_design (#PCDATA)>
+<!ELEMENT TECHNOLOGY_STACK (FRONTEND, BACKEND, DATABASE, UI_DESIGN)>
+<!ELEMENT FRONTEND (#PCDATA)>
+<!ELEMENT BACKEND (#PCDATA)>
+<!ELEMENT DATABASE (#PCDATA)>
+<!ELEMENT UI_DESIGN (#PCDATA)>
 
-<!ELEMENT data_constraints (data, integrity_constraints)>
-<!ELEMENT data (item+)>
-<!ELEMENT item (#PCDATA)>
-<!ELEMENT integrity_constraints (constraint+)>
-<!ELEMENT constraint (#PCDATA)>
+<!ELEMENT DATA_CONSTRAINTS (DATA, INTEGRITY_CONSTRAINTS)>
+<!ELEMENT DATA (ITEM+)>
+<!ELEMENT ITEM (#PCDATA)>
+<!ELEMENT INTEGRITY_CONSTRAINTS (CONSTRAINT+)>
+<!ELEMENT CONSTRAINT (#PCDATA)>
 
-<!ELEMENT ui_details (colors, fonts, rounded_elements)>
-<!ELEMENT colors (color+)>
-<!ELEMENT color (name, code)>
-<!ELEMENT name (#PCDATA)>
-<!ELEMENT code (#PCDATA)>
+<!ELEMENT UI_DETAILS (COLORS, FONTS, ROUNDED_ELEMENTS)>
+<!ELEMENT COLORS (COLOR+)>
+<!ELEMENT COLOR (NAME, CODE)>
+<!ELEMENT NAME (#PCDATA)>
+<!ELEMENT CODE (#PCDATA)>
 
-<!ELEMENT fonts (font+)>
-<!ELEMENT font (size+)>
-<!ELEMENT size (#PCDATA)>
+<!ELEMENT FONTS (FONT+)>
+<!ELEMENT FONT (SIZE+)>
+<!ELEMENT SIZE (#PCDATA)>
 
-<!ELEMENT rounded_elements (object, button)>
-<!ELEMENT object (#PCDATA)>
-<!ELEMENT button (#PCDATA)>
+<!ELEMENT ROUNDED_ELEMENTS (OBJECT, BUTTON)>
+<!ELEMENT OBJECT (#PCDATA)>
+<!ELEMENT BUTTON (#PCDATA)>
 
-<!ELEMENT er_diagram (description)>
+<!ELEMENT ER_DIAGRAM (DESCRIPTION)>
 
-<!ELEMENT transactions (transaction+)>
-<!ELEMENT transaction (description)>
+<!ELEMENT TRANSACTIONS (TRANSACTION+)>
+<!ELEMENT TRANSACTION (DESCRIPTION)>
 
-<!ELEMENT description (#PCDATA)>
+<!ELEMENT DESCRIPTION (#PCDATA)>
