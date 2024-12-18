@@ -1,0 +1,56 @@
+<!ELEMENT technical_specification (project, functions, roles, technology_stack, data_constraints, ui_details, er_diagram, transactions)>
+
+<!ELEMENT project (name, description)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+
+<!ELEMENT functions (presentation_layer, bl_layer, data_service_layer, database_layer)>
+
+<!ELEMENT presentation_layer (pages, navigation)>
+<!ELEMENT pages (page+)>
+<!ELEMENT page (#PCDATA)>
+<!ELEMENT navigation (item+)>
+<!ELEMENT item (#PCDATA)>
+
+<!ELEMENT bl_layer (function+)>
+<!ELEMENT data_service_layer (function+)>
+<!ELEMENT database_layer (description)>
+<!ELEMENT function (#PCDATA)>
+
+<!ELEMENT roles (role+)>
+<!ELEMENT role (name, description, responsibility, user_count)>
+<!ELEMENT responsibility (#PCDATA)>
+<!ELEMENT user_count (#PCDATA)>
+
+<!ELEMENT technology_stack (frontend, backend, database, ui_design)>
+<!ELEMENT frontend (#PCDATA)>
+<!ELEMENT backend (#PCDATA)>
+<!ELEMENT database (#PCDATA)>
+<!ELEMENT ui_design (#PCDATA)>
+
+<!ELEMENT data_constraints (data, integrity_constraints)>
+<!ELEMENT data (item+)>
+<!ELEMENT item (#PCDATA)>
+<!ELEMENT integrity_constraints (constraint+)>
+<!ELEMENT constraint (#PCDATA)>
+
+<!ELEMENT ui_details (colors, fonts, rounded_elements)>
+<!ELEMENT colors (color+)>
+<!ELEMENT color (name, code)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT code (#PCDATA)>
+
+<!ELEMENT fonts (font+)>
+<!ELEMENT font (size+)>
+<!ELEMENT size (#PCDATA)>
+
+<!ELEMENT rounded_elements (object, button)>
+<!ELEMENT object (#PCDATA)>
+<!ELEMENT button (#PCDATA)>
+
+<!ELEMENT er_diagram (description)>
+
+<!ELEMENT transactions (transaction+)>
+<!ELEMENT transaction (description)>
+
+<!ELEMENT description (#PCDATA)>
