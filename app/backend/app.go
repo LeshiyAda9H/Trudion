@@ -7,6 +7,8 @@ import (
 	"src/initializers"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -38,6 +40,8 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	router.Use(sessions.Sessions("user_session", cookie.NewStore([]byte("secret"))))
+
 	// Add swagger documentation
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/api/v1", handlers.RootHandler)
@@ -45,7 +49,6 @@ func main() {
 	router.GET("/api/v1/profile", handlers.GetUserProfile)
 	router.GET("/api/v1/usersnumber", handlers.GetUsersNumber)
 	router.GET("/api/v1/userspage", handlers.GetUsersPage)
-	
 
 	router.POST("/api/v1/register", handlers.SignUp)
 	router.POST("/api/v1/login", handlers.SignIn)

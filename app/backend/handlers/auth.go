@@ -3,16 +3,18 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"net/http"
 	"src/initializers"
 	"src/models"
 	"src/repository"
 	"src/types"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 const (
@@ -96,6 +98,12 @@ func SignIn(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
+
+	// create user session
+	userSession := sessions.Default(c)
+	userSession.Clear()
+	userSession.Set("userId", user.UserId)
+	userSession.Save()
 
 	// return the token
 	c.JSON(http.StatusOK, gin.H{"token": token})

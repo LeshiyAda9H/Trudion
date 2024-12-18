@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"src/initializers"
 	"src/models"
 	"src/repository"
 	"strconv"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -126,7 +128,12 @@ func GetUsersNumber(c *gin.Context) {
 		return
 	}
 
-	result := initializers.DB.Table("users").Order("RANDOM()").Limit(countInt).Find(&users)
+	userSession := sessions.Default(c)
+	userId := userSession.Get("userId")
+
+	fmt.Println(userId)
+
+	result := initializers.DB.Table("users").Where("user_id <> ?", userId).Order("RANDOM()").Limit(countInt).Find(&users)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to get users",
