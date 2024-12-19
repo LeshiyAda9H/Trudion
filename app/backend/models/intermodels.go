@@ -1,7 +1,7 @@
 package models
 
 type UserPage struct {
-	UserId       uint     `json:"-"`
+	UserId       uint     `json:"user_id"`
 	Username     string   `gorm:"size:20;not null" json:"username"`
 	Gender       string   `gorm:"size:255;not null;check:gender IN ('male', 'female', 'prefer_not_to_say');default:prefer_not_to_say" json:"gender"`
 	Biography    string   `gorm:"type:text;not null;default:' '" json:"biography"`
