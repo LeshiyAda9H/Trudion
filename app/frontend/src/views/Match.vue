@@ -1,8 +1,23 @@
 <template>
   <div class="match-container">
-    <!-- Список пользователей (показывается, когда selectedUser === null) -->
-    <div v-if="!selectedUser" class="users-grid">
-      <div v-for="user in pendingUsers" :key="user.id" class="user-card" @click="selectUser(user)">
+    <div v-if="isLoading" class="loading">
+      Загрузка...
+    </div>
+
+    <div v-else-if="error" class="error">
+      {{ error }}
+    </div>
+
+    <!-- Список пользователей -->
+    <div v-else-if="!selectedUser" class="users-grid">
+      <div v-if="pendingUsers.length === 0" class="no-requests">
+        Нет новых запросов в друзья
+      </div>
+
+      <div v-else v-for="user in pendingUsers"
+           :key="user.user_id"
+           class="user-card"
+           @click="selectUser(user)">
         <img :src="user.avatar || defaultAvatar" alt="User avatar" class="user-avatar">
         <div class="user-info">
           <h3>{{ user.username }}</h3>
@@ -29,9 +44,9 @@
         <img :src="selectedUser.avatar || defaultAvatar" alt="User avatar" class="profile-avatar">
         <div class="profile-info">
           <h2>{{ selectedUser.username }}</h2>
-          <p class="bio">{{ selectedUser.bio }}</p>
+          <p class="bio">{{ selectedUser.biography }}</p>
           <div class="interests">
-            <span v-for="interest in selectedUser.interests"
+            <span v-for="interest in selectedUser.label"
                   :key="interest"
                   class="interest-tag">
               {{ interest }}
@@ -53,62 +68,65 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
-import defaultAvatar from '../assets/default-avatar.png';
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import defaultAvatar from '../assets/default-avatar.png'
+import AuthService from '../services/AuthService'
+import type { ProfileUser } from '../classes'
 
-export default defineComponent({
-  name: 'MatchView',
+const selectedUser = ref<ProfileUser | null>(null)
+const pendingUsers = ref<ProfileUser[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
 
-  setup() {
-    const selectedUser = ref(null);
-    const pendingUsers = ref([
-      {
-        id: 1,
-        username: 'Турал',
-        avatar: '',
-        bio: 'Люблю программировать и бананы',
-        interests: ['Программирование', 'Бананы', 'Спорт']
-      },
-      // Добавьте больше пользователей для тестирования
-    ]);
-
-    const selectUser = (user) => {
-      selectedUser.value = user;
-    };
-
-    const closeProfile = () => {
-      selectedUser.value = null;
-    };
-
-    const acceptMatch = (user) => {
-      // Здесь логика для создания match
-      // После успешного match пользователь должен появиться в чате
-      pendingUsers.value = pendingUsers.value.filter(u => u.id !== user.id);
-      selectedUser.value = null;
-    };
-
-    const declineUser = (user) => {
-      pendingUsers.value = pendingUsers.value.filter(u => u.id !== user.id);
-      selectedUser.value = null;
-    };
-
-    return {
-      selectedUser,
-      pendingUsers,
-      defaultAvatar,
-      selectUser,
-      closeProfile,
-      acceptMatch,
-      declineUser
-    };
+// Загрузка запросов в друзья при монтировании компонента
+onMounted(async () => {
+  try {
+    isLoading.value = true
+    const matches = await AuthService.getMatchRequests()
+    pendingUsers.value = matches
+  } catch (err) {
+    console.error('Ошибка при загрузке запросов в друзья:', err)
+    error.value = 'Не удалось загрузить запросы в друзья'
+  } finally {
+    isLoading.value = false
   }
-});
+})
+
+const selectUser = (user: ProfileUser) => {
+  selectedUser.value = user
+}
+
+const closeProfile = () => {
+  selectedUser.value = null
+}
+
+const acceptMatch = async (user: ProfileUser) => {
+  try {
+    await AuthService.acceptMatch(user.user_id)
+    pendingUsers.value = pendingUsers.value.filter(u => u.user_id !== user.user_id)
+    selectedUser.value = null
+  } catch (err) {
+    console.error('Ошибка при принятии запроса:', err)
+    // Можно добавить уведомление об ошибке
+  }
+}
+
+const declineUser = async (user: ProfileUser) => {
+  try {
+    await AuthService.declineMatch(user.user_id)
+    pendingUsers.value = pendingUsers.value.filter(u => u.user_id !== user.user_id)
+    selectedUser.value = null
+  } catch (err) {
+    console.error('Ошибка при отклонении запроса:', err)
+    // Можно добавить уведомление об ошибке
+  }
+}
 </script>
 
 <style scoped>
 .match-container {
-  
+
   padding: 20px;
   height: 100%;
   position: relative;
@@ -264,5 +282,19 @@ export default defineComponent({
   width: 60px;
   height: 60px;
   font-size: 24px;
+}
+
+.loading, .error, .no-requests {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.error {
+  color: #f44336;
+}
+
+.no-requests {
+  color: #666;
 }
 </style>

@@ -1,45 +1,21 @@
-import { defineStore } from 'pinia' // Импортируем функцию для создания хранилища из Pinia
-import type { AuthedUser } from '../classes' // Импортируем тип данных аутентифицированного пользователя
-import AuthService from '../services/AuthService'
+import { defineStore } from 'pinia'
+import type { ProfileUser } from '../classes'
 
-// Определяем хранилище с именем 'user'
-export const useProfileStore = defineStore('user', {
-  // Определяем начальное состояние хранилища
+// Используем существующий интерфейс ProfileUser
+export const useProfileStore = defineStore('profile', {
   state: () => ({
-    // Инициализируем состояние 'user' данными из localStorage или null, если данных нет
-    user: JSON.parse(localStorage.getItem('user') || 'null') as AuthedUser | null,
-
-    // Временные данные
-    temporaryData: {
-      user_id: 0 as number,
-      username: '' as string,
-      gender: '' as string,
-      biography: '' as string,
-      label: [] as string[],
-      online_status: '' as string,
-    },
+    profileData: {} as ProfileUser,      // Оригинальные данные
+    temporaryData: {} as ProfileUser,    // Временные данные для редактирования
   }),
 
-  // Определяем действия, которые могут изменять состояние хранилища
   actions: {
-    // Отправляем данные регистрации на сервер и сбрасываем временное состояние
-    async completeUpdateProfile() {
-      try {
-        await AuthService.updateProfile(this.temporaryData)
-
-        // Обновляем состояние только после успешного ответа
-        this.temporaryData = {
-          user_id: 0,
-          username: '',
-          gender: '',
-          biography: '',
-          label: [],
-          online_status: '',
-        }
-      } catch (error) {
-        console.error('Profile update error:', error)
-        throw new Error('Ошибка обновления профиля')
-      }
+    setProfileData(data: ProfileUser) {
+      this.profileData = { ...data };
+      this.temporaryData = { ...data };
     },
-  },
+
+    completeUpdateProfile() {
+      this.profileData = { ...this.temporaryData };
+    }
+  }
 })

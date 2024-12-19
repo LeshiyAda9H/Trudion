@@ -12,6 +12,7 @@ const PROFILE_URL = '/api/v1/profile'
 // const VERIFY_TOKEN_URL = '/api/v1/verify/token'
 const VERIFY_EMAIL_URL = '/api/v1/verify/email'
 const HANDSHAKE_URL = '/api/v1/handshake'
+const MATCHES_URL = '/api/v1/matches'
 
 interface verifyProps {
   available: boolean
@@ -61,6 +62,7 @@ class AuthService {
   // Метод для обновления профиля пользователя
   async updateProfile(data: Partial<ProfileUser>): Promise<void> {
     try {
+      console.log('AuthService: отправляем PATCH запрос:', data); // добавим лог
       await this.api.patch<void, Partial<ProfileUser>>(PROFILE_URL, data)
       console.log('Профиль обновлен успешно')
     } catch (error) {
@@ -103,7 +105,7 @@ class AuthService {
     }
   }
 
-  // Метод для проверки, аутентифицирован л�� пользователь
+  // Метод для проверки, аутентифицирован ли пользователь
   isAuth(): boolean {
     return !!localStorage.getItem('token')
   }
@@ -158,6 +160,42 @@ class AuthService {
     } catch (error) {
       console.error('Ошибка при отправке запроса в друзья:', error)
       throw new Error('Не удалось отправить запрос в друзья')
+    }
+  }
+
+  async getMatchRequests(): Promise<ProfileUser[]> {
+    try {
+      const response = await this.api.get<{ result: ProfileUser[] }>(MATCHES_URL)
+      console.log('Получены запросы в друзья:', response)
+
+      if (!response || !response.result) {
+        throw new Error('Некорректный формат ответа от сервера')
+      }
+
+      return response.result
+    } catch (error) {
+      console.error('Ошибка при получении запросов в друзья:', error)
+      throw error
+    }
+  }
+
+  async acceptMatch(userId: number): Promise<void> {
+    try {
+      await this.api.post(`${MATCHES_URL}/accept`, { userId })
+      console.log('Запрос в друзья принят')
+    } catch (error) {
+      console.error('Ошибка при принятии запроса в друзья:', error)
+      throw error
+    }
+  }
+
+  async declineMatch(userId: number): Promise<void> {
+    try {
+      await this.api.post(`${MATCHES_URL}/decline`, { userId })
+      console.log('Запрос в друзья отклонен')
+    } catch (error) {
+      console.error('Ошибка при отклонении запроса в друзья:', error)
+      throw error
     }
   }
 }
