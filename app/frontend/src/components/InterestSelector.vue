@@ -1,17 +1,9 @@
 <template>
   <div class="multiselect-wrapper">
-    <!-- Отображение выбранных меток -->
-    <div class="selected-labels" v-if="modelValue.length > 0">
-      <div v-for="value in modelValue"
-           :key="value"
-           class="label-tag">
-        <span>{{ getInterestName(value) }}</span>
-        <button class="remove-label" @click.stop="removeInterest(value)">×</button>
-      </div>
-    </div>
+
 
     <div class="multiselect-container">
-      <div class="multiselect-header" @click="isOpen = !isOpen">
+      <div class="multiselect-header" @click="toggleDropdown">
         <div class="selected-display">
           <span v-if="modelValue.length === 0">{{ placeholder }}</span>
           <span v-else>Выбрано: {{ modelValue.length }}</span>
@@ -19,28 +11,45 @@
         <div class="arrow" :class="{ 'open': isOpen }">▼</div>
       </div>
 
-      <div v-show="isOpen" class="options-container">
-        <div
-          v-for="interest in interests"
-          :key="interest.id"
-          :class="['option-item', { 'selected': modelValue.includes(interest.value) }]"
-          @click="toggleInterest(interest.value)"
-        >
-          <input
-            type="checkbox"
-            :checked="modelValue.includes(interest.value)"
-            @click.stop
+      <div v-show="isOpen" class="options-container" :class="{ 'direction-up': direction === 'up' }">
+        <div v-for="category in categories" :key="category" class="category-section">
+          <div class="category-header">{{ category }}</div>
+          <div
+            v-for="interest in getInterestsByCategory(category)"
+            :key="interest.id"
+            class="option-item"
+            :class="{ 'selected': isSelected(interest.value) }"
+            @click="toggleInterest(interest.value)"
           >
-          <span>{{ interest.name }}</span>
+            <div class="checkbox-container">
+              <input
+                type="checkbox"
+                :checked="isSelected(interest.value)"
+                @click.stop
+                readonly
+              >
+              <span>{{ interest.name }}</span>
+            </div>
+
+          </div>
         </div>
+      </div>
+    </div>
+    <!-- Отображение выбранных меток -->
+    <div class="selected-labels" v-if="modelValue.length > 0">
+      <div v-for="value in modelValue"
+           :key="value"
+           class="label-tag">
+        <span>{{ getInterestName(value) }}</span>
+        <button class="remove-label" @click="removeInterest(value)" type="button">×</button>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { interests } from '../config/interests';
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
+import { interests, getCategories, getInterestsByCategory } from '../config/interests';
 
 export default defineComponent({
   name: 'InterestSelector',
@@ -52,15 +61,28 @@ export default defineComponent({
     placeholder: {
       type: String,
       default: 'Выберите интересы'
+    },
+    direction: {
+      type: String,
+      default: 'down'
     }
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     const isOpen = ref(false);
+    const categories = getCategories();
 
     const getInterestName = (value: string): string => {
       const interest = interests.find(i => i.value === value);
       return interest ? interest.name : value;
+    };
+
+    const isSelected = (value: string): boolean => {
+      return props.modelValue.includes(value);
+    };
+
+    const toggleDropdown = () => {
+      isOpen.value = !isOpen.value;
     };
 
     const toggleInterest = (value: string) => {
@@ -81,12 +103,33 @@ export default defineComponent({
       emit('update:modelValue', newInterests);
     };
 
+    // Закрытие дропдауна при клике вне компонента
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.multiselect-wrapper')) {
+        isOpen.value = false;
+      }
+    };
+
+    // Добавляем и удаляем обработчик при монтировании/размонтировании
+    onMounted(() => {
+      document.addEventListener('click', handleClickOutside);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener('click', handleClickOutside);
+    });
+
     return {
+      categories,
       interests,
       isOpen,
+      getInterestName,
+      isSelected,
+      toggleDropdown,
       toggleInterest,
       removeInterest,
-      getInterestName
+      getInterestsByCategory
     };
   }
 });
@@ -97,6 +140,9 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  padding: 0 10px;
+
 }
 
 .selected-labels {
@@ -108,11 +154,15 @@ export default defineComponent({
 .label-tag {
   display: flex;
   align-items: center;
-  background-color: #e3f2fd;
-  padding: 4px 8px;
-  border-radius: 16px;
-  font-size: 14px;
   gap: 4px;
+
+  background: var(--secondary-color);
+  padding: 4px 8px;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--primary-color);
+  font-size: 14px;
+  font-weight: bold;
+
 }
 
 .remove-label {
@@ -135,7 +185,8 @@ export default defineComponent({
 .multiselect-container {
   position: relative;
   width: 100%;
-  max-width: 300px;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius);
 }
 
 .multiselect-header {
@@ -143,11 +194,14 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
+  background: var(--secondary-color);
   cursor: pointer;
   user-select: none;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  width: 100%;
+  
+
 }
 
 .arrow {
@@ -173,6 +227,15 @@ export default defineComponent({
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.options-container.direction-up {
+  top: auto;
+  bottom: 100%;
+  border-top: 1px solid #ddd;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
 .option-item {
   display: flex;
   align-items: center;
@@ -192,6 +255,7 @@ export default defineComponent({
 
 .option-item input[type="checkbox"] {
   margin: 0;
+  cursor: pointer;
 }
 
 /* Стилизация скролла */
@@ -211,4 +275,23 @@ export default defineComponent({
 .options-container::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.category-section {
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
+}
+
+.category-header {
+  padding: 8px 15px;
+  font-weight: bold;
+  color: #666;
+  background-color: #f8f8f8;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 </style>

@@ -7,10 +7,11 @@ import apiClient from './ApiClient' //import axios from 'axios'
 const REGISTER_URL = '/api/v1/register'
 const LOGIN_URL = '/api/v1/login'
 const LOGOUT_URL = '/api/v1/logout'
-const PROFILE_URL = 'api/v1/profile'
+const PROFILE_URL = '/api/v1/profile'
 
 // const VERIFY_TOKEN_URL = '/api/v1/verify/token'
 const VERIFY_EMAIL_URL = '/api/v1/verify/email'
+const HANDSHAKE_URL = '/api/v1/handshake'
 
 interface verifyProps {
   available: boolean
@@ -60,7 +61,7 @@ class AuthService {
   // Метод для обновления профиля пользователя
   async updateProfile(data: Partial<ProfileUser>): Promise<void> {
     try {
-      await this.api.post<void, Partial<ProfileUser>>(PROFILE_URL, data)
+      await this.api.patch<void, Partial<ProfileUser>>(PROFILE_URL, data)
       console.log('Профиль обновлен успешно')
     } catch (error) {
       console.error('Ошибка при обновлении профиля:', error)
@@ -71,7 +72,11 @@ class AuthService {
   // Метод для получения профиля пользователя
   async getProfile(): Promise<ProfileUser> {
     try {
-      return await this.api.get<ProfileUser>(PROFILE_URL)
+      const profile = await this.api.get<ProfileUser>(PROFILE_URL)
+      if (!profile.user_id) {
+        console.warn('Профиль получен без ID')
+      }
+      return profile
     } catch (error) {
       throw error
     }
@@ -98,7 +103,7 @@ class AuthService {
     }
   }
 
-  // Метод для проверки, аутентифицирован ли пользователь
+  // Метод для проверки, аутентифицирован л�� пользователь
   isAuth(): boolean {
     return !!localStorage.getItem('token')
   }
@@ -119,25 +124,40 @@ class AuthService {
     try {
       console.log('Отправляем запрос с параметрами:', params)
 
-      // Формируем правильные параметры запроса
       const queryParams = {
         usersnumber: params.usersNumber,
-        // Преобразуем массив меток в строку, если они есть
         labels: params.labels ? params.labels.join(',') : undefined,
       }
 
+      console.log('URL запроса:', '/api/v1/usersnumber')
       console.log('Подготовленные параметры запроса:', queryParams)
 
       const response = await this.api.get<{ result: ProfileUser[] }>('/api/v1/usersnumber', {
         params: queryParams,
       })
 
-      console.log('Ответ от сервера:', response)
+      // Добавляем подробное логирование
+      console.log('Сырой ответ от сервера:', response)
+
+      if (!response || !response.result) {
+        console.error('Некорректный формат ответа:', response)
+        throw new Error('Некорректный формат ответа от сервера')
+      }
 
       return response
     } catch (error) {
       console.error('Error fetching users:', error)
       throw error
+    }
+  }
+
+  async sendFriendRequest(targetUserId: number): Promise<void> {
+    try {
+      await this.api.post(HANDSHAKE_URL, { targetUserId })
+      console.log('Запрос в друзья отправлен успешно')
+    } catch (error) {
+      console.error('Ошибка при отправке запроса в друзья:', error)
+      throw new Error('Не удалось отправить запрос в друзья')
     }
   }
 }

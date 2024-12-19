@@ -6,6 +6,10 @@
       </RouterLink>
     </div>
 
+    <div class="navbar-center">
+      <h1 class="page-title">{{ currentPageTitle }}</h1>
+    </div>
+
     <div class="navbar-right">
       <RouterLink to="/messenger" class="nav-icon">
         <i class="fas fa-envelope"></i>
@@ -58,20 +62,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, ref, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import AuthService from '../services/AuthService';
 import defaultAvatarImage from '../assets/default-avatar.png'; // Добавьте дефолтную аватарку
 
 export default defineComponent({
   name: 'NavbarHeader',
   setup() {
+    const route = useRoute();
     const router = useRouter();
     const showNotifications = ref(false);
     const showSettings = ref(false);
     const showLogoutModal = ref(false);
     const userAvatar = ref(''); // Здесь должен быть путь к аватарке пользователя
     const defaultAvatar = defaultAvatarImage;
+
+    const currentPageTitle = computed(() => {
+      switch (route.path) {
+        case '/home':
+          return 'Главная';
+        case '/messenger':
+        case '/messenger/chat':
+          return 'Мессенджер';
+        case '/messenger/match':
+          return 'Match';
+        case '/profile':
+          return 'Мой профиль';
+        default:
+          return '';
+      }
+    });
 
     const toggleNotifications = () => {
       showNotifications.value = !showNotifications.value;
@@ -107,7 +128,8 @@ export default defineComponent({
       defaultAvatar,
       showLogoutModal,
       confirmLogout,
-      handleLogout
+      handleLogout,
+      currentPageTitle,
     };
   },
 });
@@ -129,6 +151,7 @@ export default defineComponent({
   color: white;
   z-index: 1000;
 }
+
 
 .navbar-left {
   display: flex;
@@ -166,6 +189,7 @@ export default defineComponent({
 
 .nav-icon:hover {
   color: var(--secondary-color);
+
 }
 
 .avatar {
@@ -215,6 +239,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 10px;
+
 }
 
 .settings-button:hover {
@@ -289,5 +314,21 @@ export default defineComponent({
 .modal-button:hover {
   transform: scale(1.1);
   opacity: 0.9;
+}
+
+.navbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.page-title {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+  color: #A68136;
+    font-size: 47px;
+    text-align: center;
 }
 </style>

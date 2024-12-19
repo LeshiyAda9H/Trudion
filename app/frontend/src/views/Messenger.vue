@@ -70,17 +70,22 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
+
 .messenger-container {
+  position: fixed;
   display: flex;
-  height: 80vh;
   width: 90%;
+  height: 80vh;
   max-width: 1200px;
-  margin: 80px auto 0;
   border-radius: 30px;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   /* border: 2px solid var(--primary-color); */
   background-color: #fff;
+  left: 50%;
+  top: 6em;
+  transform: translateX(-50%);
 }
 
 .messenger-sidebar {

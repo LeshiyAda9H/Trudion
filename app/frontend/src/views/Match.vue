@@ -8,11 +8,12 @@
           <h3>{{ user.username }}</h3>
         </div>
         <div class="action-buttons">
-          <button class="decline-btn" @click.stop="declineUser(user)">
-            <i class="fas fa-times"></i>
-          </button>
           <button class="accept-btn" @click.stop="acceptMatch(user)">
             <i class="fas fa-check"></i>
+          </button>
+
+          <button class="decline-btn" @click.stop="declineUser(user)">
+            <i class="fas fa-times"></i>
           </button>
         </div>
       </div>
@@ -107,9 +108,11 @@ export default defineComponent({
 
 <style scoped>
 .match-container {
+  
   padding: 20px;
   height: 100%;
   position: relative;
+  background-color: var(--background-color);
 }
 
 .users-grid {

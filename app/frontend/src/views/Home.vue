@@ -28,57 +28,68 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
-  import Navbar from '../components/Navbar.vue'
-  import FilterComponent from '../components/FilterComponent.vue'
-  import UserCard from '../components/UserCard.vue'
-  import LoadingSpinner from '../components/LoadingSpinner.vue'
-  import AuthService from '../services/AuthService'
-  import type { ProfileUser } from '../classes'
+import { ref, onMounted } from 'vue'
+import Navbar from '../components/Navbar.vue'
+import FilterComponent from '../components/FilterComponent.vue'
+import UserCard from '../components/UserCard.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import AuthService from '../services/AuthService'
+import type { ProfileUser } from '../classes'
 
-  interface FilterParams {
-    usersNumber: number
-    labels?: string[]
+interface FilterParams {
+  usersNumber: number
+  labels?: string[]
+}
+
+const users = ref<ProfileUser[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+
+onMounted(async () => {
+  console.log('Home компонент смонтирован')
+  try {
+    await handleFilterChange({ usersNumber: 10 })
+    console.log('Начальная загрузка пользователей завершена')
+  } catch (error) {
+    console.error('Ошибка при начальной загрузке:', error)
   }
+})
 
-  const users = ref<ProfileUser[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+const handleFilterChange = async (filters: FilterParams) => {
+  console.log('Начало handleFilterChange с фильтрами:', filters)
+  isLoading.value = true
+  error.value = null
 
-  const handleFilterChange = async (filters: FilterParams) => {
-    isLoading.value = true
-    error.value = null
+  try {
+    const response = await AuthService.getUsers(filters)
+    console.log('Ответ от AuthService.getUsers:', response)
 
-    try {
-      console.log('Применяем фильтры:', filters)
-      const response = await AuthService.getUsers(filters)
+    if (response && response.result && Array.isArray(response.result)) {
+      console.log('Полученные пользователи:', response.result)
 
-      if (response && response.result && Array.isArray(response.result)) {
-        if (filters.labels && filters.labels.length > 0) {
-          users.value = response.result.filter(user =>
-            user.label && user.label.some(userLabel =>
-              filters.labels!.includes(userLabel)
-            )
+      if (filters.labels && filters.labels.length > 0) {
+        users.value = response.result.filter(user =>
+          user.label && user.label.some(userLabel =>
+            filters.labels!.includes(userLabel)
           )
-        } else {
-          users.value = response.result
-        }
+        )
       } else {
-        error.value = 'Некорректный ответ от сервера'
-        users.value = []
+        users.value = response.result
       }
-    } catch (err) {
-      console.error('Error in handleFilterChange:', err)
-      error.value = 'Ошибка при загрузке пользователей'
-      users.value = []
-    } finally {
-      isLoading.value = false
-    }
-  }
 
-  onMounted(() => {
-    handleFilterChange({ usersNumber: 10 })
-  })
+      console.log('Установлены пользователи:', users.value)
+    } else {
+      error.value = 'Некорректный ответ от сервера'
+      users.value = []
+    }
+  } catch (err) {
+    console.error('Error in handleFilterChange:', err)
+    error.value = 'Ошибка при загрузке пользователей'
+    users.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <style scoped>

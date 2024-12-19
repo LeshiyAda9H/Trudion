@@ -9,6 +9,10 @@ export class ApiClient {
       baseURL: 'http://localhost:8080',
       headers: {
         'Content-Type': 'application/json',
+        // 'Accept': 'application/json',
+        // 'Access-Control-Allow-Origin': '*',
+        // 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+        // 'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token'
       },
     })
 
@@ -61,6 +65,10 @@ export class ApiClient {
     return response.data
   }
 
+  public async patch<T, D = unknown>(url: string, data?: D, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.api.patch<T>(url, data, config)
+    return response.data
+  }
   // Другие методы (put, delete и т.д.)
 }
 

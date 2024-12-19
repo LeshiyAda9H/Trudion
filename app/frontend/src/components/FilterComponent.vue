@@ -90,6 +90,7 @@ export default defineComponent({
   height: fit-content;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
+
 }
 
 .filter-section {
@@ -156,7 +157,7 @@ export default defineComponent({
 .filter-buttons {
   display: flex;
   flex-direction: column;
-  margin-top: 18em;
+  margin-top: 15em;
 }
 
 </style>

@@ -10,49 +10,36 @@
 
     <div class="avatar">
       <img :src="defaultAvatar" alt="avatar" />
-      <div
-        v-if="user.online_status"
-        :class="['online-status', user.online_status]"
-        :title="getStatusText(user.online_status)"
-      ></div>
+      <div v-if="user.online_status" :class="['online-status', user.online_status]"
+        :title="getStatusText(user.online_status)"></div>
     </div>
 
     <div class="user-info">
       <h3 class="nickname">{{ user.username }}</h3>
       <div class="labels">
-        <span v-for="label in user.label"
-              :key="label"
-              class="label-tag"
-              :title="getInterestName(label)">
+        <span v-for="label in user.label" :key="label" class="label-tag" :title="getInterestName(label)">
           {{ getInterestName(label) }}
         </span>
       </div>
 
-      <button
-        class="friend-button"
-        @click.stop="handleFriendRequest"
-        :disabled="isFriendRequestPending"
-      >
+      <button class="friend-button" @click.stop="handleFriendRequest" :disabled="isFriendRequestPending">
         {{ friendButtonText }}
       </button>
     </div>
   </div>
 
-  <UserModal
-    :show="isModalOpen"
-    :user="user"
-    @close="closeModal"
-  />
+  <UserModal :show="isModalOpen" :user="user" @close="closeModal" />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import type { ProfileUser } from '../classes'
 import defaultAvatar from '../assets/default-avatar.png'
 import UserModal from './UserModal.vue'
 import { interests } from '../config/interests'
+import AuthService from '../services/AuthService'
 
-defineProps<{
+const props = defineProps<{
   user: ProfileUser
 }>()
 
@@ -82,8 +69,7 @@ const toggleOptions = () => {
 const handleFriendRequest = async () => {
   try {
     isFriendRequestPending.value = true
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    console.log('Добавление в друзья')
+    await AuthService.sendFriendRequest(props.user.user_id)
   } catch (error) {
     console.error('Ошибка при добавлении в друзья:', error)
   } finally {
@@ -114,6 +100,13 @@ const getInterestName = (value: string): string => {
   const interest = interests.find(i => i.value === value);
   return interest ? interest.name : value;
 };
+
+onMounted(() => {
+  console.log('UserCard получил пользователя:', props.user)
+  if (!props.user.user_id) {
+    console.warn('Пользователь без ID:', props.user)
+  }
+})
 </script>
 
 <style scoped>
@@ -187,7 +180,7 @@ const getInterestName = (value: string): string => {
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 24px;
-
+  bottom: 1em;
 }
 
 .options-icon {
@@ -201,7 +194,7 @@ const getInterestName = (value: string): string => {
   right: 10px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 8px;
   z-index: 100;
 }

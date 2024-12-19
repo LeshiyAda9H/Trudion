@@ -18,6 +18,7 @@ export interface AuthedUser {
 }
 
 export interface ProfileUser {
+  user_id: number;
   username: string;
   gender: string;
   biography: string;

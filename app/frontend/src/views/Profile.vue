@@ -3,41 +3,43 @@
     <Navbar />
   </header>
 
-  <body>
-    <LoadingSpinner v-if="isLoading" />
+  <LoadingSpinner v-if="isLoading" />
 
-    <h1 class="title">Мой профиль</h1>
+  <div v-else class="prof-container">
+    <div class="profile-header">
+      <div class="gender-icon" :class="{ active: profileStore.temporaryData.gender === 'male' }"
+        @click="profileStore.temporaryData.gender = 'male'">
+        <i class="fas fa-mars"></i>
+      </div>
 
-    <div class="prof-container">
       <div class="avatar-container">
         <div class="avatar">
-          <i class="icon-user"></i>
+          <img :src="defaultAvatar" alt="avatar" />
+          <!-- <i class="icon-user">  </i> -->
           <div class="add-photo">+</div>
         </div>
       </div>
 
-      <input type="text" placeholder="Никнейм" class="input" v-model="profileStore.temporaryData.username" />
-
-      <select class="select" v-model="profileStore.temporaryData.gender">
-        <option value="" disabled>Выбери свой пол</option>
-        <option value="male">Мужчина</option>
-        <option value="female">Женщина</option>
-        <option value="other">Абоба</option>
-      </select>
-
-      <textarea placeholder="О себе" class="form-textarea" v-model="profileStore.temporaryData.biography"></textarea>
-
-      <div class="interests-section">
-        <h3>Ваши интересы</h3>
-        <InterestSelector
-          v-model="profileStore.temporaryData.label"
-          placeholder="Выберите ваши интересы"
-        />
+      <div class="gender-icon" :class="{ active: profileStore.temporaryData.gender === 'female' }"
+        @click="profileStore.temporaryData.gender = 'female'">
+        <i class="fas fa-venus"></i>
       </div>
     </div>
 
-    <button class="save-button" @click="updateProfile">Сохранить изменения</button>
-  </body>
+    <input type="text" placeholder="Никнейм" class="input" v-model="profileStore.temporaryData.username" />
+
+    <textarea placeholder="О себе" class="form-textarea" v-model="profileStore.temporaryData.biography"></textarea>
+
+    <div class="interests-section">
+      <h3>Ваши интересы</h3>
+      <InterestSelector v-model="profileStore.temporaryData.label" placeholder="Выберите ваши интересы"
+        direction="up" />
+    </div>
+
+    <div class="save-button-container">
+      <button class="save-button" @click="updateProfile">Сохранить изменения</button>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -49,6 +51,7 @@ import AuthService from '../services/AuthService';
 import '../assets/css/profile.css'
 import { useRouter } from 'vue-router';
 import InterestSelector from '../components/InterestSelector.vue';
+import defaultAvatar from '../assets/default-avatar.png'
 
 export default defineComponent({
   name: 'ProfilePage',
@@ -60,11 +63,10 @@ export default defineComponent({
 
   setup() {
     const profileStore = useProfileStore();
-    const isLoading = ref(false);
+    const isLoading = ref(true);
     const router = useRouter();
 
     const fetchProfileData = async () => {
-      isLoading.value = true;
       try {
         const data = await AuthService.getProfile();
         const labels = data.label ?
@@ -72,18 +74,17 @@ export default defineComponent({
           [];
 
         profileStore.temporaryData = {
+          user_id: data.user_id,
           username: data.username,
           gender: data.gender,
           biography: data.biography,
           label: labels,
           online_status: data.online_status,
         };
-
-        console.log('Загруженные интересы:', labels);
       }
       catch (error) {
         console.error("Ошибка при получении данных профиля:", error);
-        alert("Не удалось загрузить данные профиля");
+        router.push('/login');
       }
       finally {
         isLoading.value = false;
@@ -132,18 +133,118 @@ export default defineComponent({
     return {
       profileStore,
       updateProfile,
-      isLoading
+      isLoading,
+      defaultAvatar
     };
   },
 });
 </script>
 
 <style scoped>
+.prof-container {
+  margin-top: 6em;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+
+}
+
 .interests-section {
   margin: 20px 0;
 }
 
 .interests-section h3 {
   margin-bottom: 10px;
+}
+
+.save-button-container {
+  position: fixed;
+  margin: 41em auto;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.save-button {
+  padding: 15px 20px;
+
+  background-color: #A68136;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  text-align: center;
+  color: #fff;
+
+
+  width: 70%;
+
+  display: grid;
+  place-items: center;
+
+
+}
+
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.avatar-container {
+  /* Существующие стили для avatar-container */
+}
+
+.avatar img {
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  object-fit: cover;
+
+}
+
+
+.gender-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--primary-color);
+  transition: all 0.3s ease;
+  font-size: 24px;
+  color: var(--secondary-color);
+  margin-top: 5em;
+}
+
+.gender-icon i {
+  filter: invert(1);
+}
+
+.gender-icon:hover {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.gender-icon.active {
+  /* background-color: var(--primary-color); */
+  /* border-color: var(--primary-color); */
+  color: white;
+  opacity: 1;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.gender-icon {
+  /* background-color: var(--primary-color); */
+  /* border-color: var(--primary-color); */
+  opacity: 0.1;
+  color: white;
 }
 </style>

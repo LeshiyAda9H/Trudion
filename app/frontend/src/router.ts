@@ -87,8 +87,11 @@ const routes = [
       from: RouteLocationNormalized,
       next: NavigationGuardNext,
     ) => {
-      checkAuthentication(next) // Проверяем аутентификацию
-      // await checkProfileFilled(next); // Проверяем заполненность профиля
+      if (!AuthService.isAuth()) {
+        next('/login');
+      } else {
+        next();
+      }
     },
   },
 

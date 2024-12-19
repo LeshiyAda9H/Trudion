@@ -11,6 +11,7 @@ export const useProfileStore = defineStore('user', {
 
     // Временные данные
     temporaryData: {
+      user_id: 0 as number,
       username: '' as string,
       gender: '' as string,
       biography: '' as string,
@@ -24,9 +25,11 @@ export const useProfileStore = defineStore('user', {
     // Отправляем данные регистрации на сервер и сбрасываем временное состояние
     async completeUpdateProfile() {
       try {
-        AuthService.updateProfile(this.temporaryData)
+        await AuthService.updateProfile(this.temporaryData)
 
+        // Обновляем состояние только после успешного ответа
         this.temporaryData = {
+          user_id: 0,
           username: '',
           gender: '',
           biography: '',
