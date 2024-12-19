@@ -277,9 +277,18 @@ func Handshake(c *gin.Context) {
 	}
 
 	// check if the recipient sends a handshake to the sender
-	var handshake models.Like
-	if initializers.DB.Where("sender_id = ? AND recipient_id = ?", body.RecipientId, sender.UserId).First(&handshake).Error == nil {
+	if initializers.DB.Where("sender_id = ? AND recipient_id = ?", body.RecipientId, sender.UserId).First(&models.Like{}).Error == nil {
 		c.JSON(http.StatusOK, gin.H{"message": "mutually"})
+
+		if initializers.DB.Where("sender_id = ? AND recipient_id = ?", sender.UserId, body.RecipientId).First(&models.Like{}).Error == nil {
+			return
+		}
+
+		// create a handshake
+		initializers.DB.Create(&models.Like{
+			SenderID:    sender.UserId,
+			RecipientID: body.RecipientId,
+		})
 
 		// create a notification for the recipient
 		initializers.DB.Create(&models.Notification{
@@ -287,6 +296,12 @@ func Handshake(c *gin.Context) {
 			Message: "У вас взаимная симпатия с пользователем " + sender.Username,
 		})
 	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "handshake successful"})
+
+		if initializers.DB.Where("sender_id = ? AND recipient_id = ?", sender.UserId, body.RecipientId).First(&models.Like{}).Error == nil {
+			return
+		}
+
 		// create a handshake
 		initializers.DB.Create(&models.Like{
 			SenderID:    sender.UserId,
@@ -297,10 +312,6 @@ func Handshake(c *gin.Context) {
 		initializers.DB.Create(&models.Notification{
 			UserID:  body.RecipientId,
 			Message: "Пользователь " + sender.Username + " хочет познакомиться с вами",
-		})
-
-		c.JSON(http.StatusOK, gin.H{
-			"message": "handshake successful",
 		})
 	}
 }
