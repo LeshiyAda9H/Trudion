@@ -169,9 +169,16 @@ func GetUsersNumber(c *gin.Context) {
 // @Failure 500 {object} string
 // @Router /api/v1/userspage [get]
 func GetUsersPage(c *gin.Context) {
-	if start == -1 || step == -1 || dbSize == -1 {
-		setStartStep(c)
-	}
+
+	setStartStep(c)
+	// if userSession.Get("start") == nil {
+	// 	setStartStep(c)
+	// }
+	userSession := sessions.Default(c)
+	start, _ := userSession.Get("start").(int)
+	step := userSession.Get("step").(int)
+	dbSize := userSession.Get("dbSize").(int)
+	userId := userSession.Get("userId").(int)
 
 	pageStr, correct := c.GetQuery("page")
 	if !correct {
@@ -202,7 +209,7 @@ func GetUsersPage(c *gin.Context) {
 
 	// var result [pageSize]models.UserPage
 	var result []models.UserPage = make([]models.UserPage, pageSize)
-	if err := initializers.DB.Raw(getPageQuery, rowIndices).Scan(&result).Error; err != nil {
+	if err := initializers.DB.Raw(getPageQuery, userId, rowIndices).Scan(&result).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed get users page",
 		})
