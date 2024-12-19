@@ -104,16 +104,32 @@ export default defineComponent({
       if (!validateData()) return;
 
       try {
-        await AuthService.updateProfile({
-          username: profileStore.temporaryData.username,
-          gender: profileStore.temporaryData.gender,
-          biography: profileStore.temporaryData.biography,
-          label: profileStore.temporaryData.label,
-          online_status: profileStore.temporaryData.online_status,
-        });
+        const changedFields: Partial<typeof profileStore.temporaryData> = {};
+        const originalData = profileStore.profileData;
 
-        profileStore.completeUpdateProfile();
-        alert("Данные обновлены!");
+        if (profileStore.temporaryData.username !== originalData.username) {
+          changedFields.username = profileStore.temporaryData.username;
+        }
+        if (profileStore.temporaryData.gender !== originalData.gender) {
+          changedFields.gender = profileStore.temporaryData.gender;
+        }
+        if (profileStore.temporaryData.biography !== originalData.biography) {
+          changedFields.biography = profileStore.temporaryData.biography;
+        }
+        if (profileStore.temporaryData.label && originalData.label &&
+            !arraysEqual(profileStore.temporaryData.label, originalData.label)) {
+          changedFields.label = profileStore.temporaryData.label;
+        }
+
+        console.log('Измененные поля:', changedFields);
+
+        if (Object.keys(changedFields).length > 0) {
+          await AuthService.updateProfile(changedFields);
+          profileStore.completeUpdateProfile();
+          alert("Данные обновлены!");
+        } else {
+          alert("Нет изменений для сохранения");
+        }
       }
       catch (error) {
         console.error("Ошибка при сохранении профиля:", error);
@@ -128,6 +144,11 @@ export default defineComponent({
         return false;
       }
       return true;
+    };
+
+    const arraysEqual = (a: string[], b: string[]) => {
+      if (a.length !== b.length) return false;
+      return a.every((val, index) => val === b[index]);
     };
 
     return {
