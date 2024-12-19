@@ -35,7 +35,7 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
@@ -49,11 +49,11 @@ func main() {
 	router.GET("/api/v1/profile", handlers.GetUserProfile)
 	router.GET("/api/v1/usersnumber", handlers.GetUsersNumber)
 	router.GET("/api/v1/userspage", handlers.GetUsersPage)
+	router.POST("/api/v1/handshake", handlers.Handshake)
 
 	router.POST("/api/v1/register", handlers.SignUp)
 	router.POST("/api/v1/login", handlers.SignIn)
 	router.POST("/api/v1/verify/email", handlers.VerifyEmail)
-	//router.POST("/api/v1/verify/token", handlers.VerifyToken)
 
 	// run server
 	port := os.Getenv("PORT")
