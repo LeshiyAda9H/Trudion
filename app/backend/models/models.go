@@ -61,8 +61,7 @@ type Notification struct {
 }
 
 type Like struct {
-	LikeID        uint   `gorm:"primaryKey;autoIncrement" json:"like_id"`
-	FirstLikerID  uint   `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"first_liker_id"`
-	SecondLikerID uint   `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"second_liker_id"`
-	LikeStatus    string `gorm:"type:varchar(255);not null" json:"like_status"`
+	LikeID      uint `gorm:"primaryKey;autoIncrement" json:"like_id"`
+	SenderID    uint `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"sender_id"`
+	RecipientID uint `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"recipient_id"`
 }

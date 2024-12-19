@@ -17,3 +17,7 @@ type SignUpPayload struct {
 	Label     []string `json:"label"`
 	Biography string   `gorm:"default:''" json:"biography"`
 }
+
+type HandshakePayload struct {
+	RecipientId uint `json:"user_id"`
+}

@@ -5,6 +5,7 @@ import (
 	"src/initializers"
 	"src/models"
 	"src/repository"
+	"src/types"
 	"strconv"
 
 	"github.com/gin-contrib/sessions"
@@ -196,7 +197,7 @@ func GetUsersPage(c *gin.Context) {
 	}
 
 	// var rowIndices [pageSize]int
-	var rowIndices []int = make([]int, pageSize)
+	var rowIndices = make([]int, pageSize)
 	var dbIterator = (start + (page-1)*pageSize*step) % dbSize
 	for i := range pageSize {
 		dbIterator = (dbIterator + step) % dbSize
@@ -208,7 +209,7 @@ func GetUsersPage(c *gin.Context) {
 	}
 
 	// var result [pageSize]models.UserPage
-	var result []models.UserPage = make([]models.UserPage, pageSize)
+	var result = make([]models.UserPage, pageSize)
 	if err := initializers.DB.Raw(getPageQuery, userId, rowIndices).Scan(&result).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed get users page",
@@ -226,4 +227,80 @@ func GetUsersPage(c *gin.Context) {
 		"users_count": usersOnPage,
 		"result":      result,
 	})
+}
+
+// @Summary Handshake
+// @Description send match request
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param input body types.HandshakePayload true "recipient id"
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/handshake [post]
+func Handshake(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	var body types.HandshakePayload
+	if err := c.Bind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read body"})
+		return
+	}
+
+	senderId, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found"})
+		return
+	}
+
+	if senderId == body.RecipientId {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "can't handshake with yourself"})
+		return
+	}
+
+	// get sender model
+	var sender models.User
+	if initializers.DB.Where("user_id = ?", senderId).First(&sender).Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to get sender from database"})
+		return
+	}
+
+	// check if the recipient exists
+	var recipient models.User
+	if initializers.DB.Where("user_id = ?", body.RecipientId).First(&recipient).Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "recipient not found"})
+		return
+	}
+
+	// check if the recipient sends a handshake to the sender
+	var handshake models.Like
+	if initializers.DB.Where("sender_id = ? AND recipient_id = ?", body.RecipientId, sender.UserId).First(&handshake).Error == nil {
+		c.JSON(http.StatusOK, gin.H{"message": "mutually"})
+
+		// create a notification for the recipient
+		initializers.DB.Create(&models.Notification{
+			UserID:  body.RecipientId,
+			Message: "У вас взаимная симпатия с пользователем " + sender.Username,
+		})
+	} else {
+		// create a handshake
+		initializers.DB.Create(&models.Like{
+			SenderID:    sender.UserId,
+			RecipientID: body.RecipientId,
+		})
+
+		// create a notification for the recipient
+		initializers.DB.Create(&models.Notification{
+			UserID:  body.RecipientId,
+			Message: "Пользователь " + sender.Username + " хочет познакомиться с вами",
+		})
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "handshake successful",
+		})
+	}
 }
