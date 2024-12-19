@@ -19,7 +19,7 @@ type SignUpPayload struct {
 }
 
 type HandshakePayload struct {
-	RecipientId uint `json:"user_id"`
+	RecipientId uint `json:"targetUserId" binding:"required"`
 }
 
 type UpdateProfilePayload struct {
