@@ -37,6 +37,19 @@ definitions:
     - password
     - username
     type: object
+  types.UpdateProfilePayload:
+    properties:
+      biography:
+        type: string
+      gender:
+        type: string
+      label:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
+    type: object
   types.VerifyEmailPayload:
     properties:
       email:
@@ -151,6 +164,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: UserProfile
+    patch:
+      consumes:
+      - application/json
+      description: update user profile information
+      parameters:
+      - description: profile information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateProfilePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateProfile
   /api/v1/register:
     post:
       consumes:

@@ -304,3 +304,59 @@ func Handshake(c *gin.Context) {
 		})
 	}
 }
+
+// @Summary UpdateProfile
+// @Description update user profile information
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce  json
+// @Param input body types.UpdateProfilePayload true "profile information"
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/profile [patch]
+func UpdateProfile(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	var body types.UpdateProfilePayload
+	if err := c.Bind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read body"})
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found"})
+		return
+	}
+
+	user, err := repository.GetUserByID(id.(uint))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Can't find user profile"})
+		return
+	}
+
+	initializers.DB.Model(user).
+		Select("Username", "Gender", "Biography").
+		Updates(models.User{
+			Username:  body.Username,
+			Biography: body.Biography,
+			Gender:    body.Gender,
+		})
+
+	// update labels
+	if body.Label != nil {
+		initializers.DB.Where("user_id = ?", user.UserId).Delete(&models.UserLabel{})
+		for _, label := range body.Label {
+			var labelInfo models.LabelInfo
+			initializers.DB.Where("label_name = ?", label).First(&labelInfo)
+			initializers.DB.Create(&models.UserLabel{
+				UserID:  user.UserId,
+				LabelID: labelInfo.LabelID,
+			})
+		}
+	}
+}

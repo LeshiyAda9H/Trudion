@@ -21,3 +21,10 @@ type SignUpPayload struct {
 type HandshakePayload struct {
 	RecipientId uint `json:"user_id"`
 }
+
+type UpdateProfilePayload struct {
+	Username  string   `json:"username"`
+	Gender    string   `json:"gender"`
+	Biography string   `json:"biography"`
+	Label     []string `json:"label"`
+}
