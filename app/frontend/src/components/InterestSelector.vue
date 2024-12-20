@@ -14,20 +14,10 @@
       <div v-show="isOpen" class="options-container" :class="{ 'direction-up': direction === 'up' }">
         <div v-for="category in categories" :key="category" class="category-section">
           <div class="category-header">{{ category }}</div>
-          <div
-            v-for="interest in getInterestsByCategory(category)"
-            :key="interest.id"
-            class="option-item"
-            :class="{ 'selected': isSelected(interest.value) }"
-            @click="toggleInterest(interest.value)"
-          >
+          <div v-for="interest in getInterestsByCategory(category)" :key="interest.id" class="option-item"
+            :class="{ 'selected': isSelected(interest.value) }" @click="toggleInterest(interest.value)">
             <div class="checkbox-container">
-              <input
-                type="checkbox"
-                :checked="isSelected(interest.value)"
-                @click.stop
-                readonly
-              >
+              <input type="checkbox" :checked="isSelected(interest.value)" @click.stop readonly>
               <span>{{ interest.name }}</span>
             </div>
 
@@ -37,9 +27,7 @@
     </div>
     <!-- Отображение выбранных меток -->
     <div class="selected-labels" v-if="modelValue.length > 0">
-      <div v-for="value in modelValue"
-           :key="value"
-           class="label-tag">
+      <div v-for="value in modelValue" :key="value" class="label-tag">
         <span>{{ getInterestName(value) }}</span>
         <button class="remove-label" @click="removeInterest(value)" type="button">×</button>
       </div>
@@ -90,6 +78,10 @@ export default defineComponent({
       const index = newInterests.indexOf(value);
 
       if (index === -1) {
+        if (newInterests.length >= 3) {
+          alert('Можно выбрать максимум 3 интереса');
+          return;
+        }
         newInterests.push(value);
       } else {
         newInterests.splice(index, 1);
@@ -161,7 +153,6 @@ export default defineComponent({
   border-radius: var(--border-radius);
   border: 2px solid var(--primary-color);
   font-size: 14px;
-  font-weight: bold;
 
 }
 
@@ -184,9 +175,7 @@ export default defineComponent({
 
 .multiselect-container {
   position: relative;
-  width: 100%;
-  border: 1px solid var(--primary-color);
-  border-radius: var(--border-radius);
+  align-self: center;
 }
 
 .multiselect-header {
@@ -197,11 +186,10 @@ export default defineComponent({
   background: var(--secondary-color);
   cursor: pointer;
   user-select: none;
-  border: 1px solid var(--primary-color);
+  border: 2px solid var(--primary-color);
   border-radius: var(--border-radius);
-  width: 100%;
-  
-
+  width: 20em;
+  margin: 1em 0;
 }
 
 .arrow {
@@ -224,7 +212,7 @@ export default defineComponent({
   border-top: none;
   border-radius: 0 0 4px 4px;
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .options-container.direction-up {
@@ -233,7 +221,7 @@ export default defineComponent({
   border-top: 1px solid #ddd;
   border-bottom: none;
   border-radius: 4px 4px 0 0;
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .option-item {
@@ -293,5 +281,4 @@ export default defineComponent({
   align-items: center;
   gap: 10px;
 }
-
 </style>

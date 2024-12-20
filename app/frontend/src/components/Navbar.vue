@@ -86,7 +86,7 @@ export default defineComponent({
         case '/messenger/chat':
           return 'Мессенджер';
         case '/messenger/match':
-          return 'Match';
+          return 'Место встречи';
         case '/profile':
           return 'Мой профиль';
         default:
@@ -145,7 +145,7 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
   padding: 20px 2em;
-  border-bottom: 1px solid #e0e0e0;
+  /* border-bottom: 1px solid #e0e0e0; */
 
   background-color: #fff;
   color: white;
@@ -156,21 +156,63 @@ export default defineComponent({
 .navbar-left {
   display: flex;
   align-items: center;
-  margin-left: 5em;
+  margin-left: 4em;
 }
 
 .logo-ellipse {
-  background-color: var(--primary-color);
-  padding: 8px 30px;
-  border-radius: 20px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #8B6B2E 100%);
+  padding: 12px 35px;
+  border-radius: 25px;
   color: white;
   font-weight: bold;
+  font-size: 1.2em;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(166, 129, 54, 0.3);
+}
+
+.logo-ellipse::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
+  transition: 0.5s;
 }
 
 .logo-ellipse:hover {
-  background-color: #666666;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(166, 129, 54, 0.4);
+  background: linear-gradient(135deg, #8B6B2E 0%, var(--primary-color) 100%);
+}
+
+.logo-ellipse:hover::before {
+  left: 100%;
+}
+
+.logo-ellipse::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #FFF, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.logo-ellipse:hover::after {
+  opacity: 0.5;
 }
 
 .navbar-right {
@@ -328,7 +370,7 @@ export default defineComponent({
   font-weight: bold;
   margin: 0;
   color: #A68136;
-    font-size: 47px;
-    text-align: center;
+  font-size: 47px;
+  text-align: center;
 }
 </style>

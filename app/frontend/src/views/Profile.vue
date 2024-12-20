@@ -117,7 +117,7 @@ export default defineComponent({
           changedFields.biography = profileStore.temporaryData.biography;
         }
         if (profileStore.temporaryData.label && originalData.label &&
-            !arraysEqual(profileStore.temporaryData.label, originalData.label)) {
+          !arraysEqual(profileStore.temporaryData.label, originalData.label)) {
           changedFields.label = profileStore.temporaryData.label;
         }
 
@@ -163,7 +163,7 @@ export default defineComponent({
 
 <style scoped>
 .prof-container {
-  margin-top: 6em;
+  margin-top: 5.5em;
   position: fixed;
   left: 50%;
   transform: translateX(-50%);

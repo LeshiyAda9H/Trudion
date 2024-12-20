@@ -1,5 +1,5 @@
 <template>
-   <!-- При клике на overlay вызывается closeModal -->
+  <!-- При клике на overlay вызывается closeModal -->
   <div v-if="show" class="modal-overlay" @click="closeModal">
     <!-- .stop предотвращает всплытие события клика к overlay -->
     <div class="modal-content" @click.stop>
@@ -7,17 +7,16 @@
         <div class="avatar">
           <img :src="defaultAvatar" alt="avatar" />
         </div>
-        <h2 class="nickname">{{ user.username }}</h2>
+        <div class="user-info">
+          <h2 class="nickname">
+            {{ user.username }}
+            <i class="fas" :class="genderIcon" :title="genderTitle"></i>
+          </h2>
+        </div>
       </div>
 
       <div class="user-details">
-        <div class="info-item">
-          <span class="label">Пол:</span>
-          <span>{{ user.gender === 'male' ? 'Мужской' : 'Женский' }}</span>
-        </div>
-
-        <div class="info-item">
-          <span class="label">О себе:</span>
+        <div v-if="user.biography" class="info-item">
           <p>{{ user.biography }}</p>
         </div>
 
@@ -29,7 +28,9 @@
       </div>
 
       <div class="modal-actions">
-        <button class="friend-button" @click="handleFriendRequest">Дружить</button>
+        <button class="friend-button" @click.stop="handleFriendRequest" :disabled="isSending">
+          {{ buttonText }}
+        </button>
         <button class="report-button" @click="handleReport">Жалоба</button>
       </div>
 
@@ -40,27 +41,42 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import type { ProfileUser } from '../classes'
 import defaultAvatar from '../assets/default-avatar.png'
 import { interests } from '../config/interests'
+import AuthService from '../services/AuthService'
 
-defineProps<{
+const props = defineProps<{
   show: boolean
   user: ProfileUser
 }>()
 
 const emit = defineEmits<{
   close: []
+  'match-success': []
 }>()
 
-// Этот метод вызывается при клике на overlay или кнопку закрытия
-const closeModal = () => {
-  emit('close')
-}
+const isSending = ref(false)
 
-const handleFriendRequest = () => {
-  // Логика добавления в друзья
-  console.log('Добавление в друзья из модального окна')
+const buttonText = computed(() => {
+  if (isSending.value) {
+    return 'Обработка...'
+  }
+  return 'Дружить'
+})
+
+const handleFriendRequest = async () => {
+  try {
+    isSending.value = true
+    await AuthService.sendFriendRequest(props.user.user_id)
+    emit('match-success') // Вызываем анимацию духа
+    closeModal()
+  } catch (error) {
+    console.error('Ошибка при отправке запроса:', error)
+  } finally {
+    isSending.value = false
+  }
 }
 
 const handleReport = () => {
@@ -72,6 +88,20 @@ const getInterestName = (value: string): string => {
   const interest = interests.find(i => i.value === value);
   return interest ? interest.name : value;
 };
+
+// Этот метод вызывается при клике на overlay или кнопку закрытия
+const closeModal = () => {
+  emit('close')
+}
+
+const genderIcon = computed(() => ({
+  'fa-mars': props.user.gender === 'male',
+  'fa-venus': props.user.gender === 'female'
+}))
+
+const genderTitle = computed(() =>
+  props.user.gender === 'male' ? 'Мужской' : 'Женский'
+)
 </script>
 
 <style scoped>
@@ -108,7 +138,6 @@ const getInterestName = (value: string): string => {
 
 .modal-header {
   text-align: center;
-  margin-bottom: 1em;
 }
 
 .avatar img {
@@ -123,7 +152,19 @@ const getInterestName = (value: string): string => {
 }
 
 .info-item {
-  margin: 1em 0;
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  outline: none;
+
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: bold;
+
+  width: 100%;
+  text-align: center;
 }
 
 .labels {
@@ -177,5 +218,35 @@ const getInterestName = (value: string): string => {
   padding: 0.3em 0.7em;
   border-radius: var(--border-radius);
   border: 2px solid var(--primary-color);
+}
+
+.friend-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nickname {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nickname i {
+  font-size: 0.8em;
+  color: var(--primary-color);
+}
+
+.fa-mars {
+  color: #4287f5;
+}
+
+.fa-venus {
+  color: #f542aa;
 }
 </style>

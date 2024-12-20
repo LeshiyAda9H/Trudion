@@ -1,28 +1,30 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-
+import PageTransition from './components/PageTransition.vue'
 </script>
 
 <template>
-  <header>
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div> -->
-
-
-  </header>
-
-  <RouterView />
+  <PageTransition>
+    <RouterView />
+  </PageTransition>
 </template>
 
 <style scoped>
+/* Предотвращаем скролл во время анимации */
+.page-enter-active,
+.page-leave-active {
+  position: absolute;
+  width: 100%;
+  transition: all 0.5s ease;
+}
 
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
 
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
 </style>

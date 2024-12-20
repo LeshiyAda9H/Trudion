@@ -22,7 +22,7 @@
         </span>
       </div>
 
-      <button class="friend-button" @click.stop="handleFriendRequest" :disabled="isFriendRequestPending">
+      <button class="friend-button" @click.stop="handleFriendRequest" :disabled="isSending">
         {{ friendButtonText }}
       </button>
     </div>
@@ -45,10 +45,10 @@ const props = defineProps<{
 
 const isModalOpen = ref(false)
 const showOptions = ref(false)
-const isFriendRequestPending = ref(false)
+const isSending = ref(false)
 
 const friendButtonText = computed(() => {
-  if (isFriendRequestPending.value) {
+  if (isSending.value) {
     return 'Обработка...'
   }
   return 'Дружить'
@@ -66,16 +66,22 @@ const toggleOptions = () => {
   showOptions.value = !showOptions.value
 }
 
+const emit = defineEmits(['match-success']);
+
 const handleFriendRequest = async () => {
   try {
-    isFriendRequestPending.value = true
-    await AuthService.sendFriendRequest(props.user.user_id)
+    isSending.value = true;
+    const response = await AuthService.sendFriendRequest(props.user.user_id);
+
+    if (response.message === 'mutually') {
+      emit('match-success', true);
+    }
   } catch (error) {
-    console.error('Ошибка при добавлении в друзья:', error)
+    console.error('Ошибка при отправке запроса:', error);
   } finally {
-    isFriendRequestPending.value = false
+    isSending.value = false;
   }
-}
+};
 
 const handleReport = () => {
   console.log('Отправка жалобы')
@@ -113,7 +119,6 @@ onMounted(() => {
 .user-card {
   background: #fff;
   border-radius: var(--border-radius);
-  border: 3px solid var(--primary-color);
   padding: 15px;
   width: 21em;
   height: 32em;
@@ -165,14 +170,12 @@ onMounted(() => {
   background: var(--secondary-color);
   padding: 4px 0.7em;
   border-radius: var(--border-radius);
-  border: 3px solid var(--primary-color);
+  border: 2px solid var(--primary-color);
   font-size: 24px;
-  font-weight: bold;
 }
 
 .friend-button {
   background: #b08d57;
-  margin-top: 1em;
   color: white;
   border: none;
   width: 10em;
@@ -180,7 +183,10 @@ onMounted(() => {
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 24px;
+  position: absolute;
   bottom: 1em;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .options-icon {

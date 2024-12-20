@@ -20,11 +20,13 @@
       </div>
 
       <div v-else class="users-list">
-        <UserCard v-for="user in users" :key="user.username" :user="user" />
+        <UserCard v-for="user in users" :key="user.username" :user="user" @match-success="handleMatch" />
       </div>
 
     </main>
   </div>
+
+  <WorkSpirit ref="workSpirit" />
 </template>
 
 <script setup lang="ts">
@@ -35,6 +37,7 @@ import UserCard from '../components/UserCard.vue'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
 import AuthService from '../services/AuthService'
 import type { ProfileUser } from '../classes'
+import WorkSpirit from '../components/WorkSpirit.vue'
 
 interface FilterParams {
   usersNumber: number
@@ -44,6 +47,7 @@ interface FilterParams {
 const users = ref<ProfileUser[]>([])
 const isLoading = ref(false)
 const error = ref<string | null>(null)
+const workSpirit = ref()
 
 onMounted(async () => {
   console.log('Home компонент смонтирован')
@@ -53,6 +57,10 @@ onMounted(async () => {
   } catch (error) {
     console.error('Ошибка при начальной загрузке:', error)
   }
+
+  setTimeout(() => {
+    workSpirit.value?.flyIn()
+  }, 1000)
 })
 
 const handleFilterChange = async (filters: FilterParams) => {
@@ -90,6 +98,10 @@ const handleFilterChange = async (filters: FilterParams) => {
     isLoading.value = false
   }
 }
+
+const handleMatch = (isMatch = false) => {
+  workSpirit.value?.flyIn(isMatch);
+};
 </script>
 
 <style scoped>
@@ -97,7 +109,6 @@ const handleFilterChange = async (filters: FilterParams) => {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 20px;
-  padding: 20px;
   min-height: 100vh;
   margin-top: 80px;
 }

@@ -18,6 +18,10 @@ interface verifyProps {
   available: boolean
 }
 
+interface HandshakeResponse {
+  message: 'mutually' | 'handshake';
+}
+
 // Класс AuthService для управления аутентификацией и регистрацией пользователей
 class AuthService {
   private api: typeof apiClient
@@ -153,13 +157,29 @@ class AuthService {
     }
   }
 
-  async sendFriendRequest(targetUserId: number): Promise<void> {
+  async sendFriendRequest(targetUserId: number): Promise<HandshakeResponse> {
     try {
-      await this.api.post(HANDSHAKE_URL, { targetUserId })
-      console.log('Запрос в друзья отправлен успешно')
+      const response = await this.api.post<HandshakeResponse>(HANDSHAKE_URL, { targetUserId });
+
+      if (response.message === 'mutually') {
+        // Создаём диалог при взаимном лайке
+        await this.createDialog(targetUserId);
+      }
+
+      return response;
     } catch (error) {
-      console.error('Ошибка при отправке запроса в друзья:', error)
-      throw new Error('Не удалось отправить запрос в друзья')
+      console.error('Ошибка при отправке запроса в друзья:', error);
+      throw error;
+    }
+  }
+
+  private async createDialog(targetUserId: number): Promise<void> {
+    try {
+      await this.api.post('/api/v1/dialogs', { targetUserId });
+      console.log('Диалог успешно создан');
+    } catch (error) {
+      console.error('Ошибка при создании диалога:', error);
+      throw error;
     }
   }
 
@@ -200,5 +220,5 @@ class AuthService {
   }
 }
 
-// Экспортируем экземпляр класса AuthService
+// Экспортируем ��кземпляр класса AuthService
 export default new AuthService()
