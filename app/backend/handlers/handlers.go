@@ -340,7 +340,7 @@ func UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	var body types.UpdateProfilePayload
+	var body map[string]interface{}
 	if err := c.Bind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read body"})
 		return
@@ -358,26 +358,44 @@ func UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	initializers.DB.Model(user).
-		Select("Username", "Gender", "Biography").
-		Updates(models.User{
-			Username:  body.Username,
-			Biography: body.Biography,
-			Gender:    body.Gender,
-		})
+	allowedFields := map[string]bool{
+		"username":  true,
+		"gender":    true,
+		"biography": true,
+	}
+
+	updateData := make(map[string]interface{})
+	for key, val := range body {
+		if allowedFields[key] {
+			updateData[key] = val
+		}
+	}
+
+	if len(updateData) > 0 {
+		if err := initializers.DB.Model(user).Updates(updateData).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+			return
+		}
+	}
 
 	// update labels
-	if body.Label != nil {
+	if labels, ok := body["label"].([]interface{}); ok {
 		initializers.DB.Where("user_id = ?", user.UserId).Delete(&models.UserLabel{})
-		for _, label := range body.Label {
+		for _, label := range labels {
+			labelStr, ok := label.(string)
+			if !ok {
+				continue
+			}
 			var labelInfo models.LabelInfo
-			initializers.DB.Where("label_name = ?", label).First(&labelInfo)
+			initializers.DB.Where("label_name = ?", labelStr).First(&labelInfo)
 			initializers.DB.Create(&models.UserLabel{
 				UserID:  user.UserId,
 				LabelID: labelInfo.LabelID,
 			})
 		}
 	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "profile updated successfully"})
 }
 
 // @Summary DeleteUser
