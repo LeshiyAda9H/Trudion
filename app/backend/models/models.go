@@ -20,11 +20,11 @@ type User struct {
 }
 
 type Message struct {
-	MessageID  uint          `gorm:"primaryKey;autoIncrement" json:"message_id"`
-	SenderID   uint          `gorm:"not null" json:"sender_id"`
-	ReceiverID sql.NullInt32 `json:"receiver_id"`
-	Message    string        `gorm:"type:text;not null" json:"message"`
-	Timestamp  time.Time     `gorm:"not null" json:"timestamp"`
+	MessageID   uint          `gorm:"primaryKey;autoIncrement" json:"message_id"`
+	SenderID    sql.NullInt32 `json:"sender_id"`
+	RecipientID sql.NullInt32 `json:"recipient_id"`
+	Message     string        `gorm:"type:text;not null" json:"message"`
+	Timestamp   time.Time     `gorm:"not null" json:"timestamp"`
 }
 
 type LabelInfo struct {

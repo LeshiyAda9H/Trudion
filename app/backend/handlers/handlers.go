@@ -429,17 +429,17 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	if initializers.DB.
+	if initializers.DB.Model(&models.Message{}).
 		Where("sender_id = ?", id).
-		Delete(&models.Message{}).
+		Update("sender_id = ?", nil).
 		Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user messages"})
 		return
 	}
 
 	if initializers.DB.Model(&models.Message{}).
-		Where("receiver_id = ?", id).
-		Update("receiver_id", nil).
+		Where("recipient_id = ?", id).
+		Update("recipient_id", nil).
 		Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user messages"})
 		return
