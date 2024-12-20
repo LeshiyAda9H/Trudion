@@ -32,6 +32,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/deleteuser": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete user",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "DeleteUser",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/handshake": {
             "post": {
                 "security": [
@@ -425,8 +459,11 @@ const docTemplate = `{
     "definitions": {
         "types.HandshakePayload": {
             "type": "object",
+            "required": [
+                "targetUserId"
+            ],
             "properties": {
-                "user_id": {
+                "targetUserId": {
                     "type": "integer"
                 }
             }

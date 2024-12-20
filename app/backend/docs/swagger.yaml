@@ -2,8 +2,10 @@ basePath: /
 definitions:
   types.HandshakePayload:
     properties:
-      user_id:
+      targetUserId:
         type: integer
+    required:
+    - targetUserId
     type: object
   types.SignInPayload:
     properties:
@@ -75,6 +77,27 @@ paths:
           schema:
             type: string
       summary: Ping
+  /api/v1/deleteuser:
+    delete:
+      description: delete user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: DeleteUser
   /api/v1/handshake:
     post:
       consumes:

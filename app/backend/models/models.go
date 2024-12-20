@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -19,11 +20,11 @@ type User struct {
 }
 
 type Message struct {
-	MessageID  uint      `gorm:"primaryKey;autoIncrement" json:"message_id"`
-	SenderID   uint      `gorm:"not null" json:"sender_id"`
-	ReceiverID uint      `gorm:"not null" json:"receiver_id"`
-	Message    string    `gorm:"type:text;not null" json:"message"`
-	Timestamp  time.Time `gorm:"not null" json:"timestamp"`
+	MessageID  uint          `gorm:"primaryKey;autoIncrement" json:"message_id"`
+	SenderID   uint          `gorm:"not null" json:"sender_id"`
+	ReceiverID sql.NullInt32 `json:"receiver_id"`
+	Message    string        `gorm:"type:text;not null" json:"message"`
+	Timestamp  time.Time     `gorm:"not null" json:"timestamp"`
 }
 
 type LabelInfo struct {

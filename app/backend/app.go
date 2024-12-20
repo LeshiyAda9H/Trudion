@@ -58,6 +58,8 @@ func main() {
 
 	router.PATCH("/api/v1/profile", handlers.UpdateProfile)
 
+	router.DELETE("/api/v1/deleteuser", handlers.DeleteUser)
+
 	// run server
 	port := os.Getenv("PORT")
 	log.Printf("Server is running at %s port.", port)

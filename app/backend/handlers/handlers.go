@@ -371,3 +371,79 @@ func UpdateProfile(c *gin.Context) {
 		}
 	}
 }
+
+// @Summary DeleteUser
+// @Description delete user
+// @Security ApiKeyAuth
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/deleteuser [delete]
+func DeleteUser(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user ID not found"})
+		return
+	}
+
+	user, err := repository.GetUserByID(id.(uint))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "can't find user profile"})
+		return
+	}
+
+	if initializers.DB.
+		Delete(&user).
+		Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user"})
+		return
+	}
+
+	if initializers.DB.
+		Where("user_id = ?", id).
+		Delete(&models.UserLabel{}).
+		Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user labels"})
+		return
+	}
+
+	if initializers.DB.
+		Where("user_id = ?", id).
+		Delete(&models.Notification{}).
+		Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user notifications"})
+		return
+	}
+
+	if initializers.DB.
+		Where("sender_id = ? OR recipient_id = ?", id, id).
+		Delete(&models.Like{}).
+		Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user likes"})
+		return
+	}
+
+	if initializers.DB.
+		Where("sender_id = ?", id).
+		Delete(&models.Message{}).
+		Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user messages"})
+		return
+	}
+
+	if initializers.DB.Model(&models.Message{}).
+		Where("receiver_id = ?", id).
+		Update("receiver_id", nil).
+		Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user messages"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
+}
