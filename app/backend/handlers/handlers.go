@@ -171,15 +171,15 @@ func GetUsersNumber(c *gin.Context) {
 // @Router /api/v1/userspage [get]
 func GetUsersPage(c *gin.Context) {
 
-	setStartStep(c)
-	// if userSession.Get("start") == nil {
-	// 	setStartStep(c)
-	// }
+	// setStartStep(c)
 	userSession := sessions.Default(c)
+	if userSession.Get("start") == nil {
+		setStartStep(c)
+	}
 	start, _ := userSession.Get("start").(int)
 	step := userSession.Get("step").(int)
 	dbSize := userSession.Get("dbSize").(int)
-	userId := userSession.Get("userId").(int)
+	userId := userSession.Get("userId").(uint)
 
 	pageStr, correct := c.GetQuery("page")
 	if !correct {
@@ -189,7 +189,7 @@ func GetUsersPage(c *gin.Context) {
 		return
 	}
 	page, err := strconv.Atoi(pageStr)
-	if err != nil || page <= 0 || (dbSize+pageSize)/pageSize < page {
+	if err != nil || page <= 0 || (dbSize+pageSize-2)/pageSize < page {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid page value",
 		})
@@ -197,8 +197,16 @@ func GetUsersPage(c *gin.Context) {
 	}
 
 	// var rowIndices [pageSize]int
+	var userRow int
+	if initializers.DB.Raw(getUserRow, userId).Scan(&userRow).Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed find user ID",
+		})
+		return
+	}
+
 	var rowIndices = make([]int, pageSize)
-	var dbIterator = (start + (page-1)*pageSize*step) % dbSize
+	var dbIterator = (start + page*pageSize*step) % dbSize
 	for i := range pageSize {
 		dbIterator = (dbIterator + step) % dbSize
 		if dbIterator == start {
