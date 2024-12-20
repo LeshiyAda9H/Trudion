@@ -21,4 +21,5 @@ jobs:
           golangci-lint --version
 
       - name: Lint
-        run: golangci-lint run ./app/backend/...
+        working-directory: ./app/backend
+        run: golangci-lint run
