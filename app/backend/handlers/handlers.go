@@ -128,13 +128,13 @@ func GetUsersNumber(c *gin.Context) {
 		return
 	}
 
-	userSession := sessions.Default(c)
-	userId := userSession.Get("userId")
+	// userSession := sessions.Default(c)
+	// userId := userSession.Get("userId")
 
 	// fmt.Println(userId)
 
-	result := initializers.DB.Table("users").Where("user_id <> ?", userId).Order("RANDOM()").Limit(countInt).Find(&users)
-	// result := initializers.DB.Table("users").Order("RANDOM()").Limit(countInt).Find(&users)
+	// result := initializers.DB.Table("users").Where("user_id <> ?", userId).Order("RANDOM()").Limit(countInt).Find(&users)
+	result := initializers.DB.Table("users").Order("RANDOM()").Limit(countInt).Find(&users)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to get users",
