@@ -26,4 +26,4 @@ jobs:
       - name: Lint the project
         working-directory: app/backend
         run: |
-          golangci-lint run --disable-all --enable vrp --enable buildssa
+          golangci-lint run --disable-all --enable vrp --enable goanalysis_metalinter
