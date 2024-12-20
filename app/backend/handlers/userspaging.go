@@ -22,6 +22,14 @@ const (
     ) AS numbered_rows
     WHERE row_num IN ?;
 	`
+	getUserRow = `
+	SELECT row_num
+	FROM (
+		SELECT user_id, ROW_NUMBER() OVER (ORDER BY user_id) AS row_num
+		FROM users
+	) AS numbered_rows
+	WHERE user_id = ?;
+	`
 )
 
 var (
@@ -35,7 +43,15 @@ var (
 
 func setStartStep(c *gin.Context) {
 	var count int64
-	initializers.DB.Table("users").Count(&count)
+	userSession := sessions.Default(c)
+	userId, correct := userSession.Get("userId").(uint)
+	if !correct {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "User ID not found",
+		})
+	}
+
+	initializers.DB.Table("users").Where("is_banned = ?", false).Where("user_id <> ?", userId).Count(&count)
 	if count <= 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "No unbanned users",
@@ -53,8 +69,7 @@ func setStartStep(c *gin.Context) {
 	dbSize := int(count)
 	pageSize, _ = strconv.Atoi(os.Getenv("PAGESIZE"))
 
-	userSession := sessions.Default(c)
-	fmt.Println("userid", userSession.Get("userId").(int))
+	fmt.Println("userid", userSession.Get("userId").(uint))
 	userSession.Set("start", start)
 	userSession.Set("step", step)
 	userSession.Set("dbSize", dbSize)
