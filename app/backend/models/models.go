@@ -27,6 +27,14 @@ type Message struct {
 	Timestamp   time.Time     `gorm:"not null" json:"timestamp"`
 }
 
+type MatchList struct {
+	MatchID        uint `gorm:"primaryKey;autoIncrement" json:"chat_id"`
+	FirstPersonID  uint `gorm:"not null" json:"first_id"`
+	SecondPersonID uint `gorm:"not null" json:"second_id"`
+	User1          User `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE" json:"-"`
+	User2          User `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE" json:"-"`
+}
+
 type LabelInfo struct {
 	LabelID   uint   `gorm:"primaryKey;autoIncrement" json:"label_id"`
 	LabelName string `gorm:"size:30;not null" json:"label_name"`
