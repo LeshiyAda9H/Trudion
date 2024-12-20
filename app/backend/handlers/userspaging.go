@@ -58,6 +58,9 @@ func setStartStep(c *gin.Context) {
 	userSession.Set("start", start)
 	userSession.Set("step", step)
 	userSession.Set("dbSize", dbSize)
-	userSession.Save()
+	err := userSession.Save()
+	if err != nil {
+		panic(err)
+	}
 
 }

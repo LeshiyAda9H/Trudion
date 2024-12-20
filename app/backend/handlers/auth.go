@@ -103,7 +103,10 @@ func SignIn(c *gin.Context) {
 	userSession := sessions.Default(c)
 	userSession.Clear()
 	userSession.Set("userId", user.UserId)
-	userSession.Save()
+	err = userSession.Save()
+	if err != nil {
+		panic(err)
+	}
 
 	// return the token
 	c.JSON(http.StatusOK, gin.H{"token": token})
