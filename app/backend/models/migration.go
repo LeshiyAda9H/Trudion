@@ -12,6 +12,7 @@ func MigrateAll(db *gorm.DB) error {
 		&Block{},
 		&Notification{},
 		&Like{},
+		&MatchList{},
 	); err != nil {
 		return err
 	}
@@ -48,4 +49,8 @@ func MigrateNotification(db *gorm.DB) error {
 
 func MigrateLike(db *gorm.DB) error {
 	return db.AutoMigrate(&Like{})
+}
+
+func MigrateMatchList(db *gorm.DB) error {
+	return db.AutoMigrate(&MatchList{})
 }

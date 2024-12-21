@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"src/handlers"
 	"src/initializers"
@@ -40,7 +41,12 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	router.Use(sessions.Sessions("user_session", cookie.NewStore([]byte("secret"))))
+	storage := cookie.NewStore([]byte("secret"))
+	storage.Options(sessions.Options{
+		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
+	})
+	router.Use(sessions.Sessions("user_session", storage))
 
 	// Add swagger documentation
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

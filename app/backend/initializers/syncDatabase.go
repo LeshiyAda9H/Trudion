@@ -3,8 +3,9 @@ package initializers
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"src/models"
+
+	"gorm.io/gorm"
 )
 
 func SyncDatabase() {
@@ -17,6 +18,7 @@ func SyncDatabase() {
 		&models.Block{},
 		&models.Notification{},
 		&models.Like{},
+		&models.MatchList{},
 	)
 	if err != nil {
 		panic("failed to migrate database")

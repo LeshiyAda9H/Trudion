@@ -303,6 +303,10 @@ func Handshake(c *gin.Context) {
 			UserID:  body.RecipientId,
 			Message: "У вас взаимная симпатия с пользователем " + sender.Username,
 		})
+		initializers.DB.Table("match_list").Create(&models.MatchList{
+			FirstPersonID:  body.RecipientId,
+			SecondPersonID: sender.UserId,
+		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "handshake successful"})
 

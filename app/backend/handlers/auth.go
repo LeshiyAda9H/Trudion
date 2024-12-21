@@ -107,7 +107,6 @@ func SignIn(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-
 	// return the token
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }

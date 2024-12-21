@@ -29,10 +29,10 @@ type Message struct {
 
 type MatchList struct {
 	MatchID        uint `gorm:"primaryKey;autoIncrement" json:"chat_id"`
-	FirstPersonID  uint `gorm:"not null" json:"first_id"`
+	FirstPersonID  uint `gorm:"not null;" json:"first_id"`
 	SecondPersonID uint `gorm:"not null" json:"second_id"`
-	User1          User `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE" json:"-"`
-	User2          User `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE" json:"-"`
+	User1          User `gorm:"foreignKey:FirstPersonID;constraint:onDelete:CASCADE" json:"-"`
+	User2          User `gorm:"foreignKey:SecondPersonID;constraint:onDelete:CASCADE" json:"-"`
 }
 
 type LabelInfo struct {
