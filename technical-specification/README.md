@@ -120,7 +120,8 @@
 ### 6. ER-диаграмма
 Прикрепленная диаграмма отражает структуру данных и связи между таблицами. 
 
-![image](https://github.com/user-attachments/assets/55ef36c9-23f2-404a-98e9-c5559eb800b7)
+![image](https://github.com/user-attachments/assets/5733038b-4b7c-4ccb-80d7-f8925f3ffb3f)
+
 
 
 #### Основные таблицы:
