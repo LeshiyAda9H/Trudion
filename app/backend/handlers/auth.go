@@ -179,10 +179,7 @@ func SignUp(c *gin.Context) {
 
 	// Save image
 	file, err := c.FormFile("image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read image"})
-		return
-	} else {
+	if err == nil {
 		user.Image = filepath.Join("uploads", file.Filename)
 		if err := c.SaveUploadedFile(file, user.Image); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
