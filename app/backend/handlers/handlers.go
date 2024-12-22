@@ -518,13 +518,13 @@ func DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
 }
 
-// @Summary GetMatches
-// @Description get user matches
+// @Summary GetChat
+// @Description get user chats
 // @Security ApiKeyAuth
 // @Produce  json
 // @Success 200 {object} string
 // @Failure 400,500 {object} string
-// @Router /api/v1/matches [get]
+// @Router /api/v1/chat [get]
 func GetChat(c *gin.Context) {
 	UserIdentity(c)
 
@@ -544,7 +544,7 @@ func GetChat(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"matches": matches})
+	c.JSON(http.StatusOK, gin.H{"chats": matches})
 }
 
 // @Summary GetMatches
@@ -578,7 +578,7 @@ func GetMatches(c *gin.Context) {
 	initializers.DB.Table("users").Where("user_id IN ?", tmp).Scan(&result)
 
 	c.JSON(http.StatusOK, gin.H{
-		"result": result,
+		"matches": result,
 	})
 
 }
