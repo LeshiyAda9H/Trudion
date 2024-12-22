@@ -258,7 +258,7 @@ func GetNotifications(c *gin.Context) {
 	userId, _ := c.Get("userId")
 	var result []models.Notification
 
-	initializers.DB.Where("user_id = ?", userId).Find(&result)
+	initializers.DB.Preload("SenderUser").Where("user_id = ?", userId).Find(&result)
 
 	c.JSON(http.StatusOK, gin.H{
 		"notifications": result,
@@ -329,8 +329,9 @@ func Handshake(c *gin.Context) {
 
 		// create a notification for the recipient
 		initializers.DB.Create(&models.Notification{
-			UserID:  body.RecipientId,
-			Message: "У вас взаимная симпатия с пользователем " + sender.Username,
+			UserID:   body.RecipientId,
+			SenderID: sender.UserId,
+			Message:  "У вас взаимная симпатия с пользователем " + sender.Username,
 		})
 		initializers.DB.Create(&models.MatchList{
 			FirstPersonID:  body.RecipientId,
@@ -353,8 +354,9 @@ func Handshake(c *gin.Context) {
 
 		// create a notification for the recipient
 		initializers.DB.Create(&models.Notification{
-			UserID:  body.RecipientId,
-			Message: "Пользователь " + sender.Username + " хочет познакомиться с вами",
+			UserID:   body.RecipientId,
+			SenderID: sender.UserId,
+			Message:  "Пользователь " + sender.Username + " хочет познакомиться с вами",
 		})
 		// SendNotification(recipient.UserId, "Пользователь "+sender.Username+" хочет познакомиться с вами")
 
