@@ -65,10 +65,12 @@ type Block struct {
 type Notification struct {
 	NotificationID   uint      `gorm:"primaryKey;autoIncrement" json:"notification_id"`
 	UserID           uint      `gorm:"not null" json:"user_id"`
+	SenderID         uint      `gorm:"not null" json:"sender_id"`
 	Message          string    `gorm:"type:text;not null" json:"message"`
 	IsRead           bool      `gorm:"not null" json:"is_read" default:"false"`
 	NotificationDate time.Time `gorm:"not null;autoCreateTime" json:"notification_date"`
-	// User             User      `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE;" json:"user"`
+	SenderUser       User      `gorm:"foreignKey:SenderID;constraint:onDelete:CASCADE;" json:"sender"`
+	User             User      `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE;" json:"-"`
 }
 
 type Like struct {
