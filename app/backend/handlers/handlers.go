@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"src/initializers"
 	"src/models"
 	"src/repository"
@@ -403,12 +404,27 @@ func UpdateProfile(c *gin.Context) {
 		"username":  true,
 		"gender":    true,
 		"biography": true,
+		"image":     true,
 	}
 
 	updateData := make(map[string]interface{})
 	for key, val := range body {
 		if allowedFields[key] {
 			updateData[key] = val
+		}
+	}
+
+	if allowedFields["image"] {
+		file, err := c.FormFile("image")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read image"})
+			return
+		} else {
+			updateData["image"] = filepath.Join("uploads", file.Filename)
+			if err := c.SaveUploadedFile(file, updateData["image"].(string)); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+				return
+			}
 		}
 	}
 
