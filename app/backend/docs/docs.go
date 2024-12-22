@@ -166,6 +166,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user notifications information",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Notifications",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/profile": {
             "get": {
                 "security": [
@@ -329,6 +369,11 @@ const docTemplate = `{
         },
         "/api/v1/usersnumber": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "get number of users",
                 "produces": [
                     "application/json"

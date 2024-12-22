@@ -162,6 +162,31 @@ paths:
       summary: SignIn
       tags:
       - auth
+  /api/v1/notifications:
+    get:
+      description: get user notifications information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Notifications
   /api/v1/profile:
     get:
       description: get user profile information
@@ -289,6 +314,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - ApiKeyAuth: []
       summary: GetUsersNumber
   /api/v1/userspage:
     get:

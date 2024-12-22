@@ -38,7 +38,7 @@ var (
 	primeSteps = []int{1, 2, 3, 5, 7, 11, 13, 17, 19}
 	stepsCount = 9
 	// dbSize     = -1
-	pageSize = 0
+	pageSize = 3
 )
 
 func setStartStep(c *gin.Context) {

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"src/initializers"
 	"src/models"
@@ -103,6 +104,7 @@ func GetUsers(c *gin.Context) {
 
 // @Summary GetUsersNumber
 // @Description get number of users
+// @Security ApiKeyAuth
 // @Produce  json
 // @Param usersnumber query int true "Number of users to fetch"
 // @Success 200 {object} string
@@ -114,6 +116,8 @@ func GetUsersNumber(c *gin.Context) {
 	// result := initializers.DB.Exec("SELECT * FROM users ORDER BY RANDOM() LIMIT 5;")
 	// tmp := []int{5, 6, 8}
 	// result := initializers.DB.Table("users").Where("user_id in ?", tmp).Find(&users)
+
+	UserIdentity(c)
 
 	var users []models.UserPage
 	count, correct := c.GetQuery("usersnumber")
@@ -129,12 +133,12 @@ func GetUsersNumber(c *gin.Context) {
 	}
 
 	// userSession := sessions.Default(c)
-	// userId := userSession.Get("userId")
+	userId, _ := c.Get("userId")
 
-	// fmt.Println(userId)
+	fmt.Println(userId)
 
-	// result := initializers.DB.Table("users").Where("user_id <> ?", userId).Order("RANDOM()").Limit(countInt).Find(&users)
-	result := initializers.DB.Table("users").Order("RANDOM()").Limit(countInt).Find(&users)
+	result := initializers.DB.Table("users").Where("user_id <> ?", userId).Order("RANDOM()").Limit(countInt).Find(&users)
+	// result := initializers.DB.Table("users").Order("RANDOM()").Limit(countInt).Find(&users)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to get users",
@@ -237,6 +241,27 @@ func GetUsersPage(c *gin.Context) {
 	})
 }
 
+// @Summary Notifications
+// @Description get user notifications information
+// @Security ApiKeyAuth
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 400,401,500 {object} string
+// @Router /api/v1/notifications [get]
+func GetNotifications(c *gin.Context) {
+	UserIdentity(c)
+
+	userId, _ := c.Get("userId")
+	var result []models.Notification
+
+	initializers.DB.Where("user_id = ?", userId).Find(&result)
+
+	c.JSON(http.StatusOK, gin.H{
+		"notifications": result,
+	})
+
+}
+
 // @Summary Handshake
 // @Description send match request
 // @Security ApiKeyAuth
@@ -303,10 +328,12 @@ func Handshake(c *gin.Context) {
 			UserID:  body.RecipientId,
 			Message: "У вас взаимная симпатия с пользователем " + sender.Username,
 		})
-		initializers.DB.Table("match_list").Create(&models.MatchList{
+		initializers.DB.Create(&models.MatchList{
 			FirstPersonID:  body.RecipientId,
 			SecondPersonID: sender.UserId,
 		})
+		// SendNotification(recipient.UserId, "У вас взаимная симпатия с пользователем "+sender.Username)
+
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "handshake successful"})
 
@@ -325,6 +352,8 @@ func Handshake(c *gin.Context) {
 			UserID:  body.RecipientId,
 			Message: "Пользователь " + sender.Username + " хочет познакомиться с вами",
 		})
+		// SendNotification(recipient.UserId, "Пользователь "+sender.Username+" хочет познакомиться с вами")
+
 	}
 }
 

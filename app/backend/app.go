@@ -56,6 +56,7 @@ func main() {
 	router.GET("/api/v1/profile", handlers.GetUserProfile)
 	router.GET("/api/v1/usersnumber", handlers.GetUsersNumber)
 	router.GET("/api/v1/userspage", handlers.GetUsersPage)
+	router.GET("/api/v1/notifications", handlers.GetNotifications)
 
 	router.POST("/api/v1/handshake", handlers.Handshake)
 	router.POST("/api/v1/register", handlers.SignUp)

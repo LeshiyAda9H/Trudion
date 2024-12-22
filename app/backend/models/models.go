@@ -66,7 +66,7 @@ type Notification struct {
 	Message          string    `gorm:"type:text;not null" json:"message"`
 	IsRead           bool      `gorm:"not null" json:"is_read" default:"false"`
 	NotificationDate time.Time `gorm:"not null;autoCreateTime" json:"notification_date"`
-	User             User      `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE;" json:"user"`
+	// User             User      `gorm:"foreignKey:UserID;constraint:onDelete:CASCADE;" json:"user"`
 }
 
 type Like struct {

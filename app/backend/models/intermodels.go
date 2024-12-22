@@ -8,3 +8,7 @@ type UserPage struct {
 	Labels       []string `gorm:"type:text[]" json:"label"`
 	OnlineStatus string   `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away');default:'offline'" json:"online_status"`
 }
+
+type UserNotification struct {
+	Message string
+}

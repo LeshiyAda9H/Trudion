@@ -23,6 +23,15 @@ const (
 	tokenTTL  = 12 * time.Hour
 )
 
+// var (
+// 	websocketStorage  sync.Map
+// 	websocketUpgrader = websocket.Upgrader{
+// 		CheckOrigin: func(r *http.Request) bool {
+// 			return true
+// 		},
+// 	}
+// )
+
 type tokenClaims struct {
 	jwt.StandardClaims
 	UserId uint `json:"user_id"`
@@ -107,6 +116,16 @@ func SignIn(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+
+	//save websocket connection
+	// connection, err := websocketUpgrader.Upgrade(c.Writer, c.Request, nil)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{
+	// 		"error": "Failed to connect web socket",
+	// 	})
+	// } else {
+	// 	websocketStorage.Store(user.UserId, connection)
+	// }
 	// return the token
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }

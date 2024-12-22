@@ -39,6 +39,31 @@ func UserIdentity(c *gin.Context) {
 	c.Set(userCtx, userId)
 }
 
+// func SendNotification(userId uint, message string) {
+// 	conn, exists := websocketStorage.Load(userId)
+// 	if !exists {
+// 		fmt.Println("NO CONNECTION FOR NOTIFICATION")
+// 		return
+// 	}
+
+// 	connection, exists := conn.(*websocket.Conn)
+// 	if !exists {
+// 		fmt.Println("WRONG WEB SOCKET LOADED")
+// 		return
+// 	}
+
+// 	notification := models.UserNotification{
+// 		Message: message,
+// 	}
+
+// 	messageJSON, _ := json.Marshal(notification)
+
+// 	err := connection.WriteMessage(websocket.TextMessage, []byte(messageJSON))
+// 	if err != nil {
+// 		fmt.Println("FAILED SEND MESSAGE")
+// 	}
+// }
+
 // func UsersCount(c *gin.Context) {
 // 	header := c.GetHeader("GetUsersNumber")
 // 	if header == "" {
