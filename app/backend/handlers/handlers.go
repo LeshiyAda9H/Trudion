@@ -33,6 +33,7 @@ type userProfileResponse struct {
 }
 
 // @Summary UserProfile
+// @Tags profile
 // @Description get user profile information
 // @Security ApiKeyAuth
 // @Produce  json
@@ -362,6 +363,7 @@ func Handshake(c *gin.Context) {
 }
 
 // @Summary UpdateProfile
+// @Tags profile
 // @Description update user profile information
 // @Security ApiKeyAuth
 // @Accept  json
@@ -436,6 +438,7 @@ func UpdateProfile(c *gin.Context) {
 }
 
 // @Summary DeleteUser
+// @Tags profile
 // @Description delete user
 // @Security ApiKeyAuth
 // @Produce  json
@@ -509,4 +512,33 @@ func DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
+}
+
+// @Summary GetMatches
+// @Description get user matches
+// @Security ApiKeyAuth
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/matches [get]
+func GetMatches(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user ID not found"})
+		return
+	}
+
+	var matches []models.MatchList
+	if err := initializers.DB.Where("first_person_id = ? OR second_person_id = ?", id, id).Order("match_date desc").Find(&matches).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"matches": matches})
 }

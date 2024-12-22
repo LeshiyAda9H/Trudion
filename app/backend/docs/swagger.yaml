@@ -98,6 +98,8 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: DeleteUser
+      tags:
+      - profile
   /api/v1/handshake:
     post:
       consumes:
@@ -162,6 +164,27 @@ paths:
       summary: SignIn
       tags:
       - auth
+  /api/v1/matches:
+    get:
+      description: get user matches
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: GetMatches
   /api/v1/notifications:
     get:
       description: get user notifications information
@@ -212,6 +235,8 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: UserProfile
+      tags:
+      - profile
     patch:
       consumes:
       - application/json
@@ -241,6 +266,8 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: UpdateProfile
+      tags:
+      - profile
   /api/v1/register:
     post:
       consumes:
