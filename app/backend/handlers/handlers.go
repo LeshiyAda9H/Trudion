@@ -251,6 +251,10 @@ func GetUsersPage(c *gin.Context) {
 func GetNotifications(c *gin.Context) {
 	UserIdentity(c)
 
+	if c.IsAborted() {
+		return
+	}
+
 	userId, _ := c.Get("userId")
 	var result []models.Notification
 
