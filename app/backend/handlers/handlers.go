@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"src/initializers"
 	"src/models"
 	"src/repository"
@@ -261,6 +260,8 @@ func GetNotifications(c *gin.Context) {
 	var result []models.Notification
 
 	initializers.DB.Preload("SenderUser").Where("user_id = ?", userId).Find(&result)
+	// initializers.DB.Table("notifications").
+	// 	Select("")
 
 	c.JSON(http.StatusOK, gin.H{
 		"notifications": result,
@@ -404,27 +405,12 @@ func UpdateProfile(c *gin.Context) {
 		"username":  true,
 		"gender":    true,
 		"biography": true,
-		"image":     true,
 	}
 
 	updateData := make(map[string]interface{})
 	for key, val := range body {
 		if allowedFields[key] {
 			updateData[key] = val
-		}
-	}
-
-	if allowedFields["image"] {
-		file, err := c.FormFile("image")
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read image"})
-			return
-		} else {
-			updateData["image"] = filepath.Join("uploads", file.Filename)
-			if err := c.SaveUploadedFile(file, updateData["image"].(string)); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
-				return
-			}
 		}
 	}
 
@@ -539,7 +525,7 @@ func DeleteUser(c *gin.Context) {
 // @Success 200 {object} string
 // @Failure 400,500 {object} string
 // @Router /api/v1/matches [get]
-func GetMatches(c *gin.Context) {
+func GetChat(c *gin.Context) {
 	UserIdentity(c)
 
 	if c.IsAborted() {
@@ -559,4 +545,40 @@ func GetMatches(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"matches": matches})
+}
+
+// @Summary GetMatches
+// @Description get user matches
+// @Security ApiKeyAuth
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/matches [get]
+func GetMatches(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user ID not found"})
+		return
+	}
+
+	var likesResult []models.Like
+	initializers.DB.Table("likes").Where("recipient_id = ?", id).Scan(&likesResult)
+	tmp := make([]uint, len(likesResult))
+	for idx, x := range likesResult {
+		tmp[idx] = x.SenderID
+	}
+
+	var result []models.UserPage
+	initializers.DB.Table("users").Where("user_id IN ?", tmp).Scan(&result)
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": result,
+	})
+
 }
