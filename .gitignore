@@ -3,3 +3,4 @@
 /app/backend/src
 src.exe
 /app/backend/.env
+/app/backend/uploads/

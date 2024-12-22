@@ -21,6 +21,14 @@ func init() {
 	initializers.LoadConfig()
 	initializers.ConnectToDB()
 	initializers.SyncDatabase()
+
+	uploadDir := "uploads"
+
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+			panic("Failed to create upload directory")
+		}
+	}
 }
 
 // @title	Trudion API

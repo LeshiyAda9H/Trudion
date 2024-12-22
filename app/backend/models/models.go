@@ -17,6 +17,7 @@ type User struct {
 	Biography        string     `gorm:"type:text;not null;default:''" json:"biography"`
 	OnlineStatus     string     `gorm:"size:255;not null;check:online_status IN ('online', 'offline', 'away');default:'offline'" json:"online_status"`
 	IsBanned         bool       `gorm:"not null; default:false" json:"is_banned"`
+	Image            string     `gorm:"type:text;not null;default:''" json:"image"`
 }
 
 type Message struct {
