@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"src/initializers"
 	"src/models"
 	"src/repository"
@@ -530,6 +529,56 @@ func DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
+}
+
+// @Summary GetChat
+// @Description get user chats
+// @Security ApiKeyAuth
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/chat [get]
+func GetChat(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user ID not found"})
+		return
+	}
+
+	// var matches []models.MatchList
+	// if err := initializers.DB.Where("first_person_id = ? OR second_person_id = ?", id, id).Order("match_date desc").Find(&matches).Error; err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches"})
+	// 	return
+	// }
+
+	var chat1 []models.MatchList
+	var chat []models.User
+	if err := initializers.DB.Table("match_lists").Preload("User1").Where("second_person_id = ?", id).Find(&chat1).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches 1"})
+		return
+	}
+
+	for _, x := range chat1 {
+		chat = append(chat, x.User1)
+	}
+
+	var chat2 []models.MatchList
+	if err := initializers.DB.Table("match_lists").Preload("User2").Where("first_person_id = ?", id).Find(&chat2).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches 2"})
+		return
+	}
+
+	for _, x := range chat2 {
+		chat = append(chat, x.User2)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"chats": chat})
 }
 
 // @Summary GetMatches

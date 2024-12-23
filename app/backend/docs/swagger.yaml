@@ -77,6 +77,27 @@ paths:
           schema:
             type: string
       summary: Ping
+  /api/v1/chat:
+    get:
+      description: get user chats
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: GetChat
   /api/v1/deleteuser:
     delete:
       description: delete user

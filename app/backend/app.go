@@ -65,6 +65,7 @@ func main() {
 	router.GET("/api/v1/usersnumber", handlers.GetUsersNumber)
 	router.GET("/api/v1/userspage", handlers.GetUsersPage)
 	router.GET("/api/v1/notifications", handlers.GetNotifications)
+	router.GET("/api/v1/chat", handlers.GetChat)
 	router.GET("/api/v1/matches", handlers.GetMatches)
 
 	router.POST("/api/v1/handshake", handlers.Handshake)
