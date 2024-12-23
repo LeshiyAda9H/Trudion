@@ -72,6 +72,8 @@ func main() {
 	router.POST("/api/v1/register", handlers.SignUp)
 	router.POST("/api/v1/login", handlers.SignIn)
 	router.POST("/api/v1/verify/email", handlers.VerifyEmail)
+	router.POST("/api/v1/matches/accept", handlers.AcceptMatch)
+	router.POST("/api/v1/matches/decline", handlers.DeclineMatch)
 
 	router.PATCH("/api/v1/profile", handlers.UpdateProfile)
 

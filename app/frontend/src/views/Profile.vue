@@ -14,9 +14,13 @@
 
       <div class="avatar-container">
         <div class="avatar">
-          <img :src="defaultAvatar" alt="avatar" />
-          <!-- <i class="icon-user">  </i> -->
-          <div class="add-photo">+</div>
+          <img :src="avatarSource" alt="avatar" />
+          <div class="add-photo" @click="triggerFileInput">
+            <i class="fas fa-camera"></i>
+          </div>
+        </div>
+        <div v-if="isUploading" class="upload-indicator">
+          Загрузка...
         </div>
       </div>
 
@@ -43,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, computed } from 'vue';
 import Navbar from '../components/Navbar.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import { useProfileStore } from '../stores/ProfileStore';
@@ -151,11 +155,52 @@ export default defineComponent({
       return a.every((val, index) => val === b[index]);
     };
 
+    const fileInputRef = ref<HTMLInputElement | null>(null);
+    const isUploading = ref(false);
+
+    const avatarSource = computed(() => {
+      return profileStore.temporaryData.avatar || defaultAvatar;
+    });
+
+    const triggerFileInput = () => {
+      const input = fileInputRef.value || document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = handleFileUpload;
+      input.click();
+    };
+
+    const handleFileUpload = async (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const file = target.files?.[0];
+
+      if (!file) return;
+
+      console.log('File selected:', file);
+
+      try {
+        isUploading.value = true;
+        const response = await AuthService.uploadAvatar(file);
+        console.log('Upload response:', response);
+
+        profileStore.temporaryData.avatar = response.path;
+      } catch (error) {
+        console.error('Ошибка при загрузке файла:', error);
+        alert('Не удалось загрузить изображение');
+      } finally {
+        isUploading.value = false;
+      }
+    };
+
     return {
       profileStore,
       updateProfile,
       isLoading,
-      defaultAvatar
+      defaultAvatar,
+      avatarSource,
+      triggerFileInput,
+      handleFileUpload,
+      isUploading
     };
   },
 });
@@ -167,7 +212,7 @@ export default defineComponent({
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-
+  max-height: 575px;
 }
 
 .interests-section {
@@ -218,17 +263,45 @@ export default defineComponent({
 }
 
 .avatar-container {
-  /* Существующие стили для avatar-container */
+  position: relative;
+  margin: 20px 0;
 }
 
-.avatar img {
+.avatar {
+  position: relative;
   width: 10em;
   height: 10em;
   border-radius: 50%;
-  object-fit: cover;
-
+  overflow: visible;
 }
 
+.avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.add-photo {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.add-photo:hover {
+  background: var(--secondary-color);
+  transform: scale(1.1);
+}
 
 .gender-icon {
   width: 50px;
@@ -267,5 +340,17 @@ export default defineComponent({
   /* border-color: var(--primary-color); */
   opacity: 0.1;
   color: white;
+}
+
+.upload-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
 }
 </style>

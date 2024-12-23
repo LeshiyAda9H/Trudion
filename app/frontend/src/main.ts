@@ -2,6 +2,7 @@ import './assets/css/variables.css' // Переменные
 import './assets/css/base.css' // Глобальные стили
 import './assets/css/main.css'
 import '@fortawesome/fontawesome-free/css/all.css'
+import 'emoji-picker-element';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

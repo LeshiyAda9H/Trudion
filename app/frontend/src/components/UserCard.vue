@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <UserModal :show="isModalOpen" :user="user" @close="closeModal" />
+  <UserModal :show="isModalOpen" :user="user" @close="closeModal" @match-success="handleModalMatch" />
 </template>
 
 <script setup lang="ts">
@@ -72,8 +72,10 @@ const handleFriendRequest = async () => {
   try {
     isSending.value = true;
     const response = await AuthService.sendFriendRequest(props.user.user_id);
+    console.log('Ответ от сервера:', response);
 
     if (response.message === 'mutually') {
+      console.log('Произошел взаимный лайк!');
       emit('match-success', true);
     }
   } catch (error) {
@@ -105,6 +107,10 @@ const getStatusText = (status: string) => {
 const getInterestName = (value: string): string => {
   const interest = interests.find(i => i.value === value);
   return interest ? interest.name : value;
+};
+
+const handleModalMatch = (isMatch: boolean) => {
+  emit('match-success', isMatch);
 };
 
 onMounted(() => {

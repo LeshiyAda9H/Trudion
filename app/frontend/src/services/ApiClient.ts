@@ -20,7 +20,7 @@ export class ApiClient {
     this.api.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token')
-        console.log('Отправляем запрос с токеном:', token);
+        // console.log('Отправляем запрос с токеном:', token);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`
         }
