@@ -29,7 +29,7 @@ func main() {
 		"movies", "books", "travel",
 	}
 
-	for i := 1; i <= 100; i++ {
+	for i := 1; i <= 10; i++ {
 		// choose random 3 labels
 		var userLabels []string
 		for j := 0; j < 3; j++ {

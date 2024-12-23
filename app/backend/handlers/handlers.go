@@ -552,8 +552,15 @@ func GetMatches(c *gin.Context) {
 		return
 	}
 
-	var matches []models.MatchList
-	if err := initializers.DB.Where("first_person_id = ? OR second_person_id = ?", id, id).Order("match_date desc").Find(&matches).Error; err != nil {
+	var matches []models.UserPage
+	query := `SELECT users.*
+			  FROM users
+         		JOIN (SELECT sender_id, like_date
+               		  FROM likes
+               		  WHERE recipient_id = ?
+               		  ORDER BY like_date DESC) AS usr ON usr.sender_id = users.user_id
+			  ORDER BY usr.like_date DESC`
+	if err := initializers.DB.Raw(query, id).Scan(&matches).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches"})
 		return
 	}

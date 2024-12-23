@@ -30,8 +30,8 @@ type Message struct {
 
 type MatchList struct {
 	MatchID        uint      `gorm:"primaryKey;autoIncrement" json:"chat_id"`
-	FirstPersonID  uint      `gorm:"not null;" json:"first_id"`
-	SecondPersonID uint      `gorm:"not null" json:"second_id"`
+	FirstPersonID  uint      `gorm:"not null;" json:"first_person_id"`
+	SecondPersonID uint      `gorm:"not null" json:"second_person_id"`
 	MatchDate      time.Time `gorm:"not null;autoCreateTime" json:"match_date"`
 	User1          User      `gorm:"foreignKey:FirstPersonID;constraint:onDelete:CASCADE" json:"-"`
 	User2          User      `gorm:"foreignKey:SecondPersonID;constraint:onDelete:CASCADE" json:"-"`
@@ -74,7 +74,10 @@ type Notification struct {
 }
 
 type Like struct {
-	LikeID      uint `gorm:"primaryKey;autoIncrement" json:"like_id"`
-	SenderID    uint `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"sender_id"`
-	RecipientID uint `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"recipient_id"`
+	LikeID      uint      `gorm:"primaryKey;autoIncrement" json:"like_id"`
+	SenderID    uint      `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"sender_id"`
+	RecipientID uint      `gorm:"not null;constraint:OnDelete:SET DEFAULT;" json:"recipient_id"`
+	LikeDate    time.Time `gorm:"not null;autoCreateTime" json:"like_date"`
+	User1       User      `gorm:"foreignKey:SenderID;constraint:onDelete:CASCADE" json:"-"`
+	User2       User      `gorm:"foreignKey:RecipientID;constraint:onDelete:CASCADE" json:"-"`
 }
