@@ -172,7 +172,8 @@
 - Кнопки — 40px
 
 ### UI-kit
-![image]()
+![image](https://github.com/user-attachments/assets/300dc619-39eb-472d-8b99-bf9139bdfce1)
+
 
 ## API: 
 **REST API** для взаимодействия с сервером. Основные эндпоинты:
