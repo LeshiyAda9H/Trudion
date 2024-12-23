@@ -17,9 +17,6 @@
         <ENTITY ent_id="likes">
             <PROPERTY>Симпатии между пользователями</PROPERTY>
         </ENTITY>
-        <ENTITY ent_id="matches">
-            <PROPERTY>Заложение дружбы между пользователями</PROPERTY>
-        </ENTITY>
         <ENTITY ent_id="messages">
             <PROPERTY>Сообщения могут быть отправлены только между пользователями, имеющими взаимную заинтересованность</PROPERTY>
         </ENTITY>
@@ -29,10 +26,13 @@
         <ENTITY ent_id="blocks">
             <PROPERTY>Сохранение даты и времени блокировки</PROPERTY>
         </ENTITY>
+        <RELATIONSHIP ent_id="matches">
+            <PROPERTY>Заложение дружбы между пользователями</PROPERTY>
+        </RELATIONSHIP>
         <RELATIONSHIP ent_ids="user labels">
             <PROPERTY>Связь между пользователями и маркерами</PROPERTY>
         </RELATIONSHIP>
-        <CONSTRAINT>Обеспечение референциальной целостности между таблицами</CONSTRAINT>
+        <CONSTRAINT>Обеспечение целостности между таблицами</CONSTRAINT>
     </DATA>
     <ROLES>
         <ROLE>
