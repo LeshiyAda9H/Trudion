@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"src/initializers"
 	"src/models"
 	"src/repository"
