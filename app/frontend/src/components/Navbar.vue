@@ -17,11 +17,26 @@
 
       <div class="nav-icon notification-icon" @click="toggleNotifications">
         <i class="fas fa-bell"></i>
-        <!-- Выпадающее меню уведомлений (пока скрыто) -->
+        <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount }}</span>
         <div v-if="showNotifications" class="dropdown-menu notifications">
           <div class="dropdown-content">
-            <!-- Здесь будет контент уведомлений -->
-            <p>Уведомления пока недоступны</p>
+            <div v-if="notifications.length === 0" class="no-notifications">
+              Нет новых уведомлений
+            </div>
+
+            <div v-else class="notifications-list">
+              <div v-for="notification in sortedNotifications" :key="notification.notification_id"
+                class="notification-item" :class="{ 'unread': !notification.is_read }"
+                @click="markAsRead(notification.notification_id)">
+                <div class="notification-avatar">
+                  <img :src="notification.sender.image || defaultAvatar" :alt="notification.sender.username">
+                </div>
+                <div class="notification-content">
+                  <div class="notification-message">{{ notification.message }}</div>
+                  <div class="notification-date">{{ formatDate(notification.notification_date) }}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -62,10 +77,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthService from '../services/AuthService';
 import defaultAvatarImage from '../assets/default-avatar.png'; // Добавьте дефолтную аватарку
+import type { Notification } from '../classes';
 
 export default defineComponent({
   name: 'NavbarHeader',
@@ -77,6 +93,8 @@ export default defineComponent({
     const showLogoutModal = ref(false);
     const userAvatar = ref(''); // Здесь должен быть путь к аватарке пользователя
     const defaultAvatar = defaultAvatarImage;
+    const notifications = ref<Notification[]>([]);
+    const unreadCount = ref(0);
 
     const currentPageTitle = computed(() => {
       switch (route.path) {
@@ -86,7 +104,7 @@ export default defineComponent({
         case '/messenger/chat':
           return 'Мессенджер';
         case '/messenger/match':
-          return 'Место встречи';
+          return 'Место встреч';
         case '/profile':
           return 'Мой профиль';
         default:
@@ -119,6 +137,48 @@ export default defineComponent({
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const response = await AuthService.getNotifications();
+        notifications.value = response.notifications;
+        unreadCount.value = notifications.value.filter(n => !n.is_read).length;
+      } catch (error) {
+        console.error('Ошибка при получении уведомлений:', error);
+      }
+    };
+
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+    };
+
+    const markAsRead = async (notificationId: number) => {
+      try {
+        // await AuthService.markNotificationAsRead(notificationId);
+        notifications.value = notifications.value.map(n =>
+          n.notification_id === notificationId ? { ...n, is_read: true } : n
+        );
+        unreadCount.value = notifications.value.filter(n => !n.is_read).length;
+      } catch (error) {
+        console.error('Ошибка при отметке уведомления как прочитанного:', error);
+      }
+    };
+
+    const sortedNotifications = computed(() => {
+      return [...notifications.value].sort((a, b) => {
+        return new Date(b.notification_date).getTime() - new Date(a.notification_date).getTime();
+      });
+    });
+
+    onMounted(() => {
+      fetchNotifications();
+    });
+
     return {
       showNotifications,
       showSettings,
@@ -130,6 +190,11 @@ export default defineComponent({
       confirmLogout,
       handleLogout,
       currentPageTitle,
+      notifications,
+      unreadCount,
+      formatDate,
+      markAsRead,
+      sortedNotifications,
     };
   },
 });
@@ -372,5 +437,72 @@ export default defineComponent({
   color: #A68136;
   font-size: 47px;
   text-align: center;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.notifications-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+  background-color: #f5f5f5;
+}
+
+.notification-item.unread {
+  background-color: #f0f7ff;
+}
+
+.notification-avatar {
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+}
+
+.notification-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-message {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.notification-date {
+  font-size: 12px;
+  color: #666;
+}
+
+.no-notifications {
+  padding: 20px;
+  text-align: center;
+  color: #666;
 }
 </style>

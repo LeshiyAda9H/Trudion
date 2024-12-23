@@ -1,5 +1,5 @@
 <template>
-  <div class="work-spirit" :class="{ 'flying': isFlying }">
+  <div class="work-spirit" :class="{ 'flying': isFlying, 'match-animation': isMatch }">
     <div class="spirit-container">
       <img src="../assets/trudion.svg" alt="Work Spirit" class="spirit-image" />
       <div class="sparkles">
@@ -20,6 +20,7 @@ import { ref } from 'vue';
 const isFlying = ref(false);
 const showMessage = ref(false);
 const message = ref('');
+const isMatch = ref(false);
 
 const regularMessages = [
   'Вместе к успеху! 💪',
@@ -35,18 +36,22 @@ const matchMessages = [
   'Вместе к новым высотам! 🚀'
 ];
 
-const flyIn = (isMatch = false) => {
+const flyIn = (matchSuccess = false) => {
   isFlying.value = true;
+  isMatch.value = matchSuccess;
+
   setTimeout(() => {
     showMessage.value = true;
-    const messages = isMatch ? matchMessages : regularMessages;
-    message.value = messages[Math.floor(Math.random() * messages.length)];
+    message.value = matchSuccess
+      ? 'Поздравляем с совпадением! 🎉 Начните общение прямо сейчас!'
+      : regularMessages[Math.floor(Math.random() * regularMessages.length)];
   }, 1000);
 
   setTimeout(() => {
     showMessage.value = false;
     setTimeout(() => {
       isFlying.value = false;
+      isMatch.value = false;
     }, 500);
   }, 4000);
 };
@@ -59,13 +64,18 @@ defineExpose({ flyIn });
   position: fixed;
   right: -100px;
   bottom: 50px;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease;
   z-index: 1000;
 }
 
 .work-spirit.flying {
-  right: 60px;
-  animation: float 3s ease-in-out infinite;
+  right: 50px;
+}
+
+.work-spirit.match-animation {
+  right: 50%;
+  bottom: 50%;
+  transform: translate(50%, 50%);
 }
 
 .spirit-container {
