@@ -302,6 +302,8 @@ func Handshake(c *gin.Context) {
 		return
 	}
 
+	c.Set("recipientId", body.RecipientId)
+
 	// get sender model
 	var sender models.User
 	if initializers.DB.Where("user_id = ?", senderId).First(&sender).Error != nil {
@@ -325,10 +327,10 @@ func Handshake(c *gin.Context) {
 		}
 
 		// create a handshake
-		initializers.DB.Create(&models.Like{
-			SenderID:    sender.UserId,
-			RecipientID: body.RecipientId,
-		})
+		// initializers.DB.Create(&models.Like{
+		// 	SenderID:    sender.UserId,
+		// 	RecipientID: body.RecipientId,
+		// })
 
 		// create a notification for the recipient
 		initializers.DB.Create(&models.Notification{
@@ -627,17 +629,13 @@ func AcceptMatch(c *gin.Context) {
 
 	userId := id.(uint)
 
-	var body types.HandshakePayload
-	if err := c.Bind(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read body"})
-		return
-	}
-
 	Handshake(c)
 
+	recId, _ := c.Get("recipientId")
+	recipientId := recId.(uint)
 	// initializers.DB.Table("likes").Delete(&models.Like{SenderID: body.RecipientId, RecipientID: userId})
 
-	initializers.DB.Where("sender_id = ? AND recipient_id = ?", body.RecipientId, userId).Delete(&models.Like{})
+	initializers.DB.Where("sender_id = ? AND recipient_id = ?", recipientId, userId).Delete(&models.Like{})
 }
 
 // @Summary Decline
