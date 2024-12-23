@@ -1,114 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE TECHNICAL_SPECIFICATION SYSTEM "tz.DTD">
-<TECHNICAL_SPECIFICATION>
-    <PROJECT>
-        <NAME>Trudion</NAME>
-        <DESCRIPTION>Trudion — это веб-сервис, который позволяет пользователям находить напарников для совместного изучения различных дисциплин и тем, таких как иностранные языки, программирование, подготовка к экзаменам и решение математических задач. Основной функционал сервиса строится на подборе пользователей по интересам и предпочтениям с возможностью коммуникации через чаты и уведомления.</DESCRIPTION>
-    </PROJECT>
-    <FUNCTIONS>
-        <PRESENTATION_LAYER>
-            <PAGES>
-                <PAGE>Авторизация</PAGE>
-                <PAGE>Регистрация</PAGE>
-                <PAGE>Профиль</PAGE>
-                <PAGE>Главная (страница для поиска напарников)</PAGE>
-                <PAGE>Коммуникации</PAGE>
-            </PAGES>
-            <NAVIGATION>
-                <ITEM>Переход на главную страницу</ITEM>
-                <ITEM>Переход на страницу коммуникаций</ITEM>
-                <ITEM>Панель уведомлений</ITEM>
-                <ITEM>Панель настроек</ITEM>
-                <ITEM>Переход на страницу профиля</ITEM>
-            </NAVIGATION>
-        </PRESENTATION_LAYER>
-        <BL_LAYER>
-            <FUNCTION>Регистрация и авторизация пользователя</FUNCTION>
-            <FUNCTION>Поиск людей по маркерам</FUNCTION>
-            <FUNCTION>Упорядочение пользователей по интересам</FUNCTION>
-            <FUNCTION>Редактирование профиля</FUNCTION>
-            <FUNCTION>Обмен сообщениями (чаты)</FUNCTION>
-            <FUNCTION>Чат с техподдержкой</FUNCTION>
-            <FUNCTION>Механизм банов пользователей</FUNCTION>
-        </BL_LAYER>
-        <DATA_SERVICE_LAYER>
-            <FUNCTION>Получение и изменение информации профиля</FUNCTION>
-            <FUNCTION>Создание новых профилей</FUNCTION>
-            <FUNCTION>Получение истории переписки</FUNCTION>
-            <FUNCTION>Фильтрация пользователей по маркерам</FUNCTION>
-            <FUNCTION>Проверка лайков и количества маркеров</FUNCTION>
-            <FUNCTION>Получение списка уведомлений</FUNCTION>
-        </DATA_SERVICE_LAYER>
-        <DATABASE_LAYER>
-            <DESCRIPTION>Модель данных представлена на ER-диаграмме.</DESCRIPTION>
-        </DATABASE_LAYER>
-    </FUNCTIONS>
+<!DOCTYPE ISSPECS SYSTEM "ISSpecs.dtd">
+<ISSPECS>
+    <DESCRIPTION>
+        <TITLE>Техническое задание (ТЗ)</TITLE>
+        <SUBJ>Наименование проекта: Trudion</SUBJ>
+    </DESCRIPTION>
+    <DATA>
+        <ENTITY ent_id="user">
+            <PROPERTY>Уникальность email и id</PROPERTY>
+            <PROPERTY>Поля обязательные для заполнения: email, password, username, gender</PROPERTY>
+        </ENTITY>
+        <ENTITY ent_id="labels">
+            <PROPERTY>Уникальность идентификатора маркера</PROPERTY>
+            <PROPERTY>Максимальное количество маркеров: 3, связанных с одним пользователем</PROPERTY>
+        </ENTITY>
+        <ENTITY ent_id="likes">
+            <PROPERTY>Симпатии между пользователями</PROPERTY>
+        </ENTITY>
+        <ENTITY ent_id="matches">
+            <PROPERTY>Заложение дружбы между пользователями</PROPERTY>
+        </ENTITY>
+        <ENTITY ent_id="messages">
+            <PROPERTY>Сообщения могут быть отправлены только между пользователями, имеющими взаимную заинтересованность</PROPERTY>
+        </ENTITY>
+        <ENTITY ent_id="notifications">
+            <PROPERTY>Статус уведомления (прочитано/непрочитано)</PROPERTY>
+        </ENTITY>
+        <ENTITY ent_id="blocks">
+            <PROPERTY>Сохранение даты и времени блокировки</PROPERTY>
+        </ENTITY>
+        <RELATIONSHIP ent_ids="user labels">
+            <PROPERTY>Связь между пользователями и маркерами</PROPERTY>
+        </RELATIONSHIP>
+        <CONSTRAINT>Обеспечение референциальной целостности между таблицами</CONSTRAINT>
+    </DATA>
     <ROLES>
         <ROLE>
-            <NAME>Стандартный пользователь</NAME>
-            <DESCRIPTION>Может регистрироваться, редактировать профиль, искать напарников, обмениваться сообщениями, получать уведомления.</DESCRIPTION>
-            <RESPONSIBILITY>Активное использование системы для поиска напарников.</RESPONSIBILITY>
-            <USER_COUNT>Потенциально неограниченное</USER_COUNT>
+            <TITLE>Стандартный пользователь</TITLE>
+            <RESPONSIBILITY>Регистрация</RESPONSIBILITY>
+            <RESPONSIBILITY>Авторизация</RESPONSIBILITY>
+            <RESPONSIBILITY>Редактирование профиля</RESPONSIBILITY>
+            <RESPONSIBILITY>Поиск напарников</RESPONSIBILITY>
+            <RESPONSIBILITY>Обмен сообщениями</RESPONSIBILITY>
+            <RESPONSIBILITY>Просмотр уведомлений</RESPONSIBILITY>
+            <TOTALUSERS>Потенциально неограниченное</TOTALUSERS>
         </ROLE>
         <ROLE>
-            <NAME>Администратор</NAME>
-            <DESCRIPTION>Управляет системой, блокирует пользователей, обеспечивает поддержку.</DESCRIPTION>
-            <RESPONSIBILITY>Поддержание работоспособности и безопасности системы.</RESPONSIBILITY>
-            <USER_COUNT>Ограниченное</USER_COUNT>
+            <TITLE>Администратор</TITLE>
+            <RESPONSIBILITY>Управление пользователями</RESPONSIBILITY>
+            <RESPONSIBILITY>Модерация контента</RESPONSIBILITY>
+            <RESPONSIBILITY>Блокировка нарушителей</RESPONSIBILITY>
+            <RESPONSIBILITY>Поддержание системы</RESPONSIBILITY>
+            <TOTALUSERS>Ограниченное</TOTALUSERS>
         </ROLE>
     </ROLES>
-    <TECHNOLOGY_STACK>
-        <FRONTEND>Vue.ts</FRONTEND>
-        <BACKEND>Golang</BACKEND>
-        <DATABASE>PostgreSQL</DATABASE>
-        <UI_DESIGN>Разработка интерфейсов в Figma с последующей реализацией на frontend.</UI_DESIGN>
-    </TECHNOLOGY_STACK>
-    <DATA_CONSTRAINTS>
-        <DATA>
-            <ITEM>Пользователи: данные о профиле, статусе и предпочтениях</ITEM>
-            <ITEM>Маркеры (labels): интересы и фильтры для поиска</ITEM>
-            <ITEM>Сообщения: переписка между пользователями</ITEM>
-            <ITEM>Уведомления: статус взаимодействий</ITEM>
-            <ITEM>Лайки: симпатии между пользователями</ITEM>
-            <ITEM>Блокировки: данные о заблокированных пользователях</ITEM>
-        </DATA>
-        <INTEGRITY_CONSTRAINTS>
-            <CONSTRAINT>Уникальность email и username для каждого пользователя</CONSTRAINT>
-            <CONSTRAINT>Проверка корректности маркеров (связи с таблицей Labels_info)</CONSTRAINT>
-            <CONSTRAINT>Ограничение на отправку сообщений (например, только между взаимно заинтересованными пользователями)</CONSTRAINT>
-        </INTEGRITY_CONSTRAINTS>
-    </DATA_CONSTRAINTS>
-    <UI_DETAILS>
-        <COLORS>
-            <COLOR NAME="фон" CODE="#FFFFFF"/>
-            <COLOR NAME="текст" CODE="#000000"/>
-            <COLOR NAME="кнопка" CODE="#355299"/>
-            <COLOR NAME="текст 1" CODE="#8984B1"/>
-            <COLOR NAME="ошибка 1" CODE="#993535"/>
-            <COLOR NAME="ошибка 2" CODE="#B18888"/>
-        </COLORS>
-        <FONTS>
-            <FONT NAME="IBM Plex Sans">
-                <SIZE>72 bold (Заголовок 1)</SIZE>
-                <SIZE>42 bold (Заголовок 2)</SIZE>
-                <SIZE>24 bold (Заголовок 3)</SIZE>
-                <SIZE>22 regular (Описание)</SIZE>
-            </FONT>
-        </FONTS>
-        <ROUNDED_ELEMENTS>
-            <OBJECT>30px</OBJECT>
-            <BUTTON>40px</BUTTON>
-        </ROUNDED_ELEMENTS>
-    </UI_DETAILS>
-    <ER_DIAGRAM>
-        <DESCRIPTION>Основные таблицы: Users, Likes, Messages, Notifications, Blocks, Labels_info, User_labels</DESCRIPTION>
-    </ER_DIAGRAM>
-    <TRANSACTIONS>
-        <TRANSACTION>
-            <DESCRIPTION>Создание нового профиля: транзакция включает создание записи в Users и начальную настройку User_labels.</DESCRIPTION>
-        </TRANSACTION>
-        <TRANSACTION>
-            <DESCRIPTION>Отправка сообщения: запись в Messages с обновлением времени последней активности пользователя.</DESCRIPTION>
-        </TRANSACTION>
-    </TRANSACTIONS>
-</TECHNICAL_SPECIFICATION>
+    <TECHSPEC>
+        <TYPE>Frontend: Vue.js (TypeScript), Backend: Golang, СУБД: PostgreSQL</TYPE>
+        <DEVTOOLS>
+            <DEV>Visual Studio Code</DEV>
+            <DEV>IntelliJ IDEA</DEV>
+            <DEV>Figma</DEV>
+            <DEV>Swagger</DEV>
+            <DEV>Docker</DEV>
+            <DEV>GitHub</DEV>
+            <DEV>DBeaver</DEV>
+            <DEV>drawSQL</DEV>
+            <DEV>PlantUML</DEV>
+            <DEV>Miro</DEV>
+        </DEVTOOLS>
+        <DBMS>
+            <TITLE>PostgreSQL</TITLE>
+            <VERSION>13</VERSION>
+            <REASONING>Мощные возможности работы с реляционными данными и поддержка сложных запросов</REASONING>
+        </DBMS>
+        <TESTING>
+            <TEST>Юнит-тесты</TEST>
+            <TEST>Интеграционные тесты</TEST>
+            <TEST>Нагрузочные тесты</TEST>
+            <TEST>Тестирование интерфейса</TEST>
+            <TEST>Тестирование безопасности</TEST>
+        </TESTING>
+    </TECHSPEC>
+</ISSPECS>
