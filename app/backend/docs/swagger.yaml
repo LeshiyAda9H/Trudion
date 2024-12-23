@@ -206,6 +206,62 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: GetMatches
+  /api/v1/matches/accept:
+    post:
+      consumes:
+      - application/json
+      description: accept match
+      parameters:
+      - description: recipient id
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/types.HandshakePayload'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Accept
+  /api/v1/matches/decline:
+    post:
+      consumes:
+      - application/json
+      description: decline match
+      parameters:
+      - description: recipient id
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/types.HandshakePayload'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Decline
   /api/v1/notifications:
     get:
       description: get user notifications information

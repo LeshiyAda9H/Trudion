@@ -545,14 +545,14 @@ func GetChat(c *gin.Context) {
 	// }
 
 	var chat1 []models.MatchList
-	var chat []models.User
+	var chat []models.UserPage
 	if err := initializers.DB.Table("match_lists").Preload("User1").Where("second_person_id = ?", id).Find(&chat1).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches 1"})
 		return
 	}
 
 	for _, x := range chat1 {
-		chat = append(chat, x.User1)
+		chat = append(chat, models.UserPage{UserId: x.User1.UserId, Username: x.User1.Username, Gender: x.User1.Gender, Biography: x.User1.Biography, OnlineStatus: x.User1.OnlineStatus})
 	}
 
 	var chat2 []models.MatchList
@@ -562,7 +562,7 @@ func GetChat(c *gin.Context) {
 	}
 
 	for _, x := range chat2 {
-		chat = append(chat, x.User2)
+		chat = append(chat, models.UserPage{UserId: x.User2.UserId, Username: x.User2.Username, Gender: x.User2.Gender, Biography: x.User2.Biography, OnlineStatus: x.User2.OnlineStatus})
 	}
 
 	c.JSON(http.StatusOK, gin.H{"chats": chat})
@@ -601,5 +601,76 @@ func GetMatches(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"matches": result,
 	})
+
+}
+
+// @Summary Accept
+// @Description accept match
+// @Security ApiKeyAuth
+// @Accept  json
+// @Param input body types.HandshakePayload true "recipient id"
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/matches/accept [post]
+func AcceptMatch(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user ID not found"})
+		return
+	}
+
+	userId := id.(uint)
+
+	var body types.HandshakePayload
+	if err := c.Bind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read body"})
+		return
+	}
+
+	Handshake(c)
+
+	// initializers.DB.Table("likes").Delete(&models.Like{SenderID: body.RecipientId, RecipientID: userId})
+
+	initializers.DB.Where("sender_id = ? AND recipient_id = ?", body.RecipientId, userId).Delete(&models.Like{})
+}
+
+// @Summary Decline
+// @Description decline match
+// @Security ApiKeyAuth
+// @Accept  json
+// @Param input body types.HandshakePayload true "recipient id"
+// @Success 200 {object} string
+// @Failure 400,500 {object} string
+// @Router /api/v1/matches/decline [post]
+func DeclineMatch(c *gin.Context) {
+	UserIdentity(c)
+
+	if c.IsAborted() {
+		return
+	}
+
+	id, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user ID not found"})
+		return
+	}
+
+	userId := id.(uint)
+
+	var body types.HandshakePayload
+	if err := c.Bind(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read body"})
+		return
+	}
+
+	// initializers.DB.Delete(&models.Like{SenderID: body.RecipientId, RecipientID: userId})
+
+	initializers.DB.Where("sender_id = ? AND recipient_id = ?", body.RecipientId, userId).Delete(&models.Like{})
 
 }
