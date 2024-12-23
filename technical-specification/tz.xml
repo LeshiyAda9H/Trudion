@@ -33,6 +33,8 @@
             <PROPERTY>Связь между пользователями и маркерами</PROPERTY>
         </RELATIONSHIP>
         <CONSTRAINT>Обеспечение целостности между таблицами</CONSTRAINT>
+        <CONSTRAINT>Валидация данных на этапе ввода, включая проверку форматов email и других ключевых данных.</CONSTRAINT>
+        <CONSTRAINT>Логирование всех изменений данных для анализа и отката изменений.</CONSTRAINT>
     </DATA>
     <ROLES>
         <ROLE>
