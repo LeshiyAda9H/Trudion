@@ -538,13 +538,34 @@ func GetChat(c *gin.Context) {
 		return
 	}
 
-	var matches []models.MatchList
-	if err := initializers.DB.Where("first_person_id = ? OR second_person_id = ?", id, id).Order("match_date desc").Find(&matches).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches"})
+	// var matches []models.MatchList
+	// if err := initializers.DB.Where("first_person_id = ? OR second_person_id = ?", id, id).Order("match_date desc").Find(&matches).Error; err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches"})
+	// 	return
+	// }
+
+	var chat1 []models.MatchList
+	var chat []models.User
+	if err := initializers.DB.Table("match_lists").Preload("User1").Where("second_person_id = ?", id).Find(&chat1).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches 1"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"chats": matches})
+	for _, x := range chat1 {
+		chat = append(chat, x.User1)
+	}
+
+	var chat2 []models.MatchList
+	if err := initializers.DB.Table("match_lists").Preload("User2").Where("first_person_id = ?", id).Find(&chat2).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get matches 2"})
+		return
+	}
+
+	for _, x := range chat2 {
+		chat = append(chat, x.User2)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"chats": chat})
 }
 
 // @Summary GetMatches
