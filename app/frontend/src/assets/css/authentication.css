@@ -8,46 +8,66 @@
 
 }
 
-.auth-container {  
+.screen{
+  height: 100vh;
+  display: grid;
+  justify-content: center;
+  place-items: center;
+}
+
+.auth-container {
   border-radius: 15px;
-  
   background-color: var(--secondary-color);
   box-shadow: 0px 4px 20px 0px #00000040;
-  
-  width: 30%;
-  
   display: grid;
+  justify-content: center;
   place-items: center;
-
-  margin: 6em auto;
-  padding: 1em;
-
+  padding: 2em;
   text-align: center;
+  width: 450px;
+}
 
+.auth-title {
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 1em;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
 }
 
 .image-ava {
-  width: 50%;
-  max-width: 200px;
-  height: auto;
-  margin-bottom: 10px;
-  /* border-radius: 50%; */
-  /* border: 2px solid #355299; */
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-/* Базовый стиль для поля ввода */
-.input {
-  width: 70%;
-  margin: 5px 0;
-}
+/* Стили для позиционирования тултипа */
+:deep(.tooltip) {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  transform: translateX(10px);
+  /* Отступ от изображения */
+  z-index: 1000;
+} 
 
-/* Стиль для текста-заполнителя */
-.input::placeholder {
-  color: #8894B1; /* Цвет текста-заполнителя */
-  font-weight: normal; /* Обычный текст */
+.auth-button {
+  padding: 15px 20px;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 5px;
+  width: 20em;
 }
-
-/* Стиль для поля с ошибкой */
 .input-error {
   
   border: 2px solid var(--error-color);
@@ -61,28 +81,11 @@
   font-size: 16px;
   font-weight: bold;
 
-  width: 70%;
   margin: 5px 0;
 }
 .input-error::placeholder {
   color: #b18888; 
   font-weight: bold; 
-}
-
-.auth-button {
-  padding: 15px 20px;
-  
-  background-color: var(--primary-color);
-  color: #fff;
-  
-  font-size: 16px;
-  font-weight: bold;
-  
-  text-align: center;
-  
-  margin-top: 5px;
-
-  min-width: 70%;
 }
 
 .footer-text {
@@ -98,8 +101,7 @@
   color: #355299;
   text-decoration: none;
 }
+
 .link:hover {
   color: #a68136;
 }
-
-

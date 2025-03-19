@@ -1,10 +1,8 @@
 <template>
+  <div class = "screen">
   <div class="auth-container">
     <p class="auth-title">Регистрация</p>
-
-
     <div class="image-container">
-
       <!-- Всплывающее облачко -->
       <TooltipMessage
       :message="modalMessage"
@@ -14,8 +12,12 @@
       <img :src="imagePath" class="image-ava" />
     </div>
 
-    <InputRegistration :writeEmail="writeEmail" :writePass="writePass" :writeConfirmPass="writeConfirmPass"
-      :error="error" />
+    <InputRegistration
+      :writeEmail="writeEmail"
+      :writePass="writePass"
+      :writeConfirmPass="writeConfirmPass"
+      :error="error"
+    />
 
     <button class="auth-button" @click="sendData">Зарегистрироваться</button>
 
@@ -27,6 +29,8 @@
     <ModalWindow :message="modalMessage" :visible="showModal" @close="showModal = false" />
 
   </div>
+
+</div>
 </template>
 
 <script lang="ts">
@@ -38,6 +42,7 @@ import { useUserStore } from '../stores/UserStore'; // Импортируем х
 import AuthService from '../services/AuthService'; // Импортируем AuthService для регистрации
 import { useRouter } from "vue-router"; // Используем Composition API для роутера
 //import ModalWindow from '../components/ModalWindow.vue';
+
 import TooltipMessage from '../components/TooltipMessage.vue';
 
 export default defineComponent({
@@ -155,80 +160,3 @@ export default defineComponent({
   },
 });
 </script>
-
-
-<style scoped>
-.auth-container {
-  border-radius: 15px;
-  background-color: var(--secondary-color);
-  box-shadow: 0px 4px 20px 0px #00000040;
-  width: 30%;
-  display: grid;
-  place-items: center;
-  margin: 6em auto;
-  padding: 1em;
-  text-align: center;
-  position: relative;
-  /* Добавлено для позиционирования */
-}
-
-.auth-title {
-  font-family: "Press Start 2P", system-ui;
-  font-weight: 400;
-  font-style: normal;
-  margin-bottom: 1em;
-}
-
-.image-container {
-  position: relative;
-  display: inline-block;
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-}
-
-.image-ava {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* Стили для позиционирования тултипа */
-:deep(.tooltip) {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  transform: translateX(10px);
-  /* Отступ от изображения */
-  z-index: 1000;
-}
-
-.auth-button {
-  padding: 15px 20px;
-  background-color: var(--primary-color);
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 5px;
-  min-width: 70%;
-}
-
-.footer-text {
-  color: #8894b1;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-.link {
-  cursor: pointer;
-  opacity: 0.9;
-  color: #355299;
-  text-decoration: none;
-}
-
-.link:hover {
-  color: #a68136;
-}
-</style>
