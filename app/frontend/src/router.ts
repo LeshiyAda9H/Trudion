@@ -88,9 +88,9 @@ const routes = [
       next: NavigationGuardNext,
     ) => {
       if (!AuthService.isAuth()) {
-        next('/login');
+        next('/login')
       } else {
-        next();
+        next()
       }
     },
   },

@@ -78,11 +78,7 @@ export default {
 .input {
   width: 20em;
   margin: 5px 0;
-}
-.input-error{
-  width: 20em;
-  margin: 5px 0;
-  color: red;
+  
 }
 
 </style>

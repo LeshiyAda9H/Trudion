@@ -14,11 +14,9 @@
         Нет новых запросов в друзья
       </div>
 
-      <div v-else v-for="user in pendingUsers"
-           :key="user.user_id"
-           class="user-card"
-           @click="selectUser(user)">
-        <img :src="user.avatar || defaultAvatar" alt="User avatar" class="user-avatar">
+      <div v-else v-for="user in pendingUsers" :key="user.user_id" class="user-card" @click="selectUser(user)">
+        <!-- <img :src="user.avatar || defaultAvatar" alt="User avatar" class="user-avatar"> -->
+        <img :src="defaultAvatar" alt="User avatar" class="user-avatar">
         <div class="user-info">
           <h3>{{ user.username }}</h3>
         </div>
@@ -41,14 +39,13 @@
       </button>
 
       <div class="profile-content">
-        <img :src="selectedUser.avatar || defaultAvatar" alt="User avatar" class="profile-avatar">
+        <!-- <img :src="selectedUser.avatar || defaultAvatar" alt="User avatar" class="profile-avatar"> -->
+        <img :src="defaultAvatar" alt="User avatar" class="profile-avatar">
         <div class="profile-info">
           <h2>{{ selectedUser.username }}</h2>
           <p class="bio">{{ selectedUser.biography }}</p>
           <div class="interests">
-            <span v-for="interest in selectedUser.label"
-                  :key="interest"
-                  class="interest-tag">
+            <span v-for="interest in selectedUser.label" :key="interest" class="interest-tag">
               {{ interest }}
             </span>
           </div>
@@ -72,10 +69,10 @@
 import { ref, onMounted } from 'vue'
 import defaultAvatar from '../assets/default-avatar.png'
 import AuthService from '../services/AuthService'
-import type { ProfileUser } from '../classes'
+import type { MatchUser } from '../classes'
 
-const selectedUser = ref<ProfileUser | null>(null)
-const pendingUsers = ref<ProfileUser[]>([])
+const selectedUser = ref<MatchUser | null>(null)
+const pendingUsers = ref<MatchUser[]>([])
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 
@@ -83,8 +80,8 @@ const error = ref<string | null>(null)
 onMounted(async () => {
   try {
     isLoading.value = true
-    const matches = await AuthService.getMatchRequests()
-    pendingUsers.value = matches
+    const response = await AuthService.getMatchRequests()
+    pendingUsers.value = response.matches
   } catch (err) {
     console.error('Ошибка при загрузке запросов в друзья:', err)
     error.value = 'Не удалось загрузить запросы в друзья'
@@ -93,7 +90,7 @@ onMounted(async () => {
   }
 })
 
-const selectUser = (user: ProfileUser) => {
+const selectUser = (user: MatchUser) => {
   selectedUser.value = user
 }
 
@@ -101,7 +98,7 @@ const closeProfile = () => {
   selectedUser.value = null
 }
 
-const acceptMatch = async (user: ProfileUser) => {
+const acceptMatch = async (user: MatchUser) => {
   try {
     await AuthService.acceptMatch(user.user_id)
     pendingUsers.value = pendingUsers.value.filter(u => u.user_id !== user.user_id)
@@ -112,7 +109,7 @@ const acceptMatch = async (user: ProfileUser) => {
   }
 }
 
-const declineUser = async (user: ProfileUser) => {
+const declineUser = async (user: MatchUser) => {
   try {
     await AuthService.declineMatch(user.user_id)
     pendingUsers.value = pendingUsers.value.filter(u => u.user_id !== user.user_id)
@@ -122,6 +119,10 @@ const declineUser = async (user: ProfileUser) => {
     // Можно добавить уведомление об ошибке
   }
 }
+
+defineOptions({
+  name: 'MatchView'
+});
 </script>
 
 <style scoped>
@@ -144,7 +145,7 @@ const declineUser = async (user: ProfileUser) => {
   background: white;
   border-radius: 15px;
   padding: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   cursor: pointer;
   transition: transform 0.2s;
@@ -173,7 +174,8 @@ const declineUser = async (user: ProfileUser) => {
   margin-top: 10px;
 }
 
-.accept-btn, .decline-btn {
+.accept-btn,
+.decline-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -195,7 +197,8 @@ const declineUser = async (user: ProfileUser) => {
   color: white;
 }
 
-.accept-btn:hover, .decline-btn:hover {
+.accept-btn:hover,
+.decline-btn:hover {
   transform: scale(1.1);
 }
 
@@ -284,7 +287,9 @@ const declineUser = async (user: ProfileUser) => {
   font-size: 24px;
 }
 
-.loading, .error, .no-requests {
+.loading,
+.error,
+.no-requests {
   text-align: center;
   padding: 20px;
   font-size: 18px;

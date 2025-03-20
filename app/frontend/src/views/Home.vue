@@ -99,7 +99,8 @@ const handleFilterChange = async (filters: FilterParams) => {
   }
 }
 
-const handleMatch = (isMatch = false) => {
+const handleMatch = (isMatch: boolean) => {
+  console.log('handleMatch вызван с параметром:', isMatch); // Для отладки
   workSpirit.value?.flyIn(isMatch);
 };
 </script>

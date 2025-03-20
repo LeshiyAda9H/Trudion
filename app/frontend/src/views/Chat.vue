@@ -117,7 +117,7 @@ export default defineComponent({
 
 <style scoped>
 .chat-container {
-  
+
   height: 100%;
   display: flex;
   flex-direction: column;

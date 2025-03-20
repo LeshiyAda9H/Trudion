@@ -7,12 +7,14 @@
         <div class="avatar">
           <img :src="defaultAvatar" alt="avatar" />
         </div>
-        <div class="user-info">
-          <h2 class="nickname">
-            {{ user.username }}
-            <i class="fas" :class="genderIcon" :title="genderTitle"></i>
-          </h2>
-        </div>
+
+      </div>
+
+      <div class="user-info">
+        <h2 class="nickname">
+          {{ user.username }}
+          <i class="fas" :class="genderIcon" :title="genderTitle"></i>
+        </h2>
       </div>
 
       <div class="user-details">
@@ -54,7 +56,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: []
-  'match-success': []
+  'match-success': [boolean]
 }>()
 
 const isSending = ref(false)
@@ -69,8 +71,13 @@ const buttonText = computed(() => {
 const handleFriendRequest = async () => {
   try {
     isSending.value = true
-    await AuthService.sendFriendRequest(props.user.user_id)
-    emit('match-success') // Вызываем анимацию духа
+    const response = await AuthService.sendFriendRequest(props.user.user_id)
+    console.log('Ответ от сервера в модальном окне:', response)
+
+    if (response.message === 'mutually') {
+      console.log('Произошел взаимный лайк в модальном окне!')
+      emit('match-success', true)
+    }
     closeModal()
   } catch (error) {
     console.error('Ошибка при отправке запроса:', error)
@@ -113,6 +120,7 @@ const genderTitle = computed(() =>
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
@@ -133,7 +141,10 @@ const genderTitle = computed(() =>
 .nickname {
   font-size: 30px;
   font-weight: bold;
-  margin: 1em 0;
+  margin: 1em 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .modal-header {
@@ -145,6 +156,7 @@ const genderTitle = computed(() =>
   height: 10em;
   border-radius: 50%;
   object-fit: cover;
+
 }
 
 .user-details {
@@ -231,11 +243,6 @@ const genderTitle = computed(() =>
   justify-content: center;
 }
 
-.nickname {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .nickname i {
   font-size: 0.8em;

@@ -134,13 +134,13 @@ export default defineComponent({
   gap: 10px;
   width: 100%;
   padding: 0 10px;
-
 }
 
 .selected-labels {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  
 }
 
 .label-tag {

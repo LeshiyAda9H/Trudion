@@ -1,47 +1,51 @@
 <template>
-  <body>
-    <h1 class="title">Завершите регистрацию</h1>
-    <div class="prof-container">
-      <div class="profile-header">
-        <div class="gender-icon"
-             :class="{ active: userStore.registrationData.gender === 'male' }"
-             @click="userStore.registrationData.gender = 'male'"
-        >
-          <i class="fas fa-mars"></i>
-        </div>
 
-        <div class="avatar-container">
-          <div class="avatar">
-            <img :src="defaultAvatar" alt="avatar" />
-            <div class="add-photo">+</div>
-          </div>
-        </div>
+<div class = "screen">
+  <h1 class="title">Завершите регистрацию</h1>
 
-        <div class="gender-icon"
-             :class="{ active: userStore.registrationData.gender === 'female' }"
-             @click="userStore.registrationData.gender = 'female'"
-        >
-          <i class="fas fa-venus"></i>
+  <div class="prof-container">
+
+    <div class="profile-header">
+      <div class="gender-icon"
+            :class="{ active: userStore.registrationData.gender === 'male' }"
+            @click="userStore.registrationData.gender = 'male'"
+      >
+        <i class="fas fa-mars"></i>
+      </div>
+
+      <div class="avatar-container">
+        <div class="avatar">
+          <img :src="defaultAvatar" alt="avatar" />
+          <div class="add-photo">+</div>
         </div>
       </div>
 
-      <input type="text" placeholder="Никнейм" class="input" v-model="userStore.registrationData.username" />
-      <textarea placeholder="О себе" class="form-textarea" v-model="userStore.registrationData.biography"></textarea>
-
-      <div class="interests-section">
-        <h3>Ваши интересы</h3>
-        <InterestSelector
-          v-model="userStore.registrationData.label"
-          placeholder="Выберите ваши интересы"
-          direction="up"
-        />
+      <div class="gender-icon"
+            :class="{ active: userStore.registrationData.gender === 'female' }"
+            @click="userStore.registrationData.gender = 'female'"
+      >
+        <i class="fas fa-venus"></i>
       </div>
     </div>
 
-    <div class="save-button-container">
-      <button class="save-button" @click="updateProfile">Сохранить изменения</button>
+    <input type="text" placeholder="Никнейм" class="input" v-model="userStore.registrationData.username" />
+    <textarea placeholder="О себе" class="form-textarea" v-model="userStore.registrationData.biography"></textarea>
+
+    <div class="interests-section">
+      <h3>Ваши интересы</h3>
+      <InterestSelector
+        v-model="userStore.registrationData.label"
+        placeholder="Выберите ваши интересы"
+        direction="up"
+      />
     </div>
-  </body>
+  </div>
+
+  <div class="save-button-container">
+    <button class="save-button" @click="updateProfile">Сохранить изменения</button>
+  </div>
+
+</div>
 </template>
 
 <script setup lang="ts">
@@ -104,22 +108,30 @@ const updateProfile = async () => {
 
 <style scoped>
 
+
+.screen{
+  height: 100vh;
+  display: grid;
+  justify-content: center;
+}
+
 .title {
+  color: #A68136;
   font-size: 47px;
   text-align: center;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0.5em;
+  place-content: center;
 
 }
 
 .prof-container {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 6em;
-
+  border-radius: 15px;
+  background-color: var(--secondary-color);
+  box-shadow: 0px 4px 20px 0px #00000040;
+  text-align: center;
+  margin: 0 auto;
+  width: 450px;
+  padding: 1em 3.5em 0 3.5em;
+  place-content: center;
 }
 
 .profile-header {
@@ -168,17 +180,55 @@ const updateProfile = async () => {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 }
 
-.save-button-container {
-  position: fixed;
-  margin: 41em auto;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  width: 100%;
+.input {
+    width: 300px;
+    margin: 5px 0;
+}
+.input::placeholder {
+    color: #8894B1;
+    font-weight: bold;
+}
+
+.form-textarea {
+    min-width: 300px;
+    max-width: 50%;
+    min-height: 5em;
+    max-height: 10em;
+
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    outline: none;
+
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+.form-textarea::placeholder{
+    color: #8894B1;
+    font-weight: bold;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.save-button {
+  width: 400px;
+  margin: 1em 6em;
+
+  padding: 15px 20px;
+  background-color: #A68136;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+
 }
 
 .interests-section {
   margin: 20px 0;
+
 }
 
 .interests-section h3 {

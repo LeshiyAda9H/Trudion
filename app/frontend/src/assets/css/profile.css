@@ -1,32 +1,4 @@
-
-.title {
-    color: #A68136;
-    margin-top: 2em;
-    font-size: 47px;
-    text-align: center;
-    
-}
-
-.prof-container { 
-    border-radius: 15px;
-    
-    background-color: var(--secondary-color);
-    box-shadow: 0px 4px 20px 0px #00000040;
-
-    
-    width: 30%;
-    
-  
-    display: grid;
-    place-items: center;
-  
-    margin: 1em auto;
-    padding: 1em 0;
-  
-    text-align: center;
-  
-  }
-
+/* 
 .avatar {
     width: 150px;
     height: 150px;
@@ -60,23 +32,8 @@
     cursor: pointer;
 }
 
-/* Базовый стиль для поля ввода */
-.input {
-    width: 70%;
-    margin: 5px 0;
-}
-.input::placeholder {
-    color: #8894B1; 
-    font-weight: bold;
-}
-
-.select {
-    width: 70%;
-    margin: 5px 0;
-}
-
 .form-textarea {
-    min-width: 70%;
+    min-width: 300px;
     max-width: 50%;
     min-height: 5em;
     max-height: 10em;
@@ -91,8 +48,6 @@
     padding: 15px 20px;
     font-size: 16px;
     font-weight: bold;
-
-    width: 70%;
     margin: 5px 0;
 }
 .form-textarea::placeholder{
@@ -100,26 +55,4 @@
     font-weight: bold;
     font-family: 'IBM Plex Sans', sans-serif;
 }
-
-
-.save-button {
-    padding: 15px 20px;
-  
-    background-color: #A68136;
-    
-    font-size: 16px;
-    font-weight: bold;
-  
-    text-align: center;
-    color: #fff;
-    
-    
-    width: 25%;
-
-    display: grid;
-    place-items: center;
-  
-    margin: 0 auto;
-
-}
-
+ */
