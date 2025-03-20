@@ -2,15 +2,38 @@ services:
     trudion-server:
         build: backend/
         command: go run app.go
-        ports: 
-            - "5433:5432"
+        ports:
             - "8080:8080"
+        env_file:
+          - backend/.env
+        depends_on:
+          postgres:
+            condition: service_healthy
 
     trudion-ui:
         build: frontend/
         command: npm run dev -- --host
         ports: 
             - "5173:5173"
-
         depends_on:
             - trudion-server
+
+    postgres:
+      image: postgres:latest
+      container_name: postgres_trudion
+      restart: always
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: db_trudion
+      ports:
+        - "5430:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres -d db_trudion"]
+        interval: 5s
+        retries: 5
+
+volumes:
+  postgres_data:
