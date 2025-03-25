@@ -206,6 +206,7 @@ export default defineComponent({
   top: 0;
   left: 0;
   width: 100%;
+  height: 10vh;
   display: flex;
   justify-content: space-between;
   align-items: center;

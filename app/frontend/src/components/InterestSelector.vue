@@ -140,7 +140,7 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  
+
 }
 
 .label-tag {
